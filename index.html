@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knockout King | Power-Tapper</title>
+    <title>Z#99' döv </title>
+    
     <link rel="stylesheet" href="style.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -13,17 +15,18 @@
         <h1>
             <i class="fa-solid fa-fire"></i> Knockout King <i class="fa-solid fa-fire"></i>
         </h1>
-        <p>| Power-Tapper |</p>
+        <p>| Keli dövF |</p>
     </header>
 
-    <div class="game-container" id="game-container">
+    <div class="game-container">
+        
         <div class="stats-panel">
             <div class="stat-box">
-                <span>Schläge:</span>
+                <i class="fa-solid fa-hand-fist"></i> Schläge:
                 <span id="strike-count" class="stat-value">0</span>
             </div>
             <div class="stat-box">
-                <span>Ziel-Energie:</span>
+                <i class="fa-solid fa-heart-pulse"></i> Energie:
                 <span id="health-count" class="stat-value">100</span>
             </div>
         </div>
@@ -33,20 +36,25 @@
             <div id="health-bar" class="health-bar" style="width: 100%;"></div>
         </div>
         
-        <div id="dummy-container" class="dummy-container">
+        <div class="dummy-container">
             <div id="dummy-hitbox" class="dummy-hitbox">
+                
+                <div class="mouth-shape"></div>
+
                 <div class="hit-effect" id="hit-effect">BAM!</div>
+            
             </div>
         </div>
 
-        <div id="message-area" class="message-area hidden">
-            </div>
+        <div id="message-area" class="message-area hidden"></div>
 
         <button id="restart-btn" class="restart-btn hidden">
-            <i class="fa-solid fa-rotate-right"></i> Neustart
+            <i class="fa-solid fa-rotate-right"></i> Yine DÖV!
         </button>
+
     </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
