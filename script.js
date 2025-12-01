@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const hitEffect = document.getElementById('hit-effect');
     const messageArea = document.getElementById('message-area');
     const restartBtn = document.getElementById('restart-btn');
-
+const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gaming.mp3'); 
+// Hinweis: Für eine dauerhafte Lösung solltest du später eigene MP3s hochladen.
     // Spiel-Variablen
     let health = 100;
     let strikes = 0;
@@ -42,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 5. Prüfen ob K.O.
         if (health <= 0) {
             gameOver();
+            function punch() {
+    // Sound abspielen, aber Klonen damit er sich überlagern kann (schnelles Klicken)
+    const soundClone = punchSound.cloneNode();
+    soundClone.volume = 0.5; // Nicht zu laut
+    soundClone.play();
+    
+    // ... dein restlicher Code ...
+
         }
     }
 
