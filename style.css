@@ -1,11 +1,12 @@
 :root {
-    --bg-dark: #282c34;
-    --bg-card: #3c4049;
-    --text-main: #e0e0e0;
-    --accent-red: #ff5555;
-    --accent-green: #50fa7b;
-    --accent-yellow: #f1fa8c;
-    --dummy-color: #555555;
+    --bg-dark: #282c34;        /* Hintergrund dunkel */
+    --bg-card: #3c4049;        /* Karten-Hintergrund */
+    --text-main: #e0e0e0;      /* Text hell */
+    --accent-red: #ff5555;     /* Rot für Schaden/Titel */
+    --accent-green: #50fa7b;   /* Grün für Leben */
+    --accent-yellow: #f1fa8c;  /* Gelb für Zahlen */
+    --skin-color: #f3d0b1;     /* Hautfarbe Dummy */
+    --skin-shadow: #e0b090;    /* Schatten für 3D Effekt */
 }
 
 * {
@@ -21,156 +22,231 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     min-height: 100vh;
     padding: 20px;
+    user-select: none; /* Verhindert Markieren von Text beim wilden Klicken */
 }
 
-/* Header */
+/* --- HEADER --- */
 .game-header {
     text-align: center;
-    margin-bottom: 20px;
-}
-.game-header h1 {
-    font-size: 2.5rem;
-    color: var(--accent-red);
-    text-shadow: 0 0 10px rgba(255, 85, 85, 0.5);
-}
-.game-header i {
-    color: var(--accent-yellow);
+    margin-bottom: 25px;
 }
 
-/* Haupt-Container (Das Fenster im Bild) */
+.game-header h1 {
+    font-size: 2.8rem;
+    color: var(--accent-red);
+    text-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.game-header p {
+    color: #888;
+    font-weight: bold;
+    letter-spacing: 4px;
+}
+
+/* --- HAUPT CONTAINER --- */
 .game-container {
     background-color: var(--bg-card);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    padding: 25px;
-    width: 90%;
-    max-width: 450px;
-    border: 2px solid var(--dummy-color);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    border: 3px solid #555;
+    position: relative;
 }
 
-/* Statistik-Panel */
+/* --- STATISTIK --- */
 .stats-panel {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 10px;
 }
+
 .stat-box {
-    display: flex;
-    gap: 5px;
-    background-color: var(--bg-dark);
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-}
-.stat-value {
-    color: var(--accent-yellow);
+    font-size: 1rem;
     font-weight: bold;
 }
 
-/* Energie-Leiste */
+.stat-value {
+    color: var(--accent-yellow);
+    margin-left: 5px;
+    font-size: 1.2rem;
+}
+
+/* --- ENERGIE LEISTE --- */
 .health-bar-container {
-    background-color: var(--dummy-color);
-    height: 25px;
-    border-radius: 5px;
-    margin-bottom: 25px;
+    background-color: #222;
+    height: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
     overflow: hidden;
     position: relative;
-    border: 1px solid var(--accent-red);
+    border: 2px solid #555;
+    box-shadow: inset 0 0 10px #000;
 }
+
 .health-bar-label {
     position: absolute;
     width: 100%;
     text-align: center;
-    line-height: 25px;
-    font-size: 0.8rem;
-    color: var(--text-main);
+    line-height: 28px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
     z-index: 10;
 }
+
 .health-bar {
     height: 100%;
-    background-color: var(--accent-green); /* Startfarbe */
-    transition: width 0.3s ease-out; /* Weiche Animation beim Abzug */
+    background: linear-gradient(90deg, var(--accent-green), #40c060);
+    width: 100%;
+    transition: width 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s;
 }
 
-/* Dummy/Ziel-Bereich */
+/* --- DER GLATZKOPF (DUMMY) --- */
 .dummy-container {
-    text-align: center;
-    padding: 20px;
-    background-color: var(--bg-dark);
-    border-radius: 10px;
-    margin-bottom: 20px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
 }
+
 .dummy-hitbox {
-    width: 150px;
-    height: 180px;
-    margin: 0 auto;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23444" stroke="%23333" stroke-width="2"/><circle cx="50" cy="35" r="30" fill="%23e8ccb7"/><rect x="40" y="55" width="20" height="20" fill="%23e8ccb7"/></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    cursor: pointer;
+    width: 170px;
+    height: 210px;
+    background-color: var(--skin-color);
+    border-radius: 70px 70px 90px 90px; /* Die Kopfform */
+    border: 4px solid #222;
+    position: relative;
+    cursor: crosshair; /* Fadenkreuz-Cursor */
+    box-shadow: inset -10px -10px 0 var(--skin-shadow); /* 3D Schatten */
     transition: transform 0.05s;
-    /* Der eigentliche Bald-Head-Dummy wird später per echtem Bild/CSS nachgebildet */
-    
-    /* Platzhalter für den Kopf: */
-    background-color: #e8ccb7; /* Hautfarbe */
-    border-radius: 50% / 40%;
-    border: 3px solid #666;
 }
 
-/* Effekt beim Klicken (JavaScript wird hier die Klasse .hitting hinzufügen) */
-.hitting {
-    transform: scale(0.95);
-    box-shadow: 0 0 20px var(--accent-red);
+/* Augenbrauen (Böse) */
+.dummy-hitbox::before {
+    content: '';
+    position: absolute;
+    top: 65px; 
+    left: 30px;
+    width: 45px; 
+    height: 12px;
+    background: #222;
+    transform: rotate(20deg); /* Linke Braue */
+    box-shadow: 60px -20px 0 #222; /* Rechte Braue (versetzt) */
+    /* Hinweis: Rechte Braue durch Rotation etwas tricky, aber wirkl einfach: */
+}
+/* Korrektur für rechte Braue (eigenes Element wäre sauberer, aber wir tricksen mit Shadow) */
+
+/* Augen */
+.dummy-hitbox::after {
+    content: '';
+    position: absolute;
+    top: 85px; 
+    left: 40px;
+    width: 20px; 
+    height: 12px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 65px 0 0 #000; /* Rechtes Auge */
 }
 
+/* Mund (Grimmig) */
+/* WICHTIG: In HTML <div class="mouth-shape"></div> einfügen! */
+.mouth-shape {
+    position: absolute;
+    bottom: 50px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px; 
+    height: 6px;
+    background: #222;
+    border-radius: 5px;
+}
+
+/* Ohren (Optional, über box-shadow am Hauptkopf oder pseudo elements) */
+
+/* --- ANIMATIONEN --- */
+
+/* Wenn geschlagen (JS fügt diese Klasse hinzu) */
+.dummy-hitbox.punched {
+    transform: scale(0.92) rotate(3deg);
+    background-color: #ffaa88; /* Rötet sich vor Wut/Schmerz */
+}
+
+/* BAM Text Effekt */
 .hit-effect {
     position: absolute;
-    top: 50%;
+    top: 50%; 
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    font-size: 2rem;
-    color: var(--accent-red);
-    display: none; /* Am Anfang versteckt */
-    animation: bam 0.4s ease-out;
+    transform: translate(-50%, -50%) scale(0.5);
+    font-size: 3.5rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #fff;
+    -webkit-text-stroke: 2px #000; /* Schwarzer Rand um Text */
+    pointer-events: none; /* Klicks gehen durch den Text durch */
+    opacity: 0;
+    z-index: 100;
 }
 
-@keyframes bam {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+/* Die Animation, die JS auslöst */
+.show-bam {
+    animation: textPop 0.4s ease-out forwards;
 }
 
-/* Nachrichten und Button */
+@keyframes textPop {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); }
+    50% { transform: translate(-50%, -120%) scale(1.2) rotate(10deg); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+}
+
+/* --- UI ELEMENTE --- */
 .message-area {
-    font-size: 1.2rem;
+    margin-top: 20px;
+    font-size: 1.4rem;
     font-weight: bold;
     text-align: center;
-    margin-top: 15px;
     color: var(--accent-green);
+    text-shadow: 0 2px 0 #000;
+    min-height: 30px;
 }
 
 .restart-btn {
     width: 100%;
-    padding: 12px;
+    margin-top: 20px;
+    padding: 15px;
     background-color: var(--accent-red);
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 15px;
+    box-shadow: 0 5px 0 #aa3333; /* 3D Button Effekt */
+    transition: transform 0.1s, box-shadow 0.1s;
 }
+
+.restart-btn:active {
+    transform: translateY(5px); /* Button eindrücken */
+    box-shadow: 0 0 0 #aa3333;
+}
+
 .restart-btn:hover {
-    background-color: #cc4444;
+    background-color: #ff6666;
 }
 
 .hidden {
     display: none !important;
 }
-
-/* Wenn du das Dummy-Bild nicht als SVG/PNG einfügen kannst, bleibt der CSS-Platzhalter-Kopf sichtbar. */
