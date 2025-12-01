@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hitEffect.classList.add('show-bam');
 
         // Zufällige Sprüche
-        const words = ["BAM!", "POW!", "BOOM!", "SMASH!", "K.O.!"];
+        const words = ["VUR!", "BITIR!", "SIK!", "ÖLDÜR!", "ALLAH RAHMET EYLESIN GG"];
         hitEffect.innerText = words[Math.floor(Math.random() * words.length)];
     }
 
