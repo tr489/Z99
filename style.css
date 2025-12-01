@@ -250,3 +250,24 @@ body {
 .hidden {
     display: none !important;
 }
+/* K.O.-Augen (Das X) */
+.dummy-hitbox.dead::after {
+    background: transparent;
+    box-shadow: none;
+    content: 'X  X';
+    color: #000;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: sans-serif;
+    top: 70px;
+    left: 45px;
+    width: auto;
+    height: auto;
+    letter-spacing: 25px; /* Abstand zwischen den Augen */
+    transform: rotate(0deg);
+}
+
+/* Augenbrauen weg bei Tod (sieht entspannter aus) */
+.dummy-hitbox.dead::before {
+    display: none;
+}
