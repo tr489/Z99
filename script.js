@@ -7,8 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const hitEffect = document.getElementById('hit-effect');
     const messageArea = document.getElementById('message-area');
     const restartBtn = document.getElementById('restart-btn');
-const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gaming.mp3'); 
-// Hinweis: Für eine dauerhafte Lösung solltest du später eigene MP3s hochladen.
+
+    // Sound laden
+    const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gaming.mp3'); 
+
     // Spiel-Variablen
     let health = 100;
     let strikes = 0;
@@ -17,40 +19,35 @@ const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gami
     // Klick-Event (Der Schlag)
     dummy.addEventListener('click', () => {
         if (!gameActive) return; // Wenn Spiel vorbei, keine Schläge mehr
-
         punch();
     });
 
     function punch() {
-        // 1. Zähler hochzählen
+        // --- 1. SOUND ABSPIELEN (Sofort!) ---
+        const soundClone = punchSound.cloneNode();
+        soundClone.volume = 0.5; // Lautstärke 50%
+        soundClone.play();
+
+        // --- 2. LOGIK ---
+        // Zähler hochzählen
         strikes++;
         strikeText.innerText = strikes;
 
-        // 2. Leben abziehen (zufällig zwischen 5 und 12 Schaden)
+        // Leben abziehen (zufällig zwischen 5 und 12 Schaden)
         const damage = Math.floor(Math.random() * 8) + 5;
         health -= damage;
 
         // Nicht unter 0 gehen
         if (health < 0) health = 0;
 
-        // 3. Anzeige aktualisieren
+        // --- 3. OPTIK ---
         updateDisplay();
-
-        // 4. Animationen abspielen
         animateDummy();
         showHitText();
 
-        // 5. Prüfen ob K.O.
+        // --- 4. PRÜFEN OB K.O. ---
         if (health <= 0) {
             gameOver();
-            function punch() {
-    // Sound abspielen, aber Klonen damit er sich überlagern kann (schnelles Klicken)
-    const soundClone = punchSound.cloneNode();
-    soundClone.volume = 0.5; // Nicht zu laut
-    soundClone.play();
-    
-    // ... dein restlicher Code ...
-
         }
     }
 
@@ -83,16 +80,17 @@ const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gami
         void hitEffect.offsetWidth; // Trigger Reflow (Trick um Animation neu zu starten)
         hitEffect.classList.add('show-bam');
 
-        // Zufällige Sprüche
-        const words = ["VUR!", "BITIR!", "SIK!", "ÖLDÜR!", "ALLAH RAHMET EYLESIN GG"];
+        // Deine Sprüche!
+        const words = ["VUR!", "BITIR!", "SIK!", "ÖLDÜR!", "HELAL OLSUN!"];
         hitEffect.innerText = words[Math.floor(Math.random() * words.length)];
     }
 
     function gameOver() {
         gameActive = false;
         
-        // Dummy ändert sich (optional: Augen "X" machen per CSS Klasse)
-        dummy.style.opacity = "0.5";
+        // Dummy wird "tot" (Augen werden zu X X, falls du das CSS von vorhin drin hast)
+        dummy.classList.add('dead'); 
+        dummy.style.opacity = "0.7";
         
         // Nachricht anzeigen
         messageArea.innerHTML = `🏆 K.O.! Du hast ihn in ${strikes} Schlägen erledigt!`;
@@ -108,7 +106,10 @@ const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gami
         strikes = 0;
         gameActive = true;
         
+        // Toten-Status entfernen
+        dummy.classList.remove('dead');
         dummy.style.opacity = "1";
+        
         messageArea.classList.add('hidden');
         restartBtn.classList.add('hidden');
         
