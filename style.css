@@ -1,0 +1,176 @@
+:root {
+    --bg-dark: #282c34;
+    --bg-card: #3c4049;
+    --text-main: #e0e0e0;
+    --accent-red: #ff5555;
+    --accent-green: #50fa7b;
+    --accent-yellow: #f1fa8c;
+    --dummy-color: #555555;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Header */
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.game-header h1 {
+    font-size: 2.5rem;
+    color: var(--accent-red);
+    text-shadow: 0 0 10px rgba(255, 85, 85, 0.5);
+}
+.game-header i {
+    color: var(--accent-yellow);
+}
+
+/* Haupt-Container (Das Fenster im Bild) */
+.game-container {
+    background-color: var(--bg-card);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 25px;
+    width: 90%;
+    max-width: 450px;
+    border: 2px solid var(--dummy-color);
+}
+
+/* Statistik-Panel */
+.stats-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.stat-box {
+    display: flex;
+    gap: 5px;
+    background-color: var(--bg-dark);
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+.stat-value {
+    color: var(--accent-yellow);
+    font-weight: bold;
+}
+
+/* Energie-Leiste */
+.health-bar-container {
+    background-color: var(--dummy-color);
+    height: 25px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--accent-red);
+}
+.health-bar-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 25px;
+    font-size: 0.8rem;
+    color: var(--text-main);
+    z-index: 10;
+}
+.health-bar {
+    height: 100%;
+    background-color: var(--accent-green); /* Startfarbe */
+    transition: width 0.3s ease-out; /* Weiche Animation beim Abzug */
+}
+
+/* Dummy/Ziel-Bereich */
+.dummy-container {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--bg-dark);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+.dummy-hitbox {
+    width: 150px;
+    height: 180px;
+    margin: 0 auto;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23444" stroke="%23333" stroke-width="2"/><circle cx="50" cy="35" r="30" fill="%23e8ccb7"/><rect x="40" y="55" width="20" height="20" fill="%23e8ccb7"/></svg>');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.05s;
+    /* Der eigentliche Bald-Head-Dummy wird später per echtem Bild/CSS nachgebildet */
+    
+    /* Platzhalter für den Kopf: */
+    background-color: #e8ccb7; /* Hautfarbe */
+    border-radius: 50% / 40%;
+    border: 3px solid #666;
+}
+
+/* Effekt beim Klicken (JavaScript wird hier die Klasse .hitting hinzufügen) */
+.hitting {
+    transform: scale(0.95);
+    box-shadow: 0 0 20px var(--accent-red);
+}
+
+.hit-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 2rem;
+    color: var(--accent-red);
+    display: none; /* Am Anfang versteckt */
+    animation: bam 0.4s ease-out;
+}
+
+@keyframes bam {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+}
+
+/* Nachrichten und Button */
+.message-area {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+    color: var(--accent-green);
+}
+
+.restart-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 15px;
+}
+.restart-btn:hover {
+    background-color: #cc4444;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Wenn du das Dummy-Bild nicht als SVG/PNG einfügen kannst, bleibt der CSS-Platzhalter-Kopf sichtbar. */
