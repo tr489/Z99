@@ -16,7 +16,9 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    touch-action: manipulation; /* Verhindert Zoom bei Doppelklick */
+    -webkit-tap-highlight-color: transparent; /* Entfernt das blaue Blinken bei Klick */
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     display: flex;
