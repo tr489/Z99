@@ -2,14 +2,19 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Z' DÖV - Hüseyin EDITION</title>
     <style>
         /* --- GRUNDLAGEN --- */
+        * {
+            /* WICHTIG: Verhindert Zoom durch Doppeltippen auf ALLEM */
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent; /* Kein graues Blinken */
+        }
+
         body {
-            background-color: #0a0a12; /* Dunklerer Cyber-Hintergrund */
+            background-color: #0a0a12;
             color: white;
-            /* Courier New für den Retro-Hacker Look im Hauptteil lassen wir */
             font-family: "Courier New", Courier, monospace; 
             text-align: center;
             margin: 0;
@@ -17,13 +22,13 @@
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation;
+            touch-action: manipulation; /* Doppelte Sicherheit */
             transition: background-color 1s ease;
         }
 
         /* --- ÜBERSCHRIFTEN --- */
         h1 { 
-            color: #ff00ff; /* Magenta Neon */
+            color: #ff00ff; 
             margin: 0; 
             font-size: 2.2rem; 
             text-transform: uppercase; 
@@ -36,7 +41,7 @@
             color: black;
             font-weight: bold;
             padding: 2px 8px;
-            border-radius: 2px; /* Eckiger = technischer */
+            border-radius: 2px;
             font-size: 0.8rem;
             vertical-align: middle;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
@@ -46,7 +51,7 @@
             position: absolute;
             top: 10px; right: 10px;
             font-size: 0.8rem;
-            color: #00ffff; /* Cyan */
+            color: #00ffff;
             text-shadow: 0 0 5px #00ffff;
             opacity: 0;
             transition: opacity 0.5s;
@@ -57,7 +62,6 @@
             background: rgba(10, 10, 20, 0.8);
             padding: 8px;
             margin-top: 10px;
-            /* Futuristischer Rahmen statt runder Ecken */
             border: 1px solid #00ffff;
             box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
             display: flex;
@@ -68,7 +72,7 @@
         
         .money { color: #f1c40f; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 5px #f1c40f; }
 
-        /* --- ARENA & GESICHT --- */
+        /* --- ARENA --- */
         .arena {
             height: 230px;
             display: flex;
@@ -83,9 +87,10 @@
             cursor: pointer;
             transition: transform 0.05s;
             z-index: 10;
-            /* Cyber Glow hinter dem Kopf */
             filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.3));
             position: relative;
+            /* Extra Sicherheit gegen Zoom auf dem Gesicht */
+            touch-action: manipulation; 
         }
 
         #face:active { transform: scale(0.9); }
@@ -105,7 +110,7 @@
             left: 55% !important; 
         }
 
-        /* --- PARTIKEL (Neon-Look) --- */
+        /* --- PARTIKEL --- */
         .particle {
             position: absolute;
             pointer-events: none;
@@ -126,29 +131,26 @@
         .hit { color: #ff00ff; transform: rotate(15deg) scale(0.95); filter: drop-shadow(0 0 10px #ff00ff); }
         .dead { filter: grayscale(100%) brightness(0.5); opacity: 0.7; transform: rotate(180deg); pointer-events: none; }
 
-        /* --- LEBENSBALKEN (Tech-Look) --- */
+        /* --- BALKEN --- */
         .bar-container {
             width: 90%;
             height: 20px;
-            /* Leuchtender Rahmen */
             border: 2px solid #ff00ff;
             box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
             margin: 0 auto;
             position: relative;
             background: rgba(0,0,0,0.7);
-            /* Keine runden Ecken für Tech-Look */
             overflow: hidden;
         }
 
         .bar-fill {
             height: 100%;
-            /* Cyber Gradient */
             background: linear-gradient(90deg, #ff00ff, #00ffff);
             width: 100%;
             transition: width 0.1s;
         }
 
-        /* --- SHOP AREA (FUTURISTISCH) --- */
+        /* --- SHOP --- */
         .shop-area {
             margin-top: 15px;
             padding-top: 10px;
@@ -158,7 +160,6 @@
             padding-bottom: 50px;
             height: 320px;
             overflow-y: auto;
-            /* Scanline Effekt */
             background-image: linear-gradient(transparent 50%, rgba(0, 255, 255, 0.05) 50%);
             background-size: 10px 4px;
         }
@@ -176,15 +177,15 @@
             color: #888;
             padding: 8px 20px;
             cursor: pointer;
-            font-family: sans-serif; /* Modernere Schrift für UI */
+            font-family: sans-serif;
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: 0.3s;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
         }
         
-        /* Cooler Hover Effekt für Tabs */
         .tab-btn::before {
             content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%;
             background: linear-gradient(90deg, transparent, rgba(0,255,255,0.4), transparent);
@@ -209,12 +210,9 @@
             padding: 0 10px;
         }
 
-        /* --- NEUE FUTURISTISCHE SHOP BUTTONS --- */
         .shop-btn {
-            /* Dunkler, technischer Hintergrund */
             background: linear-gradient(135deg, rgba(20, 20, 30, 0.9), rgba(10, 10, 20, 0.9));
             color: #aaa;
-            /* Leuchtender Basis-Rahmen */
             border: 1px solid #333;
             padding: 10px;
             cursor: pointer;
@@ -226,9 +224,9 @@
             text-align: left;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
-        /* Hover Effekt: Helles Aufleuchten */
         .shop-btn:hover {
             border-color: #00ffff;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
@@ -238,7 +236,6 @@
         .shop-btn .icon { font-size: 2rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
         .shop-btn div { display: flex; flex-direction: column; }
         
-        /* Modernere Schrift für die Namen */
         .shop-btn h4 { 
             margin: 0; 
             font-size: 0.85rem; 
@@ -249,11 +246,10 @@
         }
         .shop-btn small { font-size: 0.75rem; color: #00ffff; opacity: 0.7; }
         
-        /* Zähler Badge */
         .count-badge {
             position: absolute;
             top: 5px; right: 5px;
-            background: #ff00ff; /* Magenta */
+            background: #ff00ff;
             color: white;
             box-shadow: 0 0 5px #ff00ff;
             width: 22px; height: 22px;
@@ -263,14 +259,12 @@
             font-family: sans-serif;
         }
 
-        /* IM BESITZ (Gold/Gelb Tech Look) */
         .shop-btn.owned { 
             border-color: #f1c40f;
             color: #ddd;
             box-shadow: inset 0 0 10px rgba(241, 196, 15, 0.2);
         }
 
-        /* AKTIV / AUSGERÜSTET (Pulsierender Cyber-Look) */
         @keyframes cyber-pulse {
             0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; border-color: #ff00ff; }
             50% { box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff; border-color: #00ffff; }
@@ -286,17 +280,14 @@
         }
         .shop-btn.active h4 { color: #00ffff; font-weight: bold; }
         
-        /* Nachrichten */
         #msg { min-height: 20px; color: #00ffff; margin: 5px 0; font-weight: bold; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,255,255,0.5);}
 
-        /* Reset Button */
         #reset-btn {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             padding: 15px 40px;
             font-size: 1.2rem;
-            /* Cyber Gradient Button */
             background: linear-gradient(90deg, #00b894, #00cec9);
             border: 2px solid #00ff00;
             color: black;
@@ -307,6 +298,7 @@
             z-index: 20;
             white-space: nowrap;
             font-family: sans-serif;
+            touch-action: manipulation;
         }
         .hidden { display: none; }
 
@@ -392,14 +384,10 @@
     <script>
         // --- SOUNDS ---
         const sounds = {
-            // Hier steht jetzt dein exakter Dateiname!
-            hit: new Audio('hit.m4a'),
-            
-            // Die anderen kannst du später hochladen:
+            hit: new Audio('hit.m4a'), // Dein Dateiname
             buy: new Audio('buy.mp3'),
             win: new Audio('win.mp3')
         };
-        // Lautstärke anpassen
         sounds.hit.volume = 0.6;
         sounds.buy.volume = 0.8;
         sounds.win.volume = 1.0;
@@ -408,11 +396,15 @@
             try {
                 let s = sounds[type].cloneNode();
                 s.volume = sounds[type].volume;
-                s.play().catch(e => console.log("Audio play error:", e));
-            } catch (e) {
-                // Falls Datei nicht gefunden, Fehler ignorieren
-            }
+                s.play().catch(e => { /* Fehler ignorieren wenn Sound fehlt */ });
+            } catch (e) { }
         }
+        
+        // --- ZOOM VERHINDERN (WICHTIG) ---
+        // Dieser Code blockiert das Doppelklick-Zoom-Event
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
 
         // --- GAME STATE ---
         let state = {
@@ -502,7 +494,7 @@
                 if (Math.random() < 0.15) {
                     dmg = Math.floor(dmg * 2);
                     spawnParticles(x, y, 10, '#ff00ff'); // Magenta bei Crit
-                    msg.innerText = "💥 HELAL! " + dmg;
+                    msg.innerText = "💥 CRIT! " + dmg;
                     msg.style.color = "#ff00ff";
                     if (navigator.vibrate) navigator.vibrate(50);
                 } else {
