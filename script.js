@@ -1,107 +1,126 @@
-// Status Variablen
+// --- Variablen ---
 let score = 0;
-let playerHealth = 100;
-let enemyHealth = 100;
+let playerHp = 100;
+let enemyHp = 100;
 let isGameOver = false;
 
-// DOM Elemente holen
-const scoreEl = document.getElementById('score');
-const pHealthBar = document.getElementById('player-health');
-const eHealthBar = document.getElementById('enemy-health');
-const pHealthText = document.getElementById('player-health-text');
-const eHealthText = document.getElementById('enemy-health-text');
-const messageLog = document.getElementById('message-log');
+// --- Elemente holen ---
+const scoreDisplay = document.getElementById('score');
+const playerBar = document.getElementById('player-bar');
+const enemyBar = document.getElementById('enemy-bar');
+const enemyHpText = document.getElementById('enemy-hp-text');
+const msgLog = document.getElementById('msg-log');
+const keliFace = document.getElementById('keli-face');
 const hitBtn = document.getElementById('hit-btn');
 const resetBtn = document.getElementById('reset-btn');
-const gameContainer = document.querySelector('.game-container');
 
-// Sound Effekt (optional, simpler Web Audio API Piepton oder Platzhalter)
-function playHitSound() {
-    // Hier könnte man echte Sounds einfügen
-}
+// --- Events (Klick auf Button oder Gesicht) ---
+hitBtn.addEventListener('click', fight);
+keliFace.addEventListener('click', fight);
+resetBtn.addEventListener('click', resetGame);
 
-// Hauptfunktion: Schlagen
-hitBtn.addEventListener('click', () => {
+// --- Kampf Funktion ---
+function fight() {
     if (isGameOver) return;
 
-    // 1. Schläge zählen
+    // 1. Score hochzählen
     score++;
-    scoreEl.textContent = score;
+    scoreDisplay.innerText = score;
 
-    // 2. Schaden berechnen (Zufallswert zwischen 5 und 15)
-    const damage = Math.floor(Math.random() * 10) + 5;
-    enemyHealth -= damage;
+    // 2. Schaden berechnen (Zufall zwischen 8 und 15)
+    const damage = Math.floor(Math.random() * 8) + 8;
+    enemyHp -= damage;
 
-    // 3. Eigene Energie verlieren (Anstrengung/Gegenschlag: 1-5)
-    const recoil = Math.floor(Math.random() * 5) + 1;
-    playerHealth -= recoil;
+    // 3. Eigene Ausdauer verlieren (klein bisschen)
+    playerHp -= 2;
 
-    // Werte begrenzen (nicht unter 0)
-    if (enemyHealth < 0) enemyHealth = 0;
-    if (playerHealth < 0) playerHealth = 0;
+    // Werte begrenzen
+    if (enemyHp < 0) enemyHp = 0;
+    if (playerHp < 0) playerHp = 0;
 
-    // 4. Update UI
-    updateUI();
-    
-    // Animation auslösen
-    gameContainer.classList.add('shake');
-    setTimeout(() => {
-        gameContainer.classList.remove('shake');
-    }, 500);
+    // 4. Update Bildschirm
+    updateBars();
+    animateFace();
 
-    messageLog.textContent = `BAM! -${damage} Schaden beim Gegner!`;
+    msgLog.innerText = `BAM! -${damage} Schaden!`;
 
     // 5. Spielende prüfen
-    checkGameOver();
-});
-
-// Neustart Funktion
-resetBtn.addEventListener('click', () => {
-    score = 0;
-    playerHealth = 100;
-    enemyHealth = 100;
-    isGameOver = false;
-    
-    hitBtn.disabled = false;
-    hitBtn.classList.remove('hidden');
-    resetBtn.classList.add('hidden');
-    messageLog.textContent = "Neues Spiel gestartet!";
-    
-    updateUI();
-});
-
-function updateUI() {
-    // Balken Breite anpassen
-    pHealthBar.style.width = playerHealth + '%';
-    eHealthBar.style.width = enemyHealth + '%';
-    
-    // Text anpassen
-    pHealthText.textContent = playerHealth + ' / 100';
-    eHealthText.textContent = enemyHealth + ' / 100';
-
-    // Farben ändern bei niedriger HP
-    pHealthBar.style.backgroundColor = playerHealth < 30 ? '#ff9800' : '#4caf50';
+    checkGameStatus();
 }
 
-function checkGameOver() {
-    if (enemyHealth <= 0) {
+// --- Status prüfen ---
+function checkGameStatus() {
+    if (enemyHp <= 0) {
+        // GEWONNEN
         endGame(true);
-    } else if (playerHealth <= 0) {
+    } else if (playerHp <= 0) {
+        // VERLOREN
         endGame(false);
     }
 }
 
+// --- Ende ---
 function endGame(won) {
     isGameOver = true;
-    hitBtn.disabled = true;
     hitBtn.classList.add('hidden');
     resetBtn.classList.remove('hidden');
 
     if (won) {
-        messageLog.textContent = "🏆 SIEG! Du hast den Gegner besiegt!";
-        messageLog.style.color = "#4caf50";
+        msgLog.innerText = "🏆 SIEG! Keli liegt flach!";
+        msgLog.style.color = "#2ed573";
+        keliFace.innerText = "😵"; // K.O. Gesicht
+        keliFace.classList.add('dead');
     } else {
-        messageLog.textContent = "💀 NIEDERLAGE! Du bist erschöpft.";
-        messageLog.style.color = "#f44336";
+        msgLog.innerText = "💀 Du bist zu müde...";
+        msgLog.style.color = "#ff4757";
     }
+}
+
+// --- UI Updates ---
+function updateBars() {
+    enemyBar.style.width = enemyHp + "%";
+    playerBar.style.width = playerHp + "%";
+    enemyHpText.innerText = enemyHp + "%";
+    
+    // Farbe rot werden lassen bei wenig Leben
+    if (enemyHp < 30) {
+        enemyBar.style.backgroundColor = "#ff0000";
+    }
+}
+
+// --- Gesichts-Animation ---
+function animateFace() {
+    keliFace.classList.add('hit');
+    keliFace.innerText = "🤕"; // Aua Gesicht
+
+    setTimeout(() => {
+        keliFace.classList.remove('hit');
+        // Nur zurück ändern, wenn noch nicht tot
+        if (!isGameOver) {
+            keliFace.innerText = "👨‍🦲";
+        }
+    }, 200);
+}
+
+// --- Neustart ---
+function resetGame() {
+    score = 0;
+    playerHp = 100;
+    enemyHp = 100;
+    isGameOver = false;
+
+    scoreDisplay.innerText = "0";
+    msgLog.innerText = "Neuer Kampf!";
+    msgLog.style.color = "#ccc";
+
+    keliFace.innerText = "👨‍🦲";
+    keliFace.classList.remove('dead');
+
+    hitBtn.classList.remove('hidden');
+    resetBtn.classList.add('hidden');
+    
+    // Balken zurücksetzen Farbe
+    enemyBar.style.backgroundColor = "#ff4757";
+    
+    updateBars();
 }
