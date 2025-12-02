@@ -1,139 +1,157 @@
+/* --- Grundeinstellungen --- */
 :root {
-    --bg-color: #1a1a2e;
-    --card-bg: #16213e;
-    --text-color: #fff;
-    --accent: #e94560;
-    --player-col: #4caf50;
-    --enemy-col: #f44336;
+    --bg: #121212;
+    --card: #1e1e24;
+    --text: #ffffff;
+    --accent: #ff4757;
+    --green: #2ed573;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --- Container --- */
+.game-wrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
     text-align: center;
 }
 
 .game-container {
-    background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    max-width: 500px;
-    width: 90%;
+    background-color: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
 }
 
-h1 { margin: 0; color: var(--accent); font-size: 2.5rem; text-transform: uppercase; }
-h2 { margin-top: 5px; opacity: 0.7; font-weight: normal; }
-
-.stats-board {
-    margin: 20px 0;
-    padding: 10px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
+h1 {
+    color: var(--accent);
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-.stat-box .value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    display: block;
-}
-
+/* --- Arena Layout --- */
 .arena {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     margin: 20px 0;
+    align-items: center;
 }
 
-.health-bar-container {
+/* --- Balken --- */
+.status-col {
     width: 100%;
-    height: 20px;
-    background-color: #333;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.bar-bg {
+    width: 100%;
+    height: 15px;
+    background: #333;
     border-radius: 10px;
     overflow: hidden;
-    margin: 5px 0;
-    border: 2px solid rgba(255,255,255,0.1);
+    margin-top: 5px;
 }
 
-.health-bar {
+.bar-fill {
     height: 100%;
-    background-color: var(--player-col);
-    transition: width 0.3s ease;
+    background: var(--green);
+    transition: width 0.2s ease, background-color 0.2s;
 }
 
-.health-bar.enemy-bar {
-    background-color: var(--enemy-col);
+.enemy-fill {
+    background: var(--accent);
 }
 
-.vs {
-    margin: 15px 0;
-    font-weight: bold;
+/* --- DER KELI (Das Gesicht) --- */
+.keli-zone {
+    margin: 10px 0;
+}
+
+.keli-avatar {
+    font-size: 120px; /* Größe des Gesichts */
+    cursor: pointer;
+    transition: transform 0.1s;
+    user-select: none; /* Verhindert Markieren beim Klicken */
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+}
+
+/* Wenn getroffen */
+.keli-avatar.hit {
+    transform: scale(0.9) rotate(5deg);
+}
+
+/* Wenn tot */
+.keli-avatar.dead {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transform: rotate(180deg);
+    pointer-events: none;
+}
+
+/* --- Buttons & Log --- */
+.log-text {
+    min-height: 25px;
+    margin-bottom: 15px;
     font-style: italic;
-    opacity: 0.5;
+    color: #ccc;
 }
 
-.btn-attack {
+.btn-main {
     background-color: var(--accent);
     color: white;
     border: none;
     padding: 15px 40px;
     font-size: 1.5rem;
+    font-weight: bold;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
     transition: transform 0.1s;
-    font-weight: bold;
+    width: 100%;
 }
 
-.btn-attack:active {
+.btn-main:active {
     transform: scale(0.95);
 }
 
-.btn-attack:disabled {
+.btn-main:disabled {
     background-color: #555;
     cursor: not-allowed;
     box-shadow: none;
 }
 
 .btn-reset {
-    background-color: #4caf50;
-    color: white;
+    background-color: var(--green);
+    color: #121212;
     border: none;
-    padding: 10px 20px;
-    margin-top: 10px;
-    border-radius: 5px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50px;
     cursor: pointer;
-    font-size: 1rem;
+    width: 100%;
 }
 
 .hidden { display: none; }
-
-.log {
-    margin-top: 20px;
-    font-style: italic;
-    color: #aaa;
-    min-height: 24px;
-}
-
-/* Animationen */
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
-}
-
-.shake {
-    animation: shake 0.5s;
-    animation-iteration-count: 1;
-}
