@@ -1,107 +1,107 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Elemente holen
-    const dummy = document.getElementById('dummy-hitbox');
-    const healthBar = document.getElementById('health-bar');
-    const healthText = document.getElementById('health-count');
-    const strikeText = document.getElementById('strike-count');
-    const hitEffect = document.getElementById('hit-effect');
-    const messageArea = document.getElementById('message-area');
-    const restartBtn = document.getElementById('restart-btn');
+// Status Variablen
+let score = 0;
+let playerHealth = 100;
+let enemyHealth = 100;
+let isGameOver = false;
 
-    // Sound laden
-    const punchSound = new Audio('https://www.myinstants.com/media/sounds/punch-gaming.mp3');
+// DOM Elemente holen
+const scoreEl = document.getElementById('score');
+const pHealthBar = document.getElementById('player-health');
+const eHealthBar = document.getElementById('enemy-health');
+const pHealthText = document.getElementById('player-health-text');
+const eHealthText = document.getElementById('enemy-health-text');
+const messageLog = document.getElementById('message-log');
+const hitBtn = document.getElementById('hit-btn');
+const resetBtn = document.getElementById('reset-btn');
+const gameContainer = document.querySelector('.game-container');
 
-    // Spiel-Variablen
-    let health = 100;
-    let strikes = 0;
-    let gameActive = true;
+// Sound Effekt (optional, simpler Web Audio API Piepton oder Platzhalter)
+function playHitSound() {
+    // Hier könnte man echte Sounds einfügen
+}
 
-    // Klick-Event
-    dummy.addEventListener('click', () => {
-        if (!gameActive) return;
-        punch();
-    });
+// Hauptfunktion: Schlagen
+hitBtn.addEventListener('click', () => {
+    if (isGameOver) return;
 
-    function punch() {
-        // Sound abspielen (Klonen für schnelle Klicks)
-        try {
-            const soundClone = punchSound.cloneNode();
-            soundClone.volume = 0.5;
-            soundClone.play();
-        } catch (e) {
-            console.log("Sound konnte nicht abgespielt werden (Browser blockiert oft Audio ohne Interaktion).");
-        }
+    // 1. Schläge zählen
+    score++;
+    scoreEl.textContent = score;
 
-        // Zähler erhöhen
-        strikes++;
-        strikeText.innerText = strikes;
+    // 2. Schaden berechnen (Zufallswert zwischen 5 und 15)
+    const damage = Math.floor(Math.random() * 10) + 5;
+    enemyHealth -= damage;
 
-        // Leben abziehen
-        const damage = Math.floor(Math.random() * 8) + 5;
-        health -= damage;
-        if (health < 0) health = 0;
+    // 3. Eigene Energie verlieren (Anstrengung/Gegenschlag: 1-5)
+    const recoil = Math.floor(Math.random() * 5) + 1;
+    playerHealth -= recoil;
 
-        // Update
-        updateDisplay();
-        animateDummy();
-        showHitText();
+    // Werte begrenzen (nicht unter 0)
+    if (enemyHealth < 0) enemyHealth = 0;
+    if (playerHealth < 0) playerHealth = 0;
 
-        // Check ob tot
-        if (health <= 0) {
-            gameOver();
-        }
-    }
+    // 4. Update UI
+    updateUI();
+    
+    // Animation auslösen
+    gameContainer.classList.add('shake');
+    setTimeout(() => {
+        gameContainer.classList.remove('shake');
+    }, 500);
 
-    function updateDisplay() {
-        healthText.innerText = health;
-        healthBar.style.width = health + "%";
+    messageLog.textContent = `BAM! -${damage} Schaden beim Gegner!`;
 
-        if (health < 30) {
-            healthBar.style.backgroundColor = "#ff5555";
-        } else if (health < 60) {
-            healthBar.style.backgroundColor = "#ffb86c";
-        } else {
-            healthBar.style.backgroundColor = "#50fa7b";
-        }
-    }
-
-    function animateDummy() {
-        dummy.classList.add('punched');
-        setTimeout(() => {
-            dummy.classList.remove('punched');
-        }, 100);
-    }
-
-    function showHitText() {
-        hitEffect.classList.remove('show-bam');
-        void hitEffect.offsetWidth; // Reset Animation
-        hitEffect.classList.add('show-bam');
-
-        const words = ["VUR!", "BITIR!", "SIK!", "ÖLDÜR!", "HELAL!"];
-        hitEffect.innerText = words[Math.floor(Math.random() * words.length)];
-    }
-
-    function gameOver() {
-        gameActive = false;
-        dummy.classList.add('dead');
-        dummy.style.opacity = "0.8";
-        
-        messageArea.innerHTML = `🏆 K.O.! ${strikes} vuruşta indirdin!`;
-        messageArea.classList.remove('hidden');
-        restartBtn.classList.remove('hidden');
-    }
-
-    restartBtn.addEventListener('click', () => {
-        health = 100;
-        strikes = 0;
-        gameActive = true;
-        
-        dummy.classList.remove('dead');
-        dummy.style.opacity = "1";
-        
-        messageArea.classList.add('hidden');
-        restartBtn.classList.add('hidden');
-        
-        updateDisplay();
-    });
+    // 5. Spielende prüfen
+    checkGameOver();
 });
+
+// Neustart Funktion
+resetBtn.addEventListener('click', () => {
+    score = 0;
+    playerHealth = 100;
+    enemyHealth = 100;
+    isGameOver = false;
+    
+    hitBtn.disabled = false;
+    hitBtn.classList.remove('hidden');
+    resetBtn.classList.add('hidden');
+    messageLog.textContent = "Neues Spiel gestartet!";
+    
+    updateUI();
+});
+
+function updateUI() {
+    // Balken Breite anpassen
+    pHealthBar.style.width = playerHealth + '%';
+    eHealthBar.style.width = enemyHealth + '%';
+    
+    // Text anpassen
+    pHealthText.textContent = playerHealth + ' / 100';
+    eHealthText.textContent = enemyHealth + ' / 100';
+
+    // Farben ändern bei niedriger HP
+    pHealthBar.style.backgroundColor = playerHealth < 30 ? '#ff9800' : '#4caf50';
+}
+
+function checkGameOver() {
+    if (enemyHealth <= 0) {
+        endGame(true);
+    } else if (playerHealth <= 0) {
+        endGame(false);
+    }
+}
+
+function endGame(won) {
+    isGameOver = true;
+    hitBtn.disabled = true;
+    hitBtn.classList.add('hidden');
+    resetBtn.classList.remove('hidden');
+
+    if (won) {
+        messageLog.textContent = "🏆 SIEG! Du hast den Gegner besiegt!";
+        messageLog.style.color = "#4caf50";
+    } else {
+        messageLog.textContent = "💀 NIEDERLAGE! Du bist erschöpft.";
+        messageLog.style.color = "#f44336";
+    }
+}
