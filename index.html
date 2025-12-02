@@ -3,71 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - REPAIR EDITION</title>
+    <title>Z' DÖV - V5 FINAL</title>
     <style>
-        /* --- BASIS --- */
+        /* --- RESET & BASIS --- */
         * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
         body {
             background-color: #111; color: white; font-family: "Courier New", Courier, monospace; 
             text-align: center; margin: 0; padding: 10px; overflow: hidden; transition: background 0.5s;
         }
 
-        /* ZONEN FARBEN */
-        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); }
-        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); }
-        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); }
+        /* ZONEN */
+        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); } /* Hinterhof */
+        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); } /* Shisha */
+        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); } /* Boxclub */
 
         h1 { margin: 0; font-size: 2rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
-        .badge { background: cyan; color: black; padding: 2px 5px; font-size: 0.8rem; font-weight: bold; }
+        .badge { background: cyan; color: black; padding: 2px 6px; font-size: 0.8rem; font-weight: bold; border-radius: 4px; }
         
         /* STATUS */
         .stats-bar {
-            background: #222; border: 1px solid #555; padding: 8px; margin-top: 10px; border-radius: 5px;
+            background: #222; border: 1px solid #555; padding: 8px; margin-top: 10px; border-radius: 8px;
             display: flex; justify-content: space-around; font-size: 1rem;
         }
         .money { color: gold; font-weight: bold; }
 
         /* HP BAR */
-        .bar-wrap { width: 100%; height: 20px; background: #444; margin: 10px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
-        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.1s; }
+        .bar-wrap { width: 100%; height: 20px; background: #333; margin: 10px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
+        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.2s; }
 
         /* ARENA */
         .arena { height: 240px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #enemy-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 5px black; }
         
         #face {
-            font-size: 120px; cursor: pointer; z-index: 10; transition: transform 0.1s;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+            font-size: 120px; cursor: pointer; z-index: 10; 
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));
+            transition: transform 0.1s;
         }
-        #face:active { transform: scale(0.9); }
-        .hit { color: #ff4757; transform: scale(0.95) rotate(5deg) !important; }
-        .dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; }
+        #face:active { transform: scale(0.95); }
+        
+        /* Animation Klassen */
+        .anim-hit { animation: shake 0.2s; color: #ff4757; }
+        .anim-dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; }
+        
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5px, 5px) rotate(5deg); }
+            75% { transform: translate(5px, -5px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
 
         #weapon-anim { 
-            position: absolute; font-size: 80px; opacity: 0; pointer-events: none; 
-            top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.1s;
+            position: absolute; font-size: 90px; opacity: 0; pointer-events: none; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20;
         }
-        .smash { opacity: 1 !important; transform: translate(-50%, -50%) scale(1.5) rotate(-45deg) !important; }
+        .anim-smash { animation: smash 0.2s forwards; }
+        @keyframes smash {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5) rotate(-45deg); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0) rotate(-90deg); }
+        }
 
-        /* NEXT LEVEL BUTTON */
         #next-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #00ff00; color: black; border: 3px solid white; padding: 15px 30px;
             font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px;
-            box-shadow: 0 0 20px #00ff00; display: none;
+            box-shadow: 0 0 30px #00ff00; display: none;
         }
 
         /* SHOP & TABS */
-        .shop-area { height: 350px; background: #1a1a1a; border-top: 2px solid cyan; margin-top: 10px; display: flex; flex-direction: column; }
-        .tabs { display: flex; }
-        .tab { flex: 1; padding: 10px; background: #333; border: none; color: #aaa; cursor: pointer; border-bottom: 1px solid #555; }
-        .tab.active { background: cyan; color: black; font-weight: bold; }
+        .shop-area { height: 380px; background: #1a1a1a; border-top: 3px solid cyan; margin-top: 10px; display: flex; flex-direction: column; }
+        .tabs { display: flex; background: #333; }
+        .tab { flex: 1; padding: 12px; background: transparent; border: none; color: #aaa; cursor: pointer; font-weight: bold; }
+        .tab.active { background: cyan; color: black; }
         .content { flex: 1; overflow-y: auto; padding: 10px; display: none; }
         .content.active { display: block; }
 
         /* ITEMS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .item { background: #222; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; }
+        .item { background: #222; border: 1px solid #444; padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; border-radius: 5px; }
         .item.owned { border-color: gold; }
         .item.active { border-color: cyan; background: #003333; }
         .item h4 { margin: 0; font-size: 0.8rem; }
@@ -75,25 +89,30 @@
         .icon { font-size: 1.5rem; }
 
         /* CASINO */
-        .casino-box { background: #2a2a2a; border: 1px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-        .c-btn { background: gold; color: black; border: none; padding: 8px 15px; margin: 2px; cursor: pointer; font-weight: bold; }
-        .bet-in { background: black; color: white; border: 1px solid #555; width: 80px; text-align: center; padding: 5px; }
+        .casino-box { background: #252525; border: 2px solid gold; padding: 10px; margin-bottom: 15px; border-radius: 10px; }
+        .c-btn { background: gold; color: black; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        .bet-in { background: black; color: white; border: 1px solid #555; width: 80px; text-align: center; padding: 8px; font-size: 1rem; }
         
         /* ROULETTE WHEEL */
-        .wheel-container { width: 80px; height: 80px; margin: 10px auto; position: relative; }
+        .wheel-container { width: 100px; height: 100px; margin: 10px auto; position: relative; }
+        .arrow { 
+            position: absolute; top: -10px; left: 45px; width: 0; height: 0; 
+            border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 15px solid gold; z-index: 5; 
+        }
         .wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 2px solid white;
+            width: 100%; height: 100%; border-radius: 50%; border: 3px solid white;
+            /* Grün: 0-20deg, Rot: 20-200deg, Schwarz: 200-360deg */
             background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg);
+            transform: rotate(0deg); 
             transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
-        .arrow { position: absolute; top: -5px; left: 35px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
 
         /* BLACKJACK */
-        .cards { min-height: 40px; display: flex; justify-content: center; gap: 5px; margin: 5px; }
-        .card { background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold; width: 30px; text-align: center; }
+        .cards { min-height: 50px; display: flex; justify-content: center; gap: 5px; margin: 10px; }
+        .card { background: white; color: black; padding: 5px 8px; border-radius: 4px; font-weight: bold; width: 35px; text-align: center; border: 1px solid #999; }
 
+        #msg { color: cyan; font-weight: bold; min-height: 25px; margin: 5px; font-size: 1.1rem; }
         .hidden { display: none !important; }
-        #msg { color: cyan; font-weight: bold; min-height: 20px; margin: 5px; }
     </style>
 </head>
 <body class="zone-1">
@@ -125,18 +144,16 @@
         </div>
 
         <div id="tab-waffen" class="content active">
-            <div class="grid" id="weapon-list">
-                </div>
+            <div class="grid" id="weapon-list"></div>
         </div>
 
         <div id="tab-crew" class="content">
-            <div class="grid" id="staff-list">
-                </div>
+            <div class="grid" id="staff-list"></div>
         </div>
 
         <div id="tab-casino" class="content">
             <div class="casino-box">
-                <div style="color:gold; font-weight:bold; margin-bottom:5px">🃏 BLACKJACK</div>
+                <div style="color:gold; font-weight:bold; margin-bottom:5px">🃏 BLACKJACK (3:2)</div>
                 <div style="font-size:0.8rem">Dealer: <span id="d-score">0</span></div>
                 <div id="d-cards" class="cards"></div>
                 <div style="font-size:0.8rem">Du: <span id="p-score">0</span></div>
@@ -167,11 +184,12 @@
     </div>
 
     <script>
-        // --- CONFIG ---
-        // Bitte 'hit.m4a' auf GitHub hochladen (oder den existierenden Namen nehmen)
+        // --- SOUNDS ---
+        // Wenn hit.m4a fehlt, stürzt es nicht ab
         const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
         function snd(t){ try{ let s=sounds[t].cloneNode(); s.volume=0.5; s.play().catch(()=>{}); }catch(e){} }
 
+        // --- DATEN ---
         const weapons = {
             'fist': {name:'Faust', dmg:[5,10], icon:'👊', price:0},
             'slipper': {name:'Terlik', dmg:[15,25], icon:'🩴', price:50},
@@ -199,23 +217,32 @@
         };
         let isDead = false;
 
-        // --- INIT ---
-        load();
+        // --- START ---
+        // V5 Speicherstand laden
+        let saved = localStorage.getItem('zDovV5_Final');
+        if(saved) {
+            try { game = {...game, ...JSON.parse(saved)}; } catch(e) {}
+        }
+        
+        // Setup UI
         renderShop();
         updateUI();
         updateZone();
-        
+        checkDead();
+
         // Auto DPS
         setInterval(()=>{
             if(isDead) return;
             let dps = (game.staff.champ*1) + (game.staff.lion*5) + (game.staff.haji*25);
-            if(dps>0) damage(dps, false);
+            if(dps>0) damage(dps);
         }, 1000);
 
-        // Save Loop
-        setInterval(save, 3000);
+        // Auto Save
+        setInterval(()=>{
+            localStorage.setItem('zDovV5_Final', JSON.stringify(game));
+        }, 3000);
 
-        // --- FIGHT SYSTEM ---
+        // --- KAMPF ---
         function hit(e) {
             if(isDead) return;
             snd('hit');
@@ -224,29 +251,31 @@
             let dmg = Math.floor(Math.random()*(w.dmg[1]-w.dmg[0]+1)+w.dmg[0]);
             
             // Crit?
-            if(Math.random()<0.15) { dmg*=2; showMsg("CRIT! "+dmg, "red"); }
+            if(Math.random()<0.15) { dmg*=2; msg("CRIT! "+dmg, "red"); }
             
             // Geld
             game.money += Math.floor(Math.random()*3 + game.level);
             
-            // Animation Reset Trick
+            // ANIMATION (Clone Trick - Funktioniert immer)
             let face = document.getElementById('face');
             let anim = document.getElementById('weapon-anim');
             
-            face.classList.remove('hit');
-            void face.offsetWidth; // Force Reflow
-            face.classList.add('hit');
+            // Gesicht Wackeln
+            let newFace = face.cloneNode(true);
+            face.parentNode.replaceChild(newFace, face);
+            newFace.classList.add('anim-hit');
+            newFace.onpointerdown = hit; // Event wieder dranmachen
             
+            // Waffe Schlag
             anim.innerText = w.icon;
-            anim.classList.remove('smash');
-            void anim.offsetWidth;
-            anim.classList.add('smash');
-            setTimeout(()=>{ anim.classList.remove('smash'); }, 150);
+            let newAnim = anim.cloneNode(true);
+            anim.parentNode.replaceChild(newAnim, anim);
+            newAnim.classList.add('anim-smash');
 
-            damage(dmg, true);
+            damage(dmg);
         }
 
-        function damage(amount, manual) {
+        function damage(amount) {
             game.hp -= amount;
             if(game.hp <= 0) {
                 game.hp = 0;
@@ -265,8 +294,8 @@
             
             let bonus = 50 * game.level;
             game.money += bonus;
-            showMsg("SIEG! +"+bonus+"€", "#00ff00");
-            save();
+            msg("SIEG! +"+bonus+"€", "#00ff00");
+            saveNow();
         }
 
         function nextLevel() {
@@ -275,13 +304,16 @@
             game.hp = game.maxHp;
             isDead = false;
             
-            document.getElementById('face').classList.remove('dead');
+            let face = document.getElementById('face');
+            face.classList.remove('dead');
+            face.style.transform = "rotate(0deg)";
+            
             document.getElementById('next-btn').style.display = "none";
-            showMsg("Level "+game.level, "cyan");
+            msg("Level "+game.level, "cyan");
             
             updateZone();
             updateUI();
-            save();
+            saveNow();
         }
 
         function updateZone() {
@@ -309,7 +341,18 @@
             }
         }
 
-        // --- SHOP SYSTEM ---
+        function checkDead() {
+            // Falls beim Laden Gegner schon tot ist
+            if(game.hp <= 0) {
+                isDead = true;
+                game.hp = 0;
+                document.getElementById('face').classList.add('dead');
+                document.getElementById('face').innerText = "😵";
+                document.getElementById('next-btn').style.display = "block";
+            }
+        }
+
+        // --- SHOP ---
         function renderShop() {
             // Waffen
             let wHTML = "";
@@ -327,7 +370,7 @@
             }
             document.getElementById('weapon-list').innerHTML = wHTML;
 
-            // Staff
+            // Crew
             let sHTML = "";
             for(let key in staff) {
                 let s = staff[key];
@@ -353,7 +396,7 @@
                     game.inv.push(key);
                     game.weapon = key;
                     snd('buy');
-                } else { showMsg("Zu teuer!", "red"); }
+                } else { msg("Zu teuer!", "red"); }
             }
             renderShop(); updateUI();
         }
@@ -365,27 +408,30 @@
                 game.money -= cost;
                 game.staff[key]++;
                 snd('buy');
-            } else { showMsg("Zu teuer!", "red"); }
+            } else { msg("Zu teuer!", "red"); }
             renderShop(); updateUI();
         }
 
-        // --- CASINO ---
-        // Blackjack
-        let deck=[], pHand=[], dHand=[], bjBet=0;
+        // --- CASINO: BLACKJACK ---
+        let deck=[], pHand=[], dHand=[], bjBet=0, bjActive=false;
         function startBJ() {
+            if(bjActive) return;
             let bet = parseInt(document.getElementById('bj-bet').value);
-            if(bet > game.money || bet <= 0) return showMsg("Einsatz?", "red");
+            if(bet > game.money || bet <= 0 || isNaN(bet)) return msg("Einsatz?", "red");
             
             game.money -= bet; bjBet=bet; updateUI();
+            bjActive = true;
             
             document.getElementById('bj-start-div').classList.add('hidden');
             document.getElementById('bj-play-div').classList.remove('hidden');
             
-            deck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11]; // Simples Deck
+            // Simples Deck (unendlich)
+            deck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11]; 
             pHand = [draw(), draw()];
             dHand = [draw()];
             
             renderBJ();
+            if(score(pHand) === 21) endBJ(true); // Instant Blackjack
         }
         function draw() { return deck[Math.floor(Math.random()*deck.length)]; }
         function score(h) {
@@ -405,60 +451,85 @@
             if(score(pHand)>21) endBJ(false);
         }
         function standBJ() {
-            while(score(dHand)<17) dHand.push(draw());
-            renderBJ();
-            let p = score(pHand); let d = score(dHand);
-            if(d>21 || p>d) endBJ(true);
-            else if(p==d) endBJ('tie');
-            else endBJ(false);
+            // Dealer zieht verzögert (Visualisierung)
+            dealerLoop();
+        }
+        function dealerLoop() {
+            if(score(dHand) < 17) {
+                dHand.push(draw());
+                renderBJ();
+                setTimeout(dealerLoop, 800); // 800ms Pause
+            } else {
+                let p = score(pHand); let d = score(dHand);
+                if(d>21 || p>d) endBJ(true);
+                else if(p==d) endBJ('tie');
+                else endBJ(false);
+            }
         }
         function endBJ(win) {
-            if(win===true) { game.money += bjBet*2; showMsg("BJ: SIEG!", "#00ff00"); snd('buy'); }
-            else if(win==='tie') { game.money += bjBet; showMsg("BJ: Unentschieden", "orange"); }
-            else showMsg("BJ: Verloren", "red");
+            bjActive = false;
+            if(win===true) { game.money += Math.floor(bjBet*2); msg("BJ: SIEG!", "#00ff00"); snd('buy'); }
+            else if(win==='tie') { game.money += bjBet; msg("BJ: Unentschieden", "orange"); }
+            else msg("BJ: Verloren", "red");
             
             document.getElementById('bj-start-div').classList.remove('hidden');
             document.getElementById('bj-play-div').classList.add('hidden');
             updateUI();
         }
 
-        // Roulette
+        // --- CASINO: ROULETTE ---
         let spinning = false;
         function spinRoulette(color) {
             if(spinning) return;
             let bet = parseInt(document.getElementById('roulette-bet').value);
-            if(bet>game.money || isNaN(bet) || bet<=0) return showMsg("Einsatz?", "red");
+            if(bet>game.money || isNaN(bet) || bet<=0) return msg("Einsatz?", "red");
             
             game.money -= bet; updateUI(); spinning=true;
             
             let wheel = document.getElementById('wheel');
+            // Reset Animation
             wheel.style.transition = "none";
             wheel.style.transform = "rotate(0deg)";
+            
+            // Delay für Reflow
             setTimeout(()=>{
-                let rot = 1080 + Math.random()*360;
-                wheel.style.transition = "transform 3s ease-out";
-                wheel.style.transform = `rotate(${rot}deg)`;
-            }, 50);
-
-            setTimeout(()=>{
-                spinning = false;
-                // Simuliertes Ergebnis (Optik ist nur Show)
-                let roll = Math.random();
-                let res = roll < 0.05 ? 'green' : (roll < 0.5 ? 'red' : 'black');
+                let rot = Math.floor(Math.random() * 360); // 0-359
+                // Wir drehen extra 5 Runden (1800 Grad)
+                let totalRot = 1800 + rot; 
                 
-                if(color === res) {
-                    let win = color=='green' ? bet*14 : bet*2;
-                    game.money += win;
-                    showMsg(res.toUpperCase() + "! SIEG!", "#00ff00");
-                    snd('buy');
-                } else {
-                    showMsg("Es kam "+res, "red");
-                }
-                updateUI();
-            }, 3100);
+                wheel.style.transition = "transform 3s cubic-bezier(0.1, 0.7, 0.1, 1)";
+                wheel.style.transform = `rotate(${totalRot}deg)`;
+                
+                // Berechnung (Pfeil oben = 0 Grad)
+                // Wir müssen berechnen, wo der Pfeil relativ zum Rad ist.
+                // Da Rad im Uhrzeigersinn dreht, ist der Wert unter dem Pfeil: (360 - rot)
+                let finalAngle = (360 - rot) % 360;
+                
+                // Zonen laut CSS Gradient:
+                // Grün: 0-20
+                // Rot: 20-200
+                // Schwarz: 200-360
+                
+                setTimeout(()=>{
+                    let res='';
+                    if(finalAngle >= 0 && finalAngle < 20) res='green';
+                    else if(finalAngle >= 20 && finalAngle < 200) res='red';
+                    else res='black';
+                    
+                    if(color === res) {
+                        let win = (color=='green') ? bet*14 : bet*2;
+                        game.money += win;
+                        msg(res.toUpperCase() + "! SIEG! +"+win, "#00ff00");
+                        snd('buy');
+                    } else {
+                        msg("Es kam "+res.toUpperCase(), "red");
+                    }
+                    updateUI(); spinning=false;
+                }, 3000);
+            }, 50);
         }
 
-        // --- UTILS ---
+        // --- UI ---
         function updateUI() {
             document.getElementById('money-txt').innerText = game.money;
             document.getElementById('hp-txt').innerText = game.hp + "/" + game.maxHp;
@@ -466,10 +537,10 @@
             document.getElementById('hp-bar').style.width = (game.hp/game.maxHp*100) + "%";
         }
 
-        function showMsg(txt, col) {
+        function msg(txt, col) {
             let m = document.getElementById('msg');
             m.innerText = txt;
-            m.style.color = col || "white";
+            m.style.color = col || "cyan";
         }
 
         function tab(name) {
@@ -479,26 +550,7 @@
             event.target.classList.add('active');
         }
 
-        // --- SAVE/LOAD ---
-        function save() {
-            localStorage.setItem('zDov_REPAIR_V4', JSON.stringify(game));
-        }
-        function load() {
-            try {
-                let data = JSON.parse(localStorage.getItem('zDov_REPAIR_V4'));
-                if(data) {
-                    game = {...game, ...data};
-                    // Falls geladen wird während er tot ist, Button zeigen
-                    if(game.hp <= 0) {
-                        isDead = true;
-                        game.hp = 0;
-                        document.getElementById('face').classList.add('dead');
-                        document.getElementById('face').innerText = "😵";
-                        document.getElementById('next-btn').style.display = "block";
-                    }
-                }
-            } catch(e) {}
-        }
+        function saveNow() { localStorage.setItem('zDovV5_Final', JSON.stringify(game)); }
     </script>
 </body>
 </html>
