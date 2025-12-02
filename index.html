@@ -3,63 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - CITY CONQUEST</title>
+    <title>Z' DÖV - ULTIMATE</title>
     <style>
         /* --- GRUNDLAGEN --- */
         * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        
         body {
             background-color: #111; color: white;
             font-family: "Courier New", Courier, monospace; 
             text-align: center; margin: 0; padding: 10px;
-            overflow: hidden; user-select: none;
+            overflow: hidden; user-select: none; -webkit-user-select: none;
             transition: background 1s ease, color 0.5s ease;
         }
 
-        /* DYNAMISCHE HINTERGRÜNDE */
+        /* HINTERGRÜNDE */
         body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000000 100%); } /* Hinterhof */
-        body.zone-2 { background: radial-gradient(circle, #8e44ad 0%, #2c003e 100%); } /* Shisha Bar (Lila) */
-        body.zone-3 { background: radial-gradient(circle, #c0392b 0%, #4a0000 100%); } /* Box-Club (Rot) */
+        body.zone-2 { background: radial-gradient(circle, #6D214F 0%, #182C61 100%); } /* Shisha (Lila/Blau) */
+        body.zone-3 { background: radial-gradient(circle, #009432 0%, #1B1464 100%); } /* Stadion (Grün/Dunkel) */
 
-        h1 { 
-            margin: 0; font-size: 1.8rem; text-transform: uppercase; 
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        
-        .zone-badge {
-            display: block; font-size: 0.8rem; margin-top: 5px; letter-spacing: 2px;
-            color: cyan; text-shadow: 0 0 5px cyan;
-        }
+        h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .zone-badge { display: block; font-size: 0.8rem; margin-top: 5px; letter-spacing: 2px; color: cyan; text-shadow: 0 0 5px cyan; }
+        #save-notify { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ffff; opacity: 0; transition: opacity 0.5s; }
 
-        #save-notify {
-            position: absolute; top: 10px; right: 10px; font-size: 0.8rem;
-            color: #00ffff; opacity: 0; transition: opacity 0.5s;
-        }
-
-        /* --- STATUS --- */
+        /* --- STATS --- */
         .stats-bar {
-            background: rgba(0,0,0,0.6); padding: 5px; margin-top: 5px;
-            border: 1px solid rgba(255,255,255,0.3); display: flex; justify-content: space-around; font-size: 0.9rem;
-            backdrop-filter: blur(5px); border-radius: 5px;
+            background: rgba(0,0,0,0.6); padding: 5px; margin-top: 5px; border: 1px solid rgba(255,255,255,0.3);
+            display: flex; justify-content: space-around; font-size: 0.9rem; backdrop-filter: blur(5px); border-radius: 5px;
         }
         .money { color: gold; font-weight: bold; }
 
         /* --- ARENA --- */
-        .arena {
-            height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; margin-top: 10px;
-        }
-        .enemy-name {
-            font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;
-            text-shadow: 0 0 10px black;
-        }
-        #face {
-            font-size: 110px; cursor: pointer; transition: transform 0.05s; z-index: 10;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
-        }
-        #face:active { transform: scale(0.9); }
+        .arena { height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; margin-top: 10px; }
+        .enemy-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 10px black; }
         
-        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11; top: 40%; left: 50%; }
-        .smash-anim { transform: translate(-50%, -50%) scale(1.2) rotate(-45deg); opacity: 1 !important; transition: all 0.1s; }
+        #face {
+            font-size: 110px; cursor: pointer; z-index: 10;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+            /* Keine Transition hier, wir machen das per Animation Klasse */
+        }
+        #face:active { transform: scale(0.95); }
+        
+        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11; top: 40%; left: 50%; transform: translate(-50%, -50%); }
+        
+        /* Animationen mit Keyframes für zuverlässiges Abspielen */
+        @keyframes smash {
+            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.2) rotate(-45deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.0) rotate(-45deg); opacity: 0; }
+        }
+        .anim-smash { animation: smash 0.15s ease-out forwards; }
+
+        @keyframes face-hit {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(15deg) scale(0.9); }
+            50% { transform: rotate(-10deg) scale(0.95); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        .anim-face-hit { animation: face-hit 0.2s ease-in-out; color: #ff4757; }
 
         .particle {
             position: absolute; pointer-events: none; width: 6px; height: 6px; border-radius: 50%;
@@ -67,42 +67,26 @@
         }
         @keyframes fly { 0% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
         
-        .hit { transform: rotate(15deg) scale(0.95); }
-        .dead { filter: grayscale(100%) brightness(0.5); transform: rotate(180deg); pointer-events: none; }
+        .dead { filter: grayscale(100%) brightness(0.5); transform: rotate(180deg); pointer-events: none; transition: transform 0.5s; }
 
         /* --- HP BAR --- */
-        .bar-container {
-            width: 90%; height: 15px; border: 2px solid white; margin: 5px auto; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden;
-        }
+        .bar-container { width: 90%; height: 15px; border: 2px solid white; margin: 5px auto; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; }
         .bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s; }
 
         /* --- TABS --- */
-        .shop-area {
-            margin-top: 5px; padding-top: 5px; background: rgba(0,0,0,0.8);
-            border-top: 2px solid white; height: 400px; overflow-y: auto;
-        }
+        .shop-area { margin-top: 5px; padding-top: 5px; background: rgba(0,0,0,0.8); border-top: 2px solid white; height: 400px; overflow-y: auto; }
         .tab-buttons { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px; }
-        .tab-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid #555; color: #ccc;
-            padding: 8px; cursor: pointer; font-family: sans-serif; text-transform: uppercase;
-            font-size: 0.75rem; flex: 1; border-radius: 5px;
-        }
+        .tab-btn { background: rgba(255,255,255,0.1); border: 1px solid #555; color: #ccc; padding: 8px; cursor: pointer; font-family: sans-serif; text-transform: uppercase; font-size: 0.75rem; flex: 1; border-radius: 5px; }
         .tab-btn.active { background: white; color: black; font-weight: bold; }
 
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 10px; }
-        .shop-btn {
-            background: #222; color: #aaa; border: 1px solid #444; padding: 8px; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; text-align: left; border-radius: 5px;
-        }
+        .shop-btn { background: #222; color: #aaa; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; text-align: left; border-radius: 5px; }
         .shop-btn.owned { border-color: gold; color: white; }
         .shop-btn.active { border-color: cyan; box-shadow: 0 0 5px cyan; background: #333; }
         .shop-btn .icon { font-size: 1.5rem; }
         .shop-btn h4 { margin: 0; font-size: 0.75rem; }
         .shop-btn small { font-size: 0.65rem; color: #888; }
-        .count-badge {
-            position: absolute; top: 2px; right: 2px; background: red; color: white;
-            width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;
-        }
+        .count-badge { position: absolute; top: 2px; right: 2px; background: red; color: white; width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
         /* --- CASINO --- */
         .casino-box { background: #333; border: 1px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
@@ -110,28 +94,15 @@
         .bet-input { background: #111; color: white; border: 1px solid #555; width: 70px; text-align: center; padding: 5px; }
         .casino-btn { background: gold; color: black; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold; margin: 2px; border-radius: 3px; }
         
-        /* Blackjack specific */
         .bj-cards { display: flex; justify-content: center; gap: 5px; min-height: 40px; margin: 5px 0; }
         .bj-card { background: white; color: black; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #999; }
 
-        /* Roulette Wheel Animation */
         .roulette-wrapper { width: 80px; height: 80px; margin: 10px auto; position: relative; }
-        .roulette-wheel {
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid white;
-            background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg);
-            transform: rotate(0deg); transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
-        }
-        .roulette-arrow {
-            position: absolute; top: -10px; left: 35px; width: 0; height: 0;
-            border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5;
-        }
+        .roulette-wheel { width: 100%; height: 100%; border-radius: 50%; border: 3px solid white; background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg); transform: rotate(0deg); transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        .roulette-arrow { position: absolute; top: -10px; left: 35px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
 
         #msg { min-height: 20px; color: white; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
-        #reset-btn {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 15px 30px; font-size: 1.2rem; background: #2ed573; border: none; color: black;
-            font-weight: bold; cursor: pointer; z-index: 20; border-radius: 50px; box-shadow: 0 0 20px #2ed573;
-        }
+        #reset-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 30px; font-size: 1.2rem; background: #2ed573; border: none; color: black; font-weight: bold; cursor: pointer; z-index: 20; border-radius: 50px; box-shadow: 0 0 20px #2ed573; }
         .hidden { display: none; }
     </style>
 </head>
@@ -153,7 +124,7 @@
         <div id="enemy-name" class="enemy-name">VS OGUZ</div>
         <div id="weapon-anim">👊</div>
         <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
-        <button id="reset-btn" class="hidden" onclick="nextLevel()">WEITER REISEN >></button>
+        <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >></button>
     </div>
     
     <p id="msg">Mach ihn platt!</p>
@@ -184,7 +155,7 @@
             <div class="casino-box">
                 <h4 class="casino-title">🃏 BLACKJACK</h4>
                 <div style="text-align:center">
-                    <small>Oguz: <span id="bj-d-score">0</span></small>
+                    <small>Gegner: <span id="bj-d-score">0</span></small>
                     <div id="bj-d-cards" class="bj-cards"></div>
                     <hr style="border-color:#555; margin:5px 0">
                     <small>Du: <span id="bj-p-score">0</span></small>
@@ -218,6 +189,7 @@
 
     <script>
         // --- SOUNDS ---
+        // Bitte stell sicher, dass "hit.m4a" existiert!
         const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
         function playSound(t) { try{sounds[t].cloneNode().play().catch(()=>{});}catch(e){} }
         document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
@@ -252,31 +224,31 @@
 
         // --- ZONE LOGIC ---
         function updateZone() {
-            els.body.className = ''; // Reset classes
+            // Nur das Emoji setzen, wenn er nicht tot ist
+            if(isDead) return;
+
+            els.body.className = ''; 
             
             if(state.level <= 10) {
-                // ZONE 1: HINTERHOF
                 els.body.classList.add('zone-1');
                 els.zoneName.innerText = "📍 HINTERHOF";
                 els.zoneName.style.color = "cyan";
                 els.enemyName.innerText = "VS OGUZ";
-                if(!isDead) els.face.innerText = "👨‍🦲";
+                els.face.innerText = "👨‍🦲";
             } 
             else if(state.level <= 20) {
-                // ZONE 2: SHISHA BAR
                 els.body.classList.add('zone-2');
                 els.zoneName.innerText = "📍 SHISHA BAR";
                 els.zoneName.style.color = "#d980fa";
                 els.enemyName.innerText = "VS YNSANON";
-                if(!isDead) els.face.innerText = "🧔"; // Ynsanon Emoji
+                els.face.innerText = "🧑🏻"; // Dunkle Haare
             } 
             else {
-                // ZONE 3: BOX CLUB
                 els.body.classList.add('zone-3');
                 els.zoneName.innerText = "📍 BOX CLUB";
                 els.zoneName.style.color = "#ff4757";
                 els.enemyName.innerText = "VS MIKAUTADZE";
-                if(!isDead) els.face.innerText = "🥊"; // Mikautadze Emoji
+                els.face.innerText = "🧑‍🦱"; // Locken
             }
         }
 
@@ -305,11 +277,11 @@
             state.hp -= dmg; if(state.hp<0) state.hp=0;
             updateUI();
             
-            // Face reaction based on Zone
+            // Animation Trick: Reset Class
             if(state.hp>0 && manual) {
-                // Nur kurzes Wackeln
-                els.face.classList.add('hit');
-                setTimeout(()=>els.face.classList.remove('hit'), 100);
+                els.face.classList.remove('anim-face-hit');
+                void els.face.offsetWidth; // Reflow erzwingen
+                els.face.classList.add('anim-face-hit');
             }
 
             if(state.hp<=0) kill();
@@ -318,6 +290,7 @@
         function kill() {
             isDead = true; playSound('win');
             els.face.innerText = "😵"; els.face.classList.add('dead');
+            els.face.classList.remove('anim-face-hit');
             let bonus = 50 * state.level; state.money += bonus;
             els.msg.innerText = "SIEG! +"+bonus+"€";
             els.reset.classList.remove('hidden');
@@ -326,15 +299,23 @@
 
         function nextLevel() {
             state.level++; state.maxHp = Math.floor(state.maxHp*1.4); state.hp = state.maxHp;
-            isDead = false; els.face.classList.remove('dead');
+            isDead = false; 
+            els.face.classList.remove('dead');
             els.reset.classList.add('hidden');
             els.msg.innerText = "Nächste Runde!";
-            updateZone(); updateUI(); saveGame();
+            
+            // ZWINGEND ZONE UPDATEN DAMIT DAS GESICHT STIMMT
+            updateZone();
+            updateUI(); 
+            saveGame();
         }
 
         function animateWeapon(icon) {
-            els.wAnim.innerText = icon; els.wAnim.style.opacity=1; els.wAnim.classList.add('smash-anim');
-            setTimeout(()=>{ els.wAnim.style.opacity=0; els.wAnim.classList.remove('smash-anim'); }, 100);
+            els.wAnim.innerText = icon;
+            // Animation Reset Trick
+            els.wAnim.classList.remove('smash-anim');
+            void els.wAnim.offsetWidth;
+            els.wAnim.classList.add('smash-anim');
         }
 
         // --- SHOP ---
@@ -450,8 +431,12 @@
                 document.body.appendChild(p); setTimeout(()=>p.remove(),600);
             }
         }
-        function saveGame() { localStorage.setItem('zDovCity', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
-        function loadGame() { try{let s=JSON.parse(localStorage.getItem('zDovCity')); if(s) state={...state,...s}; if(state.hp<=0) state.hp=1; }catch(e){} }
+        function saveGame() { localStorage.setItem('zDovCityFix', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
+        function loadGame() { 
+            try{let s=JSON.parse(localStorage.getItem('zDovCityFix')); 
+            if(s) { state={...state,...s}; if(state.hp<=0) state.hp=1; }
+            }catch(e){} 
+        }
     </script>
 </body>
 </html>
