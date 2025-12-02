@@ -8,169 +8,162 @@
         body {
             background-color: black;
             color: white;
-            font-family: "Courier New", Courier, monospace; /* Hacker-Style Font */
+            font-family: "Courier New", Courier, monospace;
             text-align: center;
             margin: 0;
-            padding: 20px;
-            overflow: hidden; /* Kein Scrollen */
-            user-select: none;
-        }
-
-        h1 {
-            color: red;
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .stats {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            border: 1px solid white;
             padding: 10px;
-            display: inline-block;
+            overflow: hidden; 
+            user-select: none; /* Verhindert Text-Markieren beim Tippen */
+            -webkit-user-select: none;
+            touch-action: manipulation; /* Verbessert Tippen auf Handy */
         }
 
-        /* Der Glatzkopf Bereich */
+        h1 { color: red; margin: 0; font-size: 2.5rem; }
+        h2 { margin-top: 5px; font-size: 1rem; color: #aaa; }
+
+        /* Das Gesicht */
         .enemy-container {
-            margin: 30px auto;
-            height: 200px;
+            margin: 20px auto;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            height: 250px;
         }
 
         #face {
-            font-size: 150px;
-            cursor: pointer;
-            transition: all 0.1s;
+            font-size: 160px; /* RIESIG */
+            cursor: pointer; /* Zeigt Hand-Cursor am PC */
+            transition: transform 0.05s;
+            display: inline-block;
+            /* WICHTIG: Damit man gut trifft */
+            padding: 20px; 
+            border-radius: 50%;
         }
 
-        /* Animationen */
+        /* Wenn man draufdrückt (aktiv) */
+        #face:active {
+            transform: scale(0.9);
+        }
+
+        /* Wenn getroffen (per Script) */
         .hit {
-            transform: scale(0.9) rotate(20deg);
-            color: red; /* Wird rot beim Schlag */
+            color: red;
+            transform: rotate(15deg) scale(0.95);
         }
 
         .dead {
             transform: rotate(180deg);
             filter: grayscale(100%);
             opacity: 0.5;
+            pointer-events: none; /* Man kann Leiche nicht mehr schlagen */
         }
 
-        /* Der dicke Button */
-        #hit-btn {
-            background-color: red;
-            color: white;
-            border: 5px solid white;
-            font-size: 2rem;
-            font-weight: bold;
-            padding: 20px 50px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-family: "Courier New", Courier, monospace;
-            margin-top: 20px;
-            box-shadow: 0 0 15px red;
-        }
-
-        #hit-btn:active {
-            background-color: darkred;
-            transform: scale(0.95);
-        }
-
-        /* Energie Balken simpel */
-        .bar-border {
-            border: 2px solid white;
-            width: 80%;
+        /* Energiebalken */
+        .bar-container {
+            width: 90%;
             max-width: 400px;
-            height: 30px;
-            margin: 10px auto;
+            height: 40px;
+            border: 3px solid white;
+            margin: 0 auto 20px auto;
             position: relative;
+            background: #222;
         }
 
         .bar-fill {
-            background-color: red;
             height: 100%;
+            background-color: red;
             width: 100%;
-            transition: width 0.1s;
+            transition: width 0.1s linear;
         }
 
-        .bar-text {
+        .hp-text {
             position: absolute;
             width: 100%;
             text-align: center;
-            top: 2px;
+            top: 5px;
             font-weight: bold;
+            font-size: 1.2rem;
             text-shadow: 1px 1px 2px black;
         }
 
+        .stats { font-size: 1.2rem; margin-bottom: 10px; color: #ddd; }
+
+        /* Button unten (optional) */
+        .btn {
+            background: #333;
+            color: white;
+            border: 1px solid white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            cursor: pointer;
+        }
         .hidden { display: none; }
+
     </style>
 </head>
 <body>
 
     <h1>Z' DÖV</h1>
-    <h2>Keli Edition</h2>
+    <h2>Tipp auf die Glatze!</h2>
 
-    <div class="stats">
-        Schläge: <span id="score">0</span>
-    </div>
+    <div class="stats">Schläge: <span id="score">0</span></div>
 
-    <div>
-        <h3>KELI ENERGIE</h3>
-        <div class="bar-border">
-            <div id="health" class="bar-fill"></div>
-            <div class="bar-text"><span id="hp-text">100</span>%</div>
-        </div>
+    <div class="bar-container">
+        <div id="health" class="bar-fill"></div>
+        <div class="hp-text"><span id="hp-val">100</span>%</div>
     </div>
 
     <div class="enemy-container">
-        <div id="face">👨‍🦲</div>
+        <div id="face" onclick="schlagen()">👨‍🦲</div>
     </div>
 
-    <button id="hit-btn" onclick="schlagen()">BAM!</button>
-    <button id="reset-btn" onclick="reset()" class="hidden" style="background:green; color:white; font-size:1.5rem; padding:10px;">NOCHMAL?</button>
+    <h3 id="msg" style="color: yellow; min-height: 25px;"></h3>
 
-    <h3 id="msg" style="color: yellow; min-height: 30px;"></h3>
+    <button id="reset-btn" class="btn hidden" onclick="reset()">NOCHMAL?</button>
 
     <script>
         let hp = 100;
-        let clicks = 0;
+        let score = 0;
         let face = document.getElementById('face');
         let bar = document.getElementById('health');
-        let txt = document.getElementById('hp-text');
-        let btn = document.getElementById('hit-btn');
+        let hpVal = document.getElementById('hp-val');
+        let scoreEl = document.getElementById('score');
         let msg = document.getElementById('msg');
         let resetBtn = document.getElementById('reset-btn');
 
         function schlagen() {
             if (hp <= 0) return;
 
-            // Zähler hoch
-            clicks++;
-            document.getElementById('score').innerText = clicks;
+            // Zähler
+            score++;
+            scoreEl.innerText = score;
 
-            // Schaden (fester Wert damit es schneller geht)
-            let dmg = Math.floor(Math.random() * 10) + 5;
-            hp = hp - dmg;
+            // Schaden (Zufall 5-10)
+            let dmg = Math.floor(Math.random() * 6) + 5;
+            hp -= dmg;
             if (hp < 0) hp = 0;
 
-            // Update Grafik
+            // UI Update
             bar.style.width = hp + "%";
-            txt.innerText = hp;
+            hpVal.innerText = hp;
 
             // Animation
             face.classList.add("hit");
-            face.innerText = "😖"; // Gesicht verziehen
-            
-            setTimeout(function() {
+            face.innerText = "😖"; // Gesicht verzieht sich
+
+            // Vibration auf Handy (wenn unterstützt)
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            // Nach kurz zurücksetzen
+            setTimeout(() => {
                 if (hp > 0) {
                     face.classList.remove("hit");
                     face.innerText = "👨‍🦲";
                 }
             }, 150);
 
-            // Ist er K.O.?
+            // Check Tod
             if (hp <= 0) {
                 kill();
             }
@@ -180,26 +173,25 @@
             face.innerText = "😵";
             face.classList.remove("hit");
             face.classList.add("dead");
-            btn.classList.add("hidden");
+            msg.innerText = "K.O.!!!";
+            document.body.style.backgroundColor = "#500"; // Dunkelrot
             resetBtn.classList.remove("hidden");
-            msg.innerText = "KELI IST K.O.!!";
-            document.body.style.backgroundColor = "#220000"; // Hintergrund dunkelrot
+            if (navigator.vibrate) navigator.vibrate(500);
         }
 
         function reset() {
             hp = 100;
-            clicks = 0;
-            document.getElementById('score').innerText = "0";
+            score = 0;
+            scoreEl.innerText = "0";
             bar.style.width = "100%";
-            txt.innerText = "100";
+            hpVal.innerText = "100";
             
-            face.className = ""; // Klassen weg
             face.innerText = "👨‍🦲";
+            face.className = ""; // Alle Klassen weg
             
-            btn.classList.remove("hidden");
-            resetBtn.classList.add("hidden");
             msg.innerText = "";
             document.body.style.backgroundColor = "black";
+            resetBtn.classList.add("hidden");
         }
     </script>
 </body>
