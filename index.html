@@ -2,121 +2,401 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Z' DÖV - FINAL</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Z' DÖV - ULTIMATE COMPLETE</title>
+    <style>
+        /* --- CSS --- */
+        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
+        
+        body {
+            background-color: #111; color: white;
+            font-family: "Courier New", Courier, monospace; 
+            text-align: center; margin: 0; padding: 10px;
+            overflow: hidden; height: 100vh; width: 100vw;
+            transition: background 0.5s ease;
+        }
+
+        /* ZONEN */
+        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); }
+        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); }
+        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); }
+
+        h1 { margin: 0; font-size: 1.8rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        .badge { background: cyan; color: black; padding: 2px 6px; font-size: 0.8rem; font-weight: bold; border-radius: 4px; }
+        
+        .stats-bar {
+            background: #222; border: 1px solid #555; padding: 5px; margin-top: 5px; border-radius: 8px;
+            display: flex; justify-content: space-around; font-size: 0.9rem;
+        }
+        .money { color: gold; font-weight: bold; }
+
+        .bar-wrap { width: 100%; height: 15px; background: #333; margin: 5px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
+        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.1s; }
+
+        .arena { height: 220px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #enemy-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 5px black; }
+        
+        #face {
+            font-size: 110px; cursor: pointer; z-index: 10; 
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));
+        }
+        #face:active { transform: scale(0.95); }
+        
+        .anim-hit { animation: shake 0.1s; color: #ff4757; }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-5px, 5px); } 75% { transform: translate(5px, -5px); } }
+        .dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; transition: transform 0.5s; }
+
+        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; }
+        .anim-smash { animation: smash 0.15s forwards; }
+        @keyframes smash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5) rotate(-45deg); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0) rotate(-90deg); } }
+
+        #next-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #00ff00; color: black; border: 3px solid white; padding: 15px 30px;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px;
+            box-shadow: 0 0 20px #00ff00; display: none;
+        }
+
+        .shop-area { height: 400px; background: #1a1a1a; border-top: 3px solid cyan; margin-top: 5px; display: flex; flex-direction: column; }
+        .tabs { display: flex; background: #333; }
+        .tab { flex: 1; padding: 10px; background: transparent; border: none; color: #aaa; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .tab.active { background: cyan; color: black; }
+        .content { flex: 1; overflow-y: auto; padding: 10px; display: none; }
+        .content.active { display: block; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .item { background: #222; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; border-radius: 5px; }
+        .item.owned { border-color: gold; }
+        .item.active { border-color: cyan; background: #003333; }
+        .item h4 { margin: 0; font-size: 0.75rem; }
+        .item small { font-size: 0.65rem; color: #888; }
+        .icon { font-size: 1.3rem; }
+
+        .casino-box { background: #252525; border: 2px solid gold; padding: 10px; margin-bottom: 15px; border-radius: 10px; position: relative; }
+        .c-title { color: gold; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; text-transform: uppercase; }
+        .c-btn { background: gold; color: black; border: none; padding: 8px 15px; margin: 3px; cursor: pointer; font-weight: bold; border-radius: 4px; font-size: 0.8rem; }
+        .bet-in { background: black; color: white; border: 1px solid #555; width: 70px; text-align: center; padding: 5px; font-size: 0.9rem; }
+        
+        .slot-row { display: flex; justify-content: center; gap: 5px; margin: 10px 0; background: #000; padding: 5px; border: 1px solid #444; }
+        .reel { width: 35px; height: 45px; background: white; color: black; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        
+        .wheel-container { width: 80px; height: 80px; margin: 5px auto; position: relative; }
+        .arrow { position: absolute; top: -8px; left: 35px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 2px solid white; background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg); transform: rotate(0deg); }
+
+        .cards { min-height: 40px; display: flex; justify-content: center; gap: 5px; margin: 5px; }
+        .card { background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold; width: 30px; text-align: center; border: 1px solid #999; }
+
+        #msg { color: cyan; font-weight: bold; min-height: 20px; margin: 5px; font-size: 0.9rem; }
+        #save-notify { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ff00; opacity: 0; transition: opacity 0.5s; }
+        .hidden { display: none !important; }
+    </style>
 </head>
+<body class="zone-1">
 
-<body>
-    <main class="game-wrapper">
-        <div class="game-container">
+    <div id="save-notify">💾 SAVED</div>
 
-            <header class="top-header">
-                <h1>Z' DÖV <span id="lvl-badge" class="badge">LVL 1</span></h1>
-                <p id="zone-name" class="zone">📍 HINTERHOF</p>
-            </header>
+    <h1>Z' DÖV <span class="badge" id="lvl-badge">LVL 1</span></h1>
+    <div id="zone-name" style="color:cyan; margin-bottom:5px; font-size:0.8rem;">📍 HINTERHOF</div>
 
-            <!-- Player Status -->
-            <section class="status-box">
-                <div class="status-row">
-                    <label>HP:</label>
-                    <span id="hp-txt">100/100</span>
-                </div>
-                <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
+    <div class="stats-bar">
+        <span>HP: <span id="hp-txt">100</span></span>
+        <span class="money"><span id="money-txt">0</span> €</span>
+    </div>
 
-                <div class="status-row money">
-                    <label>Money:</label>
-                    <span id="money-txt">0 €</span>
-                </div>
-            </section>
+    <div class="bar-wrap"><div id="hp-bar" class="bar"></div></div>
+    
+    <div class="arena">
+        <div id="enemy-name">VS OGUZ</div>
+        <div id="weapon-anim">👊</div>
+        <div id="face" onpointerdown="hit(event)">👨‍🦲</div>
+        <button id="next-btn" onclick="nextLevel()">WEITER >></button>
+    </div>
+    
+    <div id="msg">Mach ihn platt!</div>
 
-            <!-- Arena -->
-            <section class="arena">
-                <h2 id="enemy-name" class="enemy-title">VS OGUZ</h2>
-
-                <div class="keli-zone">
-                    <div id="face" class="keli-avatar" onpointerdown="hit(event)">👨‍🦲</div>
-                    <div id="weapon-anim" class="weapon-anim">👊</div>
-                </div>
-
-                <p id="msg" class="log-text">Mach ihn platt!</p>
-
-                <button id="next-btn" class="btn-main hidden" onclick="nextLevel()">WEITER >></button>
-            </section>
-
-            <!-- SHOP TABS -->
-            <section class="shop">
-                <div class="tabs">
-                    <button class="tab active" onclick="tab('waffen')">⚔️ Waffen</button>
-                    <button class="tab" onclick="tab('crew')">👥 Crew</button>
-                    <button class="tab" onclick="tab('casino')">🎰 Casino</button>
-                </div>
-
-                <!-- Waffen -->
-                <div id="tab-waffen" class="tab-content active">
-                    <div id="weapon-list" class="grid"></div>
-                </div>
-
-                <!-- Crew -->
-                <div id="tab-crew" class="tab-content">
-                    <div id="staff-list" class="grid"></div>
-                </div>
-
-                <!-- Casino -->
-                <div id="tab-casino" class="tab-content">
-
-                    <!-- Blackjack -->
-                    <div class="casino-box">
-                        <h3 class="casino-title">🃏 BLACKJACK (3:2)</h3>
-
-                        <p class="sub">Dealer: <span id="d-score">0</span></p>
-                        <div id="d-cards" class="cards"></div>
-
-                        <p class="sub">Du: <span id="p-score">0</span></p>
-                        <div id="p-cards" class="cards"></div>
-
-                        <input type="number" id="bj-bet" class="bet-in" value="100">
-
-                        <div class="btn-inline">
-                            <span id="bj-start-div">
-                                <button class="c-btn" onclick="startBJ()">START</button>
-                            </span>
-
-                            <span id="bj-play-div" class="hidden">
-                                <button class="c-btn green" onclick="hitBJ()">HIT</button>
-                                <button class="c-btn red" onclick="standBJ()">STAND</button>
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Slots -->
-                    <div class="casino-box">
-                        <h3 class="casino-title">🎰 SLOTS (High Risk)</h3>
-
-                        <div class="slot-row">
-                            <div id="reel1" class="reel">👊</div>
-                            <div id="reel2" class="reel">🍒</div>
-                            <div id="reel3" class="reel">💎</div>
-                        </div>
-
-                        <button id="slot-btn" class="c-btn" onclick="spinSlots()">100€ DREHEN</button>
-                    </div>
-
-                    <!-- Coin Flip -->
-                    <div class="casino-box">
-                        <h3 class="casino-title">🟡 YAZI TURA (x2)</h3>
-
-                        <div id="coin-display" class="coin-display">🪙</div>
-                        <input type="number" id="coin-bet" class="bet-in" placeholder="Einsatz">
-                        <button class="c-btn" onclick="spinCoin()">WERFEN</button>
-                    </div>
-
-                </div>
-            </section>
-
+    <div class="shop-area">
+        <div class="tabs">
+            <button class="tab active" onclick="tab('waffen')">⚔️ Waffen</button>
+            <button class="tab" onclick="tab('crew')">👥 Crew</button>
+            <button class="tab" onclick="tab('casino')" style="color:gold">🎰 Casino</button>
         </div>
-    </main>
 
-    <script src="script.js"></script>
+        <div id="tab-waffen" class="content active"><div class="grid" id="weapon-list"></div></div>
+        <div id="tab-crew" class="content"><div class="grid" id="staff-list"></div></div>
+
+        <div id="tab-casino" class="content">
+            
+            <div class="casino-box">
+                <div class="c-title">🟡 YAZI TURA (x2)</div>
+                <div id="coin-display" style="font-size:2rem; margin:5px;">🪙</div>
+                <input type="number" id="coin-bet" class="bet-in" placeholder="Einsatz">
+                <button class="c-btn" onclick="spinCoin()">WERFEN</button>
+            </div>
+
+            <div class="casino-box">
+                <div class="c-title">🎰 SLOTS (High Risk)</div>
+                <div class="slot-row">
+                    <div id="slot1" class="reel">👊</div>
+                    <div id="slot2" class="reel">🍒</div>
+                    <div id="slot3" class="reel">💎</div>
+                </div>
+                <button id="slot-btn" class="c-btn" onclick="spinSlots()">100€ DREHEN</button>
+            </div>
+
+            <div class="casino-box">
+                <div class="c-title">🃏 BLACKJACK (3:2)</div>
+                <div style="font-size:0.8rem;color:#aaa">Dealer: <span id="d-score">0</span></div>
+                <div id="d-cards" class="cards"></div>
+                <div style="font-size:0.8rem;color:#aaa">Du: <span id="p-score">0</span></div>
+                <div id="p-cards" class="cards"></div>
+                <input type="number" id="bj-bet" class="bet-in" value="100">
+                <div style="margin-top:5px">
+                    <span id="bj-start-div"><button class="c-btn" onclick="startBJ()">START</button></span>
+                    <span id="bj-play-div" class="hidden">
+                        <button class="c-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
+                        <button class="c-btn" style="background:#e74c3c; color:white" onclick="standBJ()">STAND</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="casino-box">
+                <div class="c-title">🎲 ROULETTE</div>
+                <div class="wheel-container">
+                    <div class="arrow"></div>
+                    <div id="wheel" class="wheel"></div>
+                </div>
+                <input type="number" id="roulette-bet" class="bet-in" placeholder="Einsatz">
+                <div style="margin-top:5px">
+                    <button class="c-btn" style="background:#e74c3c; color:white" onclick="spinRoulette('red')">ROT</button>
+                    <button class="c-btn" style="background:#333; color:white" onclick="spinRoulette('black')">BLK</button>
+                    <button class="c-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
+        function snd(t){ try{ let s=sounds[t].cloneNode(); s.volume=0.5; s.play().catch(()=>{}); }catch(e){} }
+
+        const weapons = {
+            'fist': {name:'Faust', dmg:[5,10], icon:'👊', price:0},
+            'slipper': {name:'Terlik', dmg:[15,25], icon:'🩴', price:50},
+            'pan': {name:'Pfanne', dmg:[35,50], icon:'🍳', price:250},
+            'hammer': {name:'Hammer', dmg:[70,100], icon:'🔨', price:600},
+            'bat': {name:'Keule', dmg:[150,250], icon:'🏏', price:1500},
+            'fart': {name:'Atom-Döv', dmg:[500,999], icon:'☣️', price:5000}
+        };
+        const staff = {
+            'champ': {name:'Champ', dps:1, price:100, icon:'🧢'},
+            'lion': {name:'Lion', dps:5, price:500, icon:'🕶️'},
+            'haji': {name:'Haji Han', dps:25, price:2000, icon:'😎'}
+        };
+        const faces = { 1: {norm:"👨‍🦲", hit:"😖"}, 2: {norm:"🧔🏻", hit:"😫"}, 3: {norm:"🧑‍🦱", hit:"🤕"} };
+
+        let game = { money: 0, level: 1, hp: 100, maxHp: 100, inv: ['fist'], weapon: 'fist', staff: { 'champ':0, 'lion':0, 'haji':0 } };
+        let isDead = false;
+
+        // --- INIT ---
+        let s = localStorage.getItem('zDov_Final_V7');
+        if(s) try { game = {...game, ...JSON.parse(s)}; } catch(e){}
+        if(game.hp <= 0) { isDead=true; game.hp=0; document.getElementById('next-btn').style.display="block"; document.getElementById('face').classList.add('dead'); document.getElementById('face').innerText="😵"; }
+        
+        renderShop(); updateUI(); updateZone();
+        setInterval(()=>{ if(!isDead){ let d=(game.staff.champ*1)+(game.staff.lion*5)+(game.staff.haji*25); if(d>0) damage(d); } }, 1000);
+        setInterval(()=>{ localStorage.setItem('zDov_Final_V7', JSON.stringify(game)); }, 3000);
+
+        // --- CORE ---
+        function hit(e) {
+            if(isDead) return;
+            snd('hit');
+            let w = weapons[game.weapon];
+            let dmg = Math.floor(Math.random()*(w.dmg[1]-w.dmg[0]+1)+w.dmg[0]);
+            if(Math.random()<0.15) { dmg*=2; showMsg("CRIT! "+dmg, "red"); }
+            game.money += Math.floor(Math.random()*3 + game.level);
+            
+            // Animation
+            let f = document.getElementById('face');
+            let z = game.level<=10?1:(game.level<=20?2:3);
+            f.innerText = faces[z].hit;
+            f.classList.remove('anim-hit'); void f.offsetWidth; f.classList.add('anim-hit');
+            setTimeout(()=>{ if(!isDead) f.innerText=faces[z].norm; }, 150);
+            
+            let a = document.getElementById('weapon-anim');
+            a.innerText = w.icon;
+            a.classList.remove('anim-smash'); void a.offsetWidth; a.classList.add('anim-smash');
+            
+            damage(dmg);
+        }
+
+        function damage(v) {
+            game.hp -= v;
+            if(game.hp <= 0) { game.hp=0; kill(); }
+            updateUI();
+        }
+
+        function kill() {
+            isDead=true; snd('win');
+            document.getElementById('face').innerText="😵";
+            document.getElementById('face').classList.add('dead');
+            document.getElementById('next-btn').style.display="block";
+            let b = 50 * game.level; game.money += b;
+            showMsg("SIEG! +"+b+"€", "#00ff00");
+            saveNow();
+        }
+
+        function nextLevel() {
+            game.level++; game.maxHp=Math.floor(game.maxHp*1.4); game.hp=game.maxHp;
+            isDead=false;
+            document.getElementById('face').classList.remove('dead');
+            document.getElementById('next-btn').style.display="none";
+            showMsg("Level "+game.level, "cyan");
+            updateZone(); updateUI(); saveNow();
+        }
+
+        function updateZone() {
+            let b=document.body, n=document.getElementById('enemy-name'), z=document.getElementById('zone-name'), f=document.getElementById('face');
+            b.className='';
+            if(game.level<=10) { b.classList.add('zone-1'); n.innerText="VS OGUZ"; z.innerText="📍 HINTERHOF"; if(!isDead) f.innerText=faces[1].norm; }
+            else if(game.level<=20) { b.classList.add('zone-2'); n.innerText="VS YNSANON"; z.innerText="📍 SHISHA BAR"; if(!isDead) f.innerText=faces[2].norm; }
+            else { b.classList.add('zone-3'); n.innerText="VS MIKAUTADZE"; z.innerText="📍 BOX CLUB"; if(!isDead) f.innerText=faces[3].norm; }
+        }
+
+        // --- SHOP ---
+        function renderShop() {
+            let wh="", sh="";
+            for(let k in weapons) {
+                let w=weapons[k], o=game.inv.includes(k), a=game.weapon===k;
+                wh += `<div class="item ${a?'active':(o?'owned':'')}" onclick="buyW('${k}')"><div class="icon">${w.icon}</div><div><h4>${w.name}</h4><small>${o?"Besitz":w.price+" €"}</small></div></div>`;
+            }
+            document.getElementById('weapon-list').innerHTML=wh;
+            for(let k in staff) {
+                let s=staff[k], c=game.staff[k], p=Math.floor(s.price*Math.pow(1.2,c));
+                sh += `<div class="item" onclick="buyS('${k}')"><div class="icon">${s.icon}</div><div style="flex:1"><h4>${s.name}</h4><small>${p} €</small></div><div style="background:red;padding:2px 5px;border-radius:50%;font-size:0.7rem">${c}</div></div>`;
+            }
+            document.getElementById('staff-list').innerHTML=sh;
+        }
+        function buyW(k) {
+            let w=weapons[k];
+            if(game.inv.includes(k)) game.weapon=k;
+            else if(game.money>=w.price) { game.money-=w.price; game.inv.push(k); game.weapon=k; snd('buy'); }
+            else showMsg("Zu teuer!", "red");
+            renderShop(); updateUI();
+        }
+        function buyS(k) {
+            let s=staff[k], p=Math.floor(s.price*Math.pow(1.2, game.staff[k]));
+            if(game.money>=p) { game.money-=p; game.staff[k]++; snd('buy'); }
+            else showMsg("Zu teuer!", "red");
+            renderShop(); updateUI();
+        }
+
+        // --- CASINO ---
+        // Yazi Tura
+        function spinCoin() {
+            let b=parseInt(document.getElementById('coin-bet').value);
+            if(b>game.money||isNaN(b)||b<=0) return showMsg("Einsatz?", "red");
+            game.money-=b; updateUI();
+            let c=document.getElementById('coin-display');
+            let i=0, loop=setInterval(()=>{ c.innerText=i%2==0?"🟡":"🦅"; i++; if(i>10){ clearInterval(loop); let w=Math.random()<0.5; c.innerText=w?"🟡":"🦅"; if(w){ game.money+=b*2; showMsg("GEWONNEN!", "#00ff00"); snd('buy'); } else showMsg("VERLOREN!", "red"); updateUI(); } }, 100);
+        }
+
+        // Slots
+        function spinSlots() {
+            if(game.money<100) return showMsg("Brauchst 100€", "red");
+            game.money-=100; updateUI();
+            let b=document.getElementById('slot-btn'); b.disabled=true;
+            let s=["👊","🩴","🍒","💎"], r1=document.getElementById('slot1'), r2=document.getElementById('slot2'), r3=document.getElementById('slot3');
+            let c=0, loop=setInterval(()=>{ r1.innerText=s[Math.floor(Math.random()*4)]; r2.innerText=s[Math.floor(Math.random()*4)]; r3.innerText=s[Math.floor(Math.random()*4)]; c++; if(c>10) clearInterval(loop); }, 100);
+            setTimeout(()=>{
+                let res1=s[Math.floor(Math.random()*4)], res2=s[Math.floor(Math.random()*4)], res3=s[Math.floor(Math.random()*4)];
+                r1.innerText=res1; setTimeout(()=>{ r2.innerText=res2; setTimeout(()=>{ r3.innerText=res3; b.disabled=false;
+                if(res1==res3 && res2==res3) { let w=res1=='💎'?1000:300; game.money+=w; showMsg("JACKPOT! +"+w, "gold"); snd('win'); }
+                else showMsg("Niete!", "red"); updateUI(); }, 400); }, 400);
+            }, 1100);
+        }
+
+        // Roulette
+        let spinning=false;
+        function spinRoulette(col) {
+            if(spinning) return;
+            let b=parseInt(document.getElementById('roulette-bet').value);
+            if(b>game.money||isNaN(b)||b<=0) return showMsg("Einsatz?", "red");
+            game.money-=b; updateUI(); spinning=true;
+            let w=document.getElementById('wheel'); w.style.transition="none"; w.style.transform="rotate(0deg)";
+            setTimeout(()=>{
+                let r=Math.floor(Math.random()*360), tr=1800+r;
+                w.style.transition="transform 3s cubic-bezier(0.1,0.7,0.1,1)"; w.style.transform=`rotate(${tr}deg)`;
+                setTimeout(()=>{
+                    let f=(360-r)%360, res='';
+                    if(f>=0&&f<20) res='green'; else if(f>=20&&f<200) res='red'; else res='black';
+                    if(col==res) { let m=col=='green'?14:2; game.money+=b*m; showMsg(res.toUpperCase()+"! SIEG!", "#00ff00"); snd('buy'); }
+                    else showMsg("Kam "+res, "red");
+                    updateUI(); spinning=false;
+                },3000);
+            },50);
+        }
+
+        // Blackjack
+        let deck=[], pH=[], dH=[], bjB=0, bjLock=false;
+        function startBJ() {
+            if(bjLock) return;
+            let b=parseInt(document.getElementById('bj-bet').value);
+            if(b>game.money||b<=0||isNaN(b)) return showMsg("Einsatz?", "red");
+            game.money-=b; bjB=b; updateUI(); bjLock=true;
+            document.getElementById('bj-start-div').classList.add('hidden'); document.getElementById('bj-play-div').classList.remove('hidden');
+            deck=[2,3,4,5,6,7,8,9,10,10,10,10,11,2,3,4,5,6,7,8,9,10,10,10,10,11]; pH=[]; dH=[];
+            drawAnim(pH, 'p-cards', ()=>{ drawAnim(dH, 'd-cards', ()=>{ drawAnim(pH, 'p-cards', ()=>{ 
+                dH.push(deck[Math.floor(Math.random()*deck.length)]); 
+                renderBJ(true); bjLock=false; if(score(pH)==21) endBJ(true);
+            });});});
+        }
+        function drawAnim(hand, id, cb) {
+            let c=deck[Math.floor(Math.random()*deck.length)]; hand.push(c);
+            renderBJ(true); setTimeout(cb, 500);
+        }
+        function score(h){ let s=h.reduce((a,b)=>a+b,0), ac=h.filter(x=>x==11).length; while(s>21&&ac>0){s-=10;ac--;} return s; }
+        function renderBJ(hide) {
+            document.getElementById('p-score').innerText=score(pH);
+            document.getElementById('p-cards').innerHTML=pH.map(c=>`<div class="card">${c==11?'A':c}</div>`).join('');
+            let dHtml=dH.map((c,i)=>(hide&&i==1)?`<div class="card" style="background:#555;color:transparent">?</div>`:`<div class="card">${c==11?'A':c}</div>`).join('');
+            document.getElementById('d-cards').innerHTML=dHtml;
+            document.getElementById('d-score').innerText=hide&&dH.length>1 ? dH[0] : score(dH);
+        }
+        function hitBJ() { if(bjLock)return; pH.push(deck[Math.floor(Math.random()*deck.length)]); renderBJ(true); if(score(pH)>21) endBJ(false); }
+        function standBJ() {
+            bjLock=true; renderBJ(false);
+            let loop=setInterval(()=>{
+                if(score(dH)<17) { dH.push(deck[Math.floor(Math.random()*deck.length)]); renderBJ(false); }
+                else { clearInterval(loop); let p=score(pH), d=score(dH); endBJ(d>21||p>d ? true : (p==d?'tie':false)); }
+            }, 800);
+        }
+        function endBJ(w) {
+            bjLock=false;
+            if(w===true) { game.money+=Math.floor(bjB*2); showMsg("BJ: SIEG!", "#00ff00"); snd('buy'); }
+            else if(w==='tie') { game.money+=bjB; showMsg("BJ: Unentschieden", "orange"); }
+            else showMsg("BJ: Verloren", "red");
+            document.getElementById('bj-start-div').classList.remove('hidden');
+            document.getElementById('bj-play-div').classList.add('hidden'); updateUI();
+        }
+
+        // --- UTILS ---
+        function updateUI() {
+            document.getElementById('money-txt').innerText = game.money;
+            document.getElementById('hp-txt').innerText = game.hp+"/"+game.maxHp;
+            document.getElementById('lvl-badge').innerText = "LVL "+game.level;
+            let p=(game.hp/game.maxHp)*100; if(p<0)p=0;
+            document.getElementById('hp-bar').style.width = p+"%";
+        }
+        function showMsg(t,c) { let m=document.getElementById('msg'); m.innerText=t; m.style.color=c||"cyan"; }
+        function tab(n) {
+            document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            document.getElementById('tab-'+n).classList.add('active');
+            event.target.classList.add('active');
+        }
+        function saveNow() { localStorage.setItem('zDov_Final_V7', JSON.stringify(game)); }
+    </script>
 </body>
 </html>
