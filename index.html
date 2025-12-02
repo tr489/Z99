@@ -3,54 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z' DÖV - Ultimate Edition</title>
+    <title>Z' DÖV - Keli Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="game-container">
+    <div class="game-wrapper">
         <header>
             <h1>Z' DÖV</h1>
-            <h2>Keli döv</h2>
+            <p>Schlag den Keli!</p>
         </header>
 
-        <div class="stats-board">
-            <div class="stat-box">
-                <span class="label">Schläge</span>
-                <span id="score" class="value">0</span>
-            </div>
-        </div>
-
-        <main class="arena">
+        <div class="game-container">
             
-            <div class="fighter player">
-                <h3>Du (Energie)</h3>
-                <div class="health-bar-container">
-                    <div id="player-health" class="health-bar" style="width: 100%;"></div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span>Schläge:</span>
+                    <strong id="score">0</strong>
                 </div>
-                <div id="player-health-text">100 / 100</div>
             </div>
 
-            <div class="vs">VS</div>
-
-            <div class="fighter enemy">
-                <h3>Gegner</h3>
-                <div class="health-bar-container">
-                    <div id="enemy-health" class="health-bar enemy-bar" style="width: 100%;"></div>
+            <main class="arena">
+                
+                <div class="status-col player">
+                    <span>Deine Kraft</span>
+                    <div class="bar-bg">
+                        <div id="player-bar" class="bar-fill" style="width: 100%;"></div>
+                    </div>
                 </div>
-                <div id="enemy-health-text">100 / 100</div>
+
+                <div class="keli-zone">
+                    <div id="keli-face" class="keli-avatar">👨‍🦲</div>
+                </div>
+
+                <div class="status-col enemy">
+                    <span>Keli Leben</span>
+                    <div class="bar-bg">
+                        <div id="enemy-bar" class="bar-fill enemy-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="enemy-hp-text">100%</span>
+                </div>
+
+            </main>
+
+            <div id="msg-log" class="log-text">Kampf bereit!</div>
+
+            <div class="controls">
+                <button id="hit-btn" class="btn-main">BAM! 👊</button>
+                <button id="reset-btn" class="btn-reset hidden">Nochmal? 🔄</button>
             </div>
-
-        </main>
-
-        <div class="controls">
-            <button id="hit-btn" class="btn-attack">BAM! 👊</button>
-            <button id="reset-btn" class="btn-reset hidden">Yine DÖV! (Neustart) 🔄</button>
         </div>
-
-        <p id="message-log" class="log">Kampf bereit...</p>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
