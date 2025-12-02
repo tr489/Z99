@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Z' DÖV</title>
+    <title>Z' DÖV - Business Empire</title>
     <style>
         body {
             background-color: #111;
@@ -12,7 +12,7 @@
             text-align: center;
             margin: 0;
             padding: 10px;
-            overflow: hidden; /* Wichtig für Partikel */
+            overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
@@ -22,9 +22,9 @@
         h1 { 
             color: #ff4757; 
             margin: 0; 
-            font-size: 2.5rem; 
+            font-size: 2.2rem; 
             text-transform: uppercase; 
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
         }
         
@@ -37,24 +37,34 @@
             vertical-align: middle;
         }
 
+        /* Save Icon */
+        #save-notify {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 0.8rem;
+            color: #2ed573;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
         /* Stats Zeile */
         .stats-bar {
             background: rgba(255,255,255,0.1);
-            padding: 10px;
+            padding: 8px;
             margin-top: 10px;
             border-radius: 10px;
             display: flex;
             justify-content: space-around;
-            font-size: 1rem;
+            font-size: 0.9rem;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.2);
         }
         
-        .money { color: gold; font-weight: bold; }
+        .money { color: gold; font-weight: bold; font-size: 1.1rem; }
 
         /* Arena */
         .arena {
-            height: 240px;
+            height: 230px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -67,8 +77,8 @@
             cursor: pointer;
             transition: transform 0.05s;
             z-index: 10;
-            /* Leuchtender Schein hinter dem Kopf */
             filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+            position: relative;
         }
 
         #face:active { transform: scale(0.9); }
@@ -89,14 +99,15 @@
             left: 55% !important; 
         }
 
-        /* Partikel (Tropfen) */
+        /* Partikel */
         .particle {
             position: absolute;
             pointer-events: none;
-            background: cyan; /* Schweiß */
+            background: cyan;
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            z-index: 99;
             animation: fly 0.6s linear forwards;
         }
         @keyframes fly {
@@ -111,7 +122,7 @@
         /* Balken */
         .bar-container {
             width: 90%;
-            height: 25px;
+            height: 20px;
             border: 2px solid rgba(255,255,255,0.5);
             margin: 0 auto;
             position: relative;
@@ -127,26 +138,39 @@
             transition: width 0.1s;
         }
 
-        .hp-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            top: 2px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px black;
-        }
-
-        /* SHOP */
+        /* SHOP & TABS */
         .shop-area {
             margin-top: 10px;
-            padding-top: 10px;
+            padding-top: 5px;
             background: rgba(0,0,0,0.3);
             border-radius: 20px 20px 0 0;
             padding-bottom: 50px;
+            height: 300px;
+            overflow-y: auto;
         }
-        .shop-title { color: gold; margin-bottom: 10px; font-size: 1.2rem; }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
         
+        .tab-btn {
+            background: none;
+            border: 1px solid #555;
+            color: #888;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: white;
+            color: black;
+            border-color: white;
+            font-weight: bold;
+        }
+
         .shop-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -169,17 +193,31 @@
             gap: 10px;
             transition: 0.2s;
             text-align: left;
+            position: relative;
         }
 
         .shop-btn .icon { font-size: 1.8rem; }
         .shop-btn div { display: flex; flex-direction: column; }
-        .shop-btn h4 { margin: 0; font-size: 1rem; }
+        .shop-btn h4 { margin: 0; font-size: 0.9rem; }
         .shop-btn small { font-size: 0.75rem; color: #a4b0be; }
+        
+        /* Zähler für Anzahl der Mitarbeiter */
+        .count-badge {
+            position: absolute;
+            top: -5px; right: -5px;
+            background: #2ed573;
+            color: black;
+            border-radius: 50%;
+            width: 20px; height: 20px;
+            font-size: 0.7rem;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
 
         .shop-btn.owned { border-color: gold; color: white; background: #2f3542; }
-        .shop-btn.active { background: linear-gradient(45deg, gold, orange); color: black; border-color: white; transform: scale(1.02); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+        .shop-btn.active { background: linear-gradient(45deg, gold, orange); color: black; border-color: white; }
         
-        #msg { min-height: 25px; color: yellow; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
+        #msg { min-height: 20px; color: yellow; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
 
         #reset-btn {
             position: absolute;
@@ -202,6 +240,8 @@
 </head>
 <body>
 
+    <div id="save-notify">💾 Gespeichert</div>
+
     <h1>Z' DÖV <span class="level-badge" id="lvl-badge">LVL 1</span></h1>
     
     <div class="stats-bar">
@@ -209,76 +249,105 @@
         <span class="money"><span id="money-val">0</span> €</span>
     </div>
 
-    <p id="msg">Mach ihn fertig!</p>
-
     <div class="bar-container">
         <div id="health" class="bar-fill"></div>
     </div>
+    
+    <p id="msg">Geschäft eröffnet!</p>
 
     <div class="arena">
         <div id="weapon-anim">👊</div>
         
-        <div id="face" onclick="attack(event)">👨‍🦲</div>
+        <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
         
         <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >>></button>
     </div>
 
     <div class="shop-area">
-        <h3 class="shop-title">WAFFEN LAGER</h3>
-        <div class="shop-grid">
-            
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('weapons')">⚔️ Waffen</button>
+            <button class="tab-btn" onclick="showTab('staff')">👥 Mitarbeiter</button>
+        </div>
+
+        <div id="tab-weapons" class="shop-grid">
             <button id="w-fist" class="shop-btn active" onclick="equip('fist')">
                 <span class="icon">👊</span>
-                <div><h4>Keremin yumrugu</h4><small>Gratis</small></div>
+                <div><h4>Kerenin yumrugu</h4><small>Gratis</small></div>
             </button>
-
-            <button id="w-slipper" class="shop-btn" onclick="buy('slipper', 50)">
+            <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)">
                 <span class="icon">🩴</span>
                 <div><h4>Terlik</h4><small>50 €</small></div>
             </button>
-
-            <button id="w-pan" class="shop-btn" onclick="buy('pan', 250)">
+            <button id="w-pan" class="shop-btn" onclick="buyWeapon('pan', 250)">
                 <span class="icon">🍳</span>
                 <div><h4>Pfanne</h4><small>250 €</small></div>
             </button>
-
-            <button id="w-hammer" class="shop-btn" onclick="buy('hammer', 600)">
+            <button id="w-hammer" class="shop-btn" onclick="buyWeapon('hammer', 600)">
                 <span class="icon">🔨</span>
                 <div><h4>Hammer</h4><small>600 €</small></div>
             </button>
-            
-             <button id="w-bat" class="shop-btn" onclick="buy('bat', 1500)">
+             <button id="w-bat" class="shop-btn" onclick="buyWeapon('bat', 1500)">
                 <span class="icon">🏏</span>
                 <div><h4>Keule</h4><small>1500 €</small></div>
             </button>
-
-            <button id="w-fart" class="shop-btn" onclick="buy('fart', 6868)">
+            <button id="w-fart" class="shop-btn" onclick="buyWeapon('fart', 5000)">
                 <span class="icon">☣️</span>
-                <div><h4>Sakirden uppercut</h4><small>6868 €</small></div>
+                <div><h4>Sakirden uppercut</h4><small>5000 €</small></div>
             </button>
+        </div>
 
+        <div id="tab-staff" class="shop-grid hidden">
+            <button class="shop-btn" onclick="hireStaff('kuseng', 100)">
+                <span class="icon">🧢</span>
+                <div><h4>Lion</h4><small>100 € (1/s)</small></div>
+                <div id="cnt-kuseng" class="count-badge hidden">0</div>
+            </button>
+            <button class="shop-btn" onclick="hireStaff('brudi', 500)">
+                <span class="icon">🕶️</span>
+                <div><h4>Lion</h4><small>500 € (5/s)</small></div>
+                <div id="cnt-brudi" class="count-badge hidden">0</div>
+            </button>
+             <button class="shop-btn" onclick="hireStaff('gang', 2000)">
+                <span class="icon">🚐</span>
+                <div><h4>Haji Han</h4><small>2k € (25/s)</small></div>
+                <div id="cnt-gang" class="count-badge hidden">0</div>
+            </button>
         </div>
     </div>
 
     <script>
-        // Spiel Variablen
-        let level = 1;
-        let maxHp = 100;
-        let hp = 100;
-        let money = 0;
+        // --- GAME STATE ---
+        let state = {
+            level: 1,
+            maxHp: 100,
+            hp: 100,
+            money: 0,
+            inventory: ['fist'],
+            currentWeapon: 'fist',
+            staff: {
+                Champ: 0, // Anzahl Kusengs
+                Lion: 0,
+                Haji Han: 0
+            }
+        };
+
         let isDead = false;
 
-        // Inventar
-        let inventory = ['fist'];
-        let currentWeapon = 'fist';
-        
+        // Waffen Daten (Konstanten)
         const weapons = {
-            'fist':    { dmg: [5, 9],    icon: '👊', name: 'Faust' },
-            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Schlappen' },
+            'fist':    { dmg: [5, 9],    icon: '👊', name: 'Keremin yumrugu' },
+            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik' },
             'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Pfanne' },
             'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer' },
             'bat':     { dmg: [150, 250], icon: '🏏', name: 'Keule' },
-            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Atom-Döv' }
+            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Sakirden uppercut' }
+        };
+
+        // Staff Daten
+        const staffData = {
+            'Champ': { dps: 1, name: "Champ" },
+            'Lion':  { dps: 5, name: "Lion" },
+            'Haji Han':   { dps: 25, name: "Haji Han" }
         };
 
         // Elemente
@@ -290,85 +359,107 @@
         const weaponAnim = document.getElementById('weapon-anim');
         const resetBtn = document.getElementById('reset-btn');
         const lvlBadge = document.getElementById('lvl-badge');
+        const saveNotify = document.getElementById('save-notify');
 
-        // Funktion: Angreifen (mit Event für Partikel Position)
-        function attack(e) {
+        // --- INIT ---
+        loadGame(); // Spielstand laden beim Start
+        updateUI();
+        updateShopUI();
+        
+        // Auto-Döv Loop (Jede Sekunde)
+        setInterval(autoAttack, 1000);
+        // Auto-Save Loop (Alle 5 Sekunden)
+        setInterval(saveGame, 5000);
+
+        // --- ATTACK SYSTEM ---
+        function manualAttack(e) {
             if (isDead) return;
+            // Bei manuellem Klick: Mouse Position für Partikel nutzen
+            attackLogic(true, e.clientX, e.clientY);
+        }
 
-            let w = weapons[currentWeapon];
-            let dmg = Math.floor(Math.random() * (w.dmg[1] - w.dmg[0] + 1)) + w.dmg[0];
+        function autoAttack() {
+            if (isDead) return;
             
-            // Crit Chance
-            let isCrit = Math.random() < 0.15;
-            if (isCrit) {
-                dmg = Math.floor(dmg * 2);
-                msg.innerText = "💥 BAM! " + dmg + "!!";
-                msg.style.color = "#ff4757";
-                spawnParticles(e.clientX, e.clientY, 10, 'red'); // Rotes Blut bei Crit
+            // Berechne Gesamt-DPS der Mitarbeiter
+            let totalDps = (state.staff.kuseng * staffData.kuseng.dps) + 
+                           (state.staff.brudi * staffData.brudi.dps) + 
+                           (state.staff.gang * staffData.gang.dps);
+            
+            if (totalDps > 0) {
+                // Zufällige Position auf dem Gesicht für Auto-Partikel
+                const rect = face.getBoundingClientRect();
+                const randX = rect.left + rect.width/2 + (Math.random()-0.5)*50;
+                const randY = rect.top + rect.height/2 + (Math.random()-0.5)*50;
+
+                attackLogic(false, randX, randY, totalDps);
+            }
+        }
+
+        function attackLogic(isManual, x, y, autoDmg = 0) {
+            let dmg = 0;
+            let currentW = weapons[state.currentWeapon];
+
+            if (isManual) {
+                // Waffen Schaden
+                dmg = Math.floor(Math.random() * (currentW.dmg[1] - currentW.dmg[0] + 1)) + currentW.dmg[0];
+                
+                // Crit Chance nur bei manuellem Klick
+                if (Math.random() < 0.15) {
+                    dmg = Math.floor(dmg * 2);
+                    spawnParticles(x, y, 10, 'red');
+                    msg.innerText = "💥 HELAL! " + dmg;
+                    msg.style.color = "red";
+                    if (navigator.vibrate) navigator.vibrate(50);
+                } else {
+                    spawnParticles(x, y, 4, 'cyan');
+                    msg.innerText = "-" + dmg;
+                    msg.style.color = "yellow";
+                }
+                
+                // Waffen Animation nur bei manuellem Klick
+                animateWeapon(currentW.icon);
+                
+                // Geld pro Schlag
+                state.money += Math.floor(Math.random() * 3) + state.level;
             } else {
-                msg.innerText = "-" + dmg; 
-                msg.style.color = "yellow";
-                spawnParticles(e.clientX, e.clientY, 5, 'cyan'); // Blauer Schweiß normal
+                // Auto Schaden
+                dmg = autoDmg;
+                // Kleiner visueller Effekt auch bei Auto
+                spawnParticles(x, y, 1, 'lime'); 
             }
 
-            hp -= dmg;
-            if (hp < 0) hp = 0;
-
-            // Geld: Basis + Level Bonus
-            let loot = Math.floor(Math.random() * 5) + (level * 2);
-            money += loot;
-            updateMoney();
+            state.hp -= dmg;
+            if (state.hp < 0) state.hp = 0;
 
             updateUI();
-            
-            // Animationen
-            face.classList.add("hit");
-            weaponAnim.innerText = w.icon;
+            updateFaceState();
+
+            if (state.hp <= 0) {
+                kill();
+            }
+        }
+
+        function animateWeapon(icon) {
+            weaponAnim.innerText = icon;
             weaponAnim.style.left = "60%"; 
             weaponAnim.style.top = "20%";
             setTimeout(() => { weaponAnim.classList.add("smash-anim"); }, 10);
             
-            // Gesicht Update
-            let hpPercent = (hp / maxHp) * 100;
-            if (hp > 0) {
-                if (hpPercent < 30) face.innerText = "🤢";
-                else if (hpPercent < 60) face.innerText = "🤕";
-                else face.innerText = "😠";
-            }
-
+            face.classList.add("hit");
             setTimeout(() => {
                 face.classList.remove("hit");
                 weaponAnim.classList.remove("smash-anim");
                 weaponAnim.style.opacity = "0";
-                
-                let hpPercent = (hp / maxHp) * 100;
-                if (hp > 0 && hpPercent > 60) face.innerText = "👨‍🦲";
             }, 150);
-
-            if (hp <= 0) {
-                kill();
-            }
-            
-            if (navigator.vibrate) navigator.vibrate(isCrit ? 100 : 30);
         }
 
-        // Partikel Effekt Funktion
-        function spawnParticles(x, y, count, color) {
-            for (let i = 0; i < count; i++) {
-                let p = document.createElement('div');
-                p.classList.add('particle');
-                p.style.backgroundColor = color;
-                p.style.left = x + 'px';
-                p.style.top = y + 'px';
-                
-                // Zufällige Richtung
-                let tx = (Math.random() - 0.5) * 200;
-                let ty = (Math.random() - 0.5) * 200;
-                p.style.setProperty('--tx', tx + 'px');
-                p.style.setProperty('--ty', ty + 'px');
-                
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 600); // Löschen nach Animation
+        function updateFaceState() {
+            let hpPercent = (state.hp / state.maxHp) * 100;
+            if (state.hp > 0) {
+                if (hpPercent < 30) face.innerText = "🤢";
+                else if (hpPercent < 60) face.innerText = "🤕";
+                else face.innerText = "😠";
             }
         }
 
@@ -377,87 +468,179 @@
             face.innerText = "😵";
             face.classList.add("dead");
             
-            let bonus = 50 * level; // Mehr Bonus in höheren Levels
-            money += bonus;
-            updateMoney();
+            let bonus = 50 * state.level;
+            state.money += bonus;
             
-            msg.innerText = "K.O.! Level " + level + " geschafft!";
+            msg.innerText = "K.O.! + " + bonus + " €";
             msg.style.color = "#2ed573";
             
             resetBtn.classList.remove("hidden");
-            if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+            if (navigator.vibrate) navigator.vibrate([100,50,100]);
+            
+            updateUI();
+            saveGame(); // Sofort speichern bei Kill
         }
 
         function nextLevel() {
-            level++;
-            maxHp = Math.floor(maxHp * 1.5); // 50% mehr Leben pro Level
-            hp = maxHp;
+            state.level++;
+            state.maxHp = Math.floor(state.maxHp * 1.4);
+            state.hp = state.maxHp;
             isDead = false;
-            
-            lvlBadge.innerText = "LVL " + level;
             
             face.innerText = "👨‍🦲";
             face.classList.remove("dead");
             resetBtn.classList.add("hidden");
-            msg.innerText = "Z sinirlendi geri geldi kelek!";
+            msg.innerText = "Z geri geldi kelek!!!!";
             msg.style.color = "white";
             
             updateUI();
+            saveGame();
+        }
+
+        // --- SHOP FUNCTIONS ---
+        function buyWeapon(key, price) {
+            if (state.inventory.includes(key)) {
+                equip(key);
+                return;
+            }
+            if (state.money >= price) {
+                state.money -= price;
+                state.inventory.push(key);
+                equip(key);
+                msg.innerText = "Gekauft: " + weapons[key].name;
+            } else {
+                msg.innerText = "Fehlt: " + (price - state.money) + " €";
+                msg.style.color = "orange";
+            }
+            updateUI();
+            updateShopUI();
+        }
+
+        function hireStaff(type, price) {
+            // Staff wird jedes Mal teurer (Preis * 1.2 ^ Anzahl)
+            let currentCount = state.staff[type];
+            let realPrice = Math.floor(price * Math.pow(1.2, currentCount));
+
+            if (state.money >= realPrice) {
+                state.money -= realPrice;
+                state.staff[type]++;
+                msg.innerText = "Eingestellt: " + staffData[type].name;
+                updateUI();
+                updateShopUI(); // Wichtig um Preis zu aktualisieren
+            } else {
+                msg.innerText = "Fehlt: " + (realPrice - state.money) + " €";
+                msg.style.color = "orange";
+            }
+        }
+
+        function equip(key) {
+            state.currentWeapon = key;
+            msg.innerText = "Ausrüstung: " + weapons[key].name;
+            updateShopUI();
+        }
+
+        // --- UI & TABS ---
+        function showTab(tabName) {
+            document.getElementById('tab-weapons').classList.add('hidden');
+            document.getElementById('tab-staff').classList.add('hidden');
             
-            // Hintergrund dunkler/anders machen
-            let r = Math.max(17 - (level*2), 0);
-            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${r})`;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            if (tabName === 'weapons') {
+                document.getElementById('tab-weapons').classList.remove('hidden');
+                document.querySelector('button[onclick="showTab(\'weapons\')"]').classList.add('active');
+            } else {
+                document.getElementById('tab-staff').classList.remove('hidden');
+                document.querySelector('button[onclick="showTab(\'staff\')"]').classList.add('active');
+            }
         }
 
         function updateUI() {
-            let percent = (hp / maxHp) * 100;
-            hpBar.style.width = percent + "%";
-            hpVal.innerText = hp + " / " + maxHp;
-        }
-
-        function updateMoney() {
-            moneyEl.innerText = money;
-        }
-
-        function buy(weaponKey, price) {
-            if (inventory.includes(weaponKey)) {
-                equip(weaponKey);
-                return;
-            }
-            if (money >= price) {
-                money -= price;
-                updateMoney();
-                inventory.push(weaponKey);
-                equip(weaponKey);
-                msg.innerText = "GEKAUFT: " + weapons[weaponKey].name;
-            } else {
-                msg.innerText = "Fehlt: " + (price - money) + " €";
-                msg.style.color = "orange";
-                if (navigator.vibrate) navigator.vibrate(200);
-            }
-        }
-
-        function equip(weaponKey) {
-            currentWeapon = weaponKey;
+            moneyEl.innerText = state.money;
+            let hpPercent = (state.hp / state.maxHp) * 100;
+            hpBar.style.width = hpPercent + "%";
+            hpVal.innerText = state.hp + " / " + state.maxHp;
+            lvlBadge.innerText = "LVL " + state.level;
             
-            document.querySelectorAll('.shop-btn').forEach(btn => {
+            // Hintergrund dunkler je Level
+            let r = Math.max(17 - (state.level), 0);
+            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${r})`;
+        }
+
+        function updateShopUI() {
+            // Waffen Update
+            document.querySelectorAll('#tab-weapons .shop-btn').forEach(btn => {
                 btn.classList.remove('active');
+                btn.classList.remove('owned');
             });
+            
+            // Inventar prüfen
+            state.inventory.forEach(key => {
+                let btn = document.getElementById('w-' + key);
+                if(btn) {
+                    btn.classList.add('owned');
+                    btn.querySelector('small').innerText = "Im Besitz";
+                }
+            });
+            
+            // Aktive Waffe
+            let activeBtn = document.getElementById('w-' + state.currentWeapon);
+            if(activeBtn) activeBtn.classList.add('active');
 
-            let btnId = 'w-' + weaponKey;
-            let btn = document.getElementById(btnId);
-            
-            btn.classList.add('active');
-            btn.classList.add('owned');
-            
-            let smallText = btn.querySelector('small');
-            if (smallText.innerText.includes('€')) {
-                smallText.innerText = "Im Besitz";
+            // Staff Badges und Preise Update
+            for (let type in state.staff) {
+                let count = state.staff[type];
+                let badge = document.getElementById('cnt-' + type);
+                if(count > 0) {
+                    badge.innerText = count;
+                    badge.classList.remove('hidden');
+                }
+                // Preisanzeige aktualisieren wäre cool, aber für diesen simplen Code lassen wir es statisch oder berechnen es beim Klick.
             }
-
-            msg.innerText = "Ausrüstung: " + weapons[weaponKey].name;
-            msg.style.color = "white";
         }
+
+        // --- PARTICLES ---
+        function spawnParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                let p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.backgroundColor = color;
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                let tx = (Math.random() - 0.5) * 150;
+                let ty = (Math.random() - 0.5) * 150;
+                p.style.setProperty('--tx', tx + 'px');
+                p.style.setProperty('--ty', ty + 'px');
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
+        }
+
+        // --- SAVE / LOAD ---
+        function saveGame() {
+            localStorage.setItem('zDovSave', JSON.stringify(state));
+            
+            // Kleines "Gespeichert" Feedback
+            saveNotify.style.opacity = 1;
+            setTimeout(() => { saveNotify.style.opacity = 0; }, 1000);
+        }
+
+        function loadGame() {
+            let saved = localStorage.getItem('zDovSave');
+            if (saved) {
+                try {
+                    let parsed = JSON.parse(saved);
+                    // Merge mit Default State falls neue Felder dazu kamen
+                    state = { ...state, ...parsed };
+                    
+                    // Sicherstellen dass HP nicht buggt
+                    if(state.hp <= 0) state.hp = 1; 
+                } catch(e) {
+                    console.log("Savegame fehlerhaft");
+                }
+            }
+        }
+
     </script>
 </body>
 </html>
