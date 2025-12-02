@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - Hüseyin EDITION</title>
+    <title>Z' DÖV - CASINO ROYAL</title>
     <style>
         /* --- GRUNDLAGEN --- */
         * {
-            /* WICHTIG: Verhindert Zoom durch Doppeltippen auf ALLEM */
             touch-action: manipulation; 
-            -webkit-tap-highlight-color: transparent; /* Kein graues Blinken */
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         body {
@@ -22,7 +22,6 @@
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation; /* Doppelte Sicherheit */
             transition: background-color 1s ease;
         }
 
@@ -74,7 +73,7 @@
 
         /* --- ARENA --- */
         .arena {
-            height: 230px;
+            height: 220px; /* Etwas kleiner damit Casino Platz hat */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -83,13 +82,12 @@
         }
 
         #face {
-            font-size: 130px;
+            font-size: 120px;
             cursor: pointer;
             transition: transform 0.05s;
             z-index: 10;
             filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.3));
             position: relative;
-            /* Extra Sicherheit gegen Zoom auf dem Gesicht */
             touch-action: manipulation; 
         }
 
@@ -150,15 +148,15 @@
             transition: width 0.1s;
         }
 
-        /* --- SHOP --- */
+        /* --- SHOP AREA --- */
         .shop-area {
-            margin-top: 15px;
+            margin-top: 10px;
             padding-top: 10px;
-            background: rgba(10, 10, 15, 0.9);
+            background: rgba(10, 10, 15, 0.95);
             border-top: 2px solid #00ffff;
             box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.2);
-            padding-bottom: 50px;
-            height: 320px;
+            padding-bottom: 60px;
+            height: 340px;
             overflow-y: auto;
             background-image: linear-gradient(transparent 50%, rgba(0, 255, 255, 0.05) 50%);
             background-size: 10px 4px;
@@ -167,32 +165,27 @@
         .tab-buttons {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
             margin-bottom: 15px;
+            padding: 0 5px;
         }
         
         .tab-btn {
             background: rgba(0,0,0,0.5);
             border: 1px solid #555;
             color: #888;
-            padding: 8px 20px;
+            padding: 8px 10px;
             cursor: pointer;
             font-family: sans-serif;
             text-transform: uppercase;
+            font-size: 0.8rem;
             letter-spacing: 1px;
             transition: 0.3s;
             position: relative;
             overflow: hidden;
-            touch-action: manipulation;
+            flex: 1; /* Buttons gleich breit */
         }
         
-        .tab-btn::before {
-            content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%;
-            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.4), transparent);
-            transition: 0.5s;
-        }
-        .tab-btn:hover::before { left: 100%; }
-
         .tab-btn.active {
             background: rgba(0, 255, 255, 0.1);
             color: #00ffff;
@@ -204,7 +197,7 @@
         .shop-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             max-width: 420px;
             margin: 0 auto;
             padding: 0 10px;
@@ -220,85 +213,68 @@
             align-items: center;
             justify-content: flex-start;
             gap: 10px;
-            transition: all 0.3s ease;
             text-align: left;
             position: relative;
-            overflow: hidden;
-            touch-action: manipulation;
         }
 
-        .shop-btn:hover {
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
-            color: white;
-        }
-
-        .shop-btn .icon { font-size: 2rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
-        .shop-btn div { display: flex; flex-direction: column; }
+        .shop-btn.owned { border-color: #f1c40f; color: #ddd; box-shadow: inset 0 0 10px rgba(241, 196, 15, 0.2); }
+        .shop-btn.active { border-color: #00ffff; box-shadow: 0 0 10px #00ffff; color: white;}
         
-        .shop-btn h4 { 
-            margin: 0; 
-            font-size: 0.85rem; 
-            font-family: sans-serif; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            font-weight: normal;
-        }
-        .shop-btn small { font-size: 0.75rem; color: #00ffff; opacity: 0.7; }
+        .shop-btn .icon { font-size: 1.8rem; }
+        .shop-btn h4 { margin: 0; font-size: 0.8rem; text-transform: uppercase; }
+        .shop-btn small { font-size: 0.7rem; color: #00ffff; }
         
         .count-badge {
-            position: absolute;
-            top: 5px; right: 5px;
-            background: #ff00ff;
-            color: white;
-            box-shadow: 0 0 5px #ff00ff;
-            width: 22px; height: 22px;
-            font-size: 0.7rem;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold;
-            font-family: sans-serif;
+            position: absolute; top: 5px; right: 5px; background: #ff00ff; color: white;
+            width: 20px; height: 20px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; border-radius: 2px;
         }
 
-        .shop-btn.owned { 
-            border-color: #f1c40f;
-            color: #ddd;
-            box-shadow: inset 0 0 10px rgba(241, 196, 15, 0.2);
+        /* --- CASINO STYLES --- */
+        .casino-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #f1c40f;
+            padding: 10px;
+            margin-bottom: 15px;
+            width: 90%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        @keyframes cyber-pulse {
-            0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; border-color: #ff00ff; }
-            50% { box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff; border-color: #00ffff; }
-            100% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; border-color: #ff00ff; }
-        }
-
-        .shop-btn.active { 
-            background: linear-gradient(135deg, rgba(255,0,255,0.2), rgba(0,255,255,0.2));
-            color: white;
-            animation: cyber-pulse 2s infinite alternate;
-            transform: scale(1.02);
-            z-index: 2;
-        }
-        .shop-btn.active h4 { color: #00ffff; font-weight: bold; }
         
+        .casino-title { color: #f1c40f; margin: 0 0 10px 0; text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        
+        .bet-input {
+            background: #111; border: 1px solid #555; color: #00ffff; 
+            padding: 8px; width: 60%; text-align: center; font-family: "Courier New"; font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .casino-btn {
+            background: #333; border: 1px solid #f1c40f; color: #f1c40f;
+            padding: 10px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase;
+            transition: 0.2s; margin: 2px;
+        }
+        .casino-btn:active { background: #f1c40f; color: black; }
+        
+        .roulette-btn { width: 30%; border: none; color: white; }
+        .btn-red { background: #e74c3c; }
+        .btn-black { background: #333; border: 1px solid #555; }
+        .btn-green { background: #2ed573; }
+
+        .slot-display {
+            font-size: 2.5rem; letter-spacing: 5px; background: black; border: 2px solid #f1c40f;
+            padding: 10px; margin-bottom: 10px; text-shadow: 0 0 10px gold;
+        }
+
         #msg { min-height: 20px; color: #00ffff; margin: 5px 0; font-weight: bold; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,255,255,0.5);}
 
         #reset-btn {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            background: linear-gradient(90deg, #00b894, #00cec9);
-            border: 2px solid #00ff00;
-            color: black;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
-            z-index: 20;
-            white-space: nowrap;
-            font-family: sans-serif;
-            touch-action: manipulation;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 15px 40px; font-size: 1.2rem;
+            background: linear-gradient(90deg, #00b894, #00cec9); border: 2px solid #00ff00;
+            color: black; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); z-index: 20;
         }
         .hidden { display: none; }
 
@@ -306,7 +282,7 @@
 </head>
 <body>
 
-    <div id="save-notify">💾 SYSTEM GESPEICHERT</div>
+    <div id="save-notify">💾 SAVED</div>
 
     <h1>Z' DÖV <span class="level-badge" id="lvl-badge">LVL 1</span></h1>
     
@@ -319,20 +295,19 @@
         <div id="health" class="bar-fill"></div>
     </div>
     
-    <p id="msg">BITIR ISINI</p>
+    <p id="msg">Mach ihn fertig!</p>
 
     <div class="arena">
         <div id="weapon-anim">👊</div>
-        
         <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
-        
         <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >>></button>
     </div>
 
     <div class="shop-area">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="showTab('weapons')">⚔️ Waffen</button>
-            <button class="tab-btn" onclick="showTab('staff')">👥 Adamlar</button>
+            <button class="tab-btn" onclick="showTab('staff')">👥 Crew</button>
+            <button class="tab-btn" onclick="showTab('casino')" style="color: gold; border-color: gold;">🎰 Casino</button>
         </div>
 
         <div id="tab-weapons" class="shop-grid">
@@ -379,12 +354,39 @@
                 <div id="cnt-Haji Han" class="count-badge hidden">0</div>
             </button>
         </div>
+
+        <div id="tab-casino" class="hidden">
+            
+            <div class="casino-box">
+                <h4 class="casino-title">🟡 YAZI TURA (x2)</h4>
+                <input type="number" id="bet-coin" class="bet-input" placeholder="Einsatz">
+                <br>
+                <button class="casino-btn" onclick="playCoinFlip()">WERFEN</button>
+            </div>
+
+            <div class="casino-box">
+                <h4 class="casino-title">🎰 OGUZ SLOTS</h4>
+                <div id="slot-display" class="slot-display">👊 👊 👊</div>
+                <small>Kosten: 100 € pro Dreh</small><br>
+                <button class="casino-btn" onclick="playSlots()">DREHEN</button>
+            </div>
+
+            <div class="casino-box">
+                <h4 class="casino-title">🎲 HINTERHOF ROULETTE</h4>
+                <input type="number" id="bet-roulette" class="bet-input" placeholder="Einsatz">
+                <br>
+                <button class="casino-btn roulette-btn btn-red" onclick="playRoulette('red')">ROT (x2)</button>
+                <button class="casino-btn roulette-btn btn-black" onclick="playRoulette('black')">SCHWARZ (x2)</button>
+                <button class="casino-btn roulette-btn btn-green" onclick="playRoulette('green')">GRÜN (x14)</button>
+            </div>
+
+        </div>
     </div>
 
     <script>
         // --- SOUNDS ---
         const sounds = {
-            hit: new Audio('hit.m4a'), // Dein Dateiname
+            hit: new Audio('hit.m4a'),
             buy: new Audio('buy.mp3'),
             win: new Audio('win.mp3')
         };
@@ -396,15 +398,11 @@
             try {
                 let s = sounds[type].cloneNode();
                 s.volume = sounds[type].volume;
-                s.play().catch(e => { /* Fehler ignorieren wenn Sound fehlt */ });
+                s.play().catch(e => {});
             } catch (e) { }
         }
         
-        // --- ZOOM VERHINDERN (WICHTIG) ---
-        // Dieser Code blockiert das Doppelklick-Zoom-Event
-        document.addEventListener('dblclick', function(event) {
-            event.preventDefault();
-        }, { passive: false });
+        document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
 
         // --- GAME STATE ---
         let state = {
@@ -414,26 +412,20 @@
             money: 0,
             inventory: ['fist'],
             currentWeapon: 'fist',
-            staff: {
-                'Champ': 0,
-                'Lion': 0,
-                'Haji Han': 0
-            }
+            staff: { 'Champ': 0, 'Lion': 0, 'Haji Han': 0 }
         };
 
         let isDead = false;
 
-        // Waffen Daten
         const weapons = {
             'fist':    { dmg: [5, 9],    icon: '👊', name: 'Keremin yumrugu' },
             'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik v2.0' },
             'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Cyber-Pfanne' },
             'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer X-9000' },
             'bat':     { dmg: [150, 250], icon: '🏏', name: 'Laser-Keule' },
-            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Bio-Hazard Döv' }
+            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Sakirin osurugu' }
         };
 
-        // Staff Daten
         const staffData = {
             'Champ': { dps: 1, name: "Champ" },
             'Lion':  { dps: 5, name: "Lion" },
@@ -455,9 +447,91 @@
         loadGame(); 
         updateUI();
         updateShopUI();
-        
         setInterval(autoAttack, 1000);
         setInterval(saveGame, 5000);
+
+        // --- CASINO LOGIC ---
+        function playCoinFlip() {
+            let bet = parseInt(document.getElementById('bet-coin').value);
+            if (isNaN(bet) || bet <= 0) { msg.innerText = "Ungültiger Einsatz!"; return; }
+            if (bet > state.money) { msg.innerText = "Nicht genug Geld!"; return; }
+
+            state.money -= bet;
+            
+            // 50% Chance
+            if (Math.random() < 0.5) {
+                let win = bet * 2;
+                state.money += win;
+                msg.innerText = "GEWONNEN! +" + win + " €";
+                msg.style.color = "#2ed573";
+                playSound('buy');
+            } else {
+                msg.innerText = "VERLOREN! -" + bet + " €";
+                msg.style.color = "red";
+            }
+            updateUI();
+        }
+
+        function playSlots() {
+            let cost = 100;
+            if (state.money < cost) { msg.innerText = "Kostet 100 €!"; return; }
+            
+            state.money -= cost;
+            let symbols = ["👊", "🩴", "👨‍🦲", "🍒", "💎"];
+            
+            let s1 = symbols[Math.floor(Math.random() * symbols.length)];
+            let s2 = symbols[Math.floor(Math.random() * symbols.length)];
+            let s3 = symbols[Math.floor(Math.random() * symbols.length)];
+            
+            document.getElementById('slot-display').innerText = s1 + " " + s2 + " " + s3;
+
+            if (s1 === s3 && s2 === s3) {
+                let win = cost * 10; // Jackpot
+                state.money += win;
+                msg.innerText = "JACKPOT!!! +" + win;
+                msg.style.color = "gold";
+                playSound('win');
+            } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+                let win = cost * 2; // Kleiner Gewinn
+                state.money += win;
+                msg.innerText = "Kleiner Gewinn! +" + win;
+                msg.style.color = "#2ed573";
+                playSound('buy');
+            } else {
+                msg.innerText = "Niete!";
+                msg.style.color = "red";
+            }
+            updateUI();
+        }
+
+        function playRoulette(color) {
+            let bet = parseInt(document.getElementById('bet-roulette').value);
+            if (isNaN(bet) || bet <= 0) { msg.innerText = "Einsatz?"; return; }
+            if (bet > state.money) { msg.innerText = "Zu arm!"; return; }
+
+            state.money -= bet;
+            
+            // 0-36 (0=Grün, 1-18=Rot, 19-36=Schwarz)
+            let roll = Math.floor(Math.random() * 37);
+            let resultColor = "";
+            
+            if (roll === 0) resultColor = "green";
+            else if (roll <= 18) resultColor = "red";
+            else resultColor = "black";
+
+            if (color === resultColor) {
+                let multi = (color === "green") ? 14 : 2;
+                let win = bet * multi;
+                state.money += win;
+                msg.innerText = resultColor.toUpperCase() + "! Sieg! +" + win;
+                msg.style.color = "#2ed573";
+                playSound('buy');
+            } else {
+                msg.innerText = "Es war " + resultColor + ". Verloren.";
+                msg.style.color = "red";
+            }
+            updateUI();
+        }
 
         // --- ATTACK SYSTEM ---
         function manualAttack(e) {
@@ -467,17 +541,14 @@
 
         function autoAttack() {
             if (isDead) return;
-            
             let totalDps = (state.staff['Champ'] * staffData['Champ'].dps) + 
                            (state.staff['Lion'] * staffData['Lion'].dps) + 
                            (state.staff['Haji Han'] * staffData['Haji Han'].dps);
-            
             if (totalDps > 0) {
                 const rect = face.getBoundingClientRect();
-                const randX = rect.left + rect.width/2 + (Math.random()-0.5)*50;
-                const randY = rect.top + rect.height/2 + (Math.random()-0.5)*50;
-
-                attackLogic(false, randX, randY, totalDps);
+                const rx = rect.left + rect.width/2 + (Math.random()-0.5)*50;
+                const ry = rect.top + rect.height/2 + (Math.random()-0.5)*50;
+                attackLogic(false, rx, ry, totalDps);
             }
         }
 
@@ -486,47 +557,37 @@
             let currentW = weapons[state.currentWeapon];
 
             if (isManual) {
-                // SOUND!
                 playSound('hit');
-
                 dmg = Math.floor(Math.random() * (currentW.dmg[1] - currentW.dmg[0] + 1)) + currentW.dmg[0];
-                
                 if (Math.random() < 0.15) {
                     dmg = Math.floor(dmg * 2);
-                    spawnParticles(x, y, 10, '#ff00ff'); // Magenta bei Crit
-                    msg.innerText = "💥 CRIT! " + dmg;
+                    spawnParticles(x, y, 10, '#ff00ff');
+                    msg.innerText = "💥 HELAL! " + dmg;
                     msg.style.color = "#ff00ff";
                     if (navigator.vibrate) navigator.vibrate(50);
                 } else {
-                    spawnParticles(x, y, 4, '#00ffff'); // Cyan normal
+                    spawnParticles(x, y, 4, '#00ffff');
                     msg.innerText = "-" + dmg;
                     msg.style.color = "#00ffff";
                 }
-                
                 animateWeapon(currentW.icon);
                 state.money += Math.floor(Math.random() * 3) + state.level;
             } else {
                 dmg = autoDmg;
-                spawnParticles(x, y, 1, '#00ff00'); // Grün bei Auto
+                spawnParticles(x, y, 1, '#00ff00');
             }
 
             state.hp -= dmg;
             if (state.hp < 0) state.hp = 0;
-
             updateUI();
             updateFaceState();
-
-            if (state.hp <= 0) {
-                kill();
-            }
+            if (state.hp <= 0) kill();
         }
 
         function animateWeapon(icon) {
             weaponAnim.innerText = icon;
-            weaponAnim.style.left = "60%"; 
-            weaponAnim.style.top = "20%";
+            weaponAnim.style.left = "60%"; weaponAnim.style.top = "20%";
             setTimeout(() => { weaponAnim.classList.add("smash-anim"); }, 10);
-            
             face.classList.add("hit");
             setTimeout(() => {
                 face.classList.remove("hit");
@@ -536,30 +597,25 @@
         }
 
         function updateFaceState() {
-            let hpPercent = (state.hp / state.maxHp) * 100;
+            let p = (state.hp / state.maxHp) * 100;
             if (state.hp > 0) {
-                if (hpPercent < 30) face.innerText = "🤢";
-                else if (hpPercent < 60) face.innerText = "🤕";
+                if (p < 30) face.innerText = "🤢";
+                else if (p < 60) face.innerText = "🤕";
                 else face.innerText = "😠";
             }
         }
 
         function kill() {
             isDead = true;
-            playSound('win'); // SOUND
-
+            playSound('win');
             face.innerText = "😵";
             face.classList.add("dead");
-            
             let bonus = 50 * state.level;
             state.money += bonus;
-            
             msg.innerText = "SYSTEM CRASH! + " + bonus + " €";
             msg.style.color = "#00ff00";
-            
             resetBtn.classList.remove("hidden");
             if (navigator.vibrate) navigator.vibrate([100,50,100]);
-            
             updateUI();
             saveGame(); 
         }
@@ -569,51 +625,41 @@
             state.maxHp = Math.floor(state.maxHp * 1.4);
             state.hp = state.maxHp;
             isDead = false;
-            
             face.innerText = "👨‍🦲";
             face.classList.remove("dead");
             resetBtn.classList.add("hidden");
             msg.innerText = "Oguz Rebooted!";
             msg.style.color = "#00ffff";
-            
             updateUI();
             saveGame();
         }
 
-        // --- SHOP FUNCTIONS ---
+        // --- SHOP & UI ---
         function buyWeapon(key, price) {
-            if (state.inventory.includes(key)) {
-                equip(key);
-                return;
-            }
+            if (state.inventory.includes(key)) { equip(key); return; }
             if (state.money >= price) {
                 state.money -= price;
                 state.inventory.push(key);
                 equip(key);
                 msg.innerText = "Erworben: " + weapons[key].name;
-                playSound('buy'); // SOUND
+                playSound('buy');
             } else {
-                msg.innerText = "Zu wenig Credits! Fehlt: " + (price - state.money) + " €";
-                msg.style.color = "#ff00ff";
+                msg.innerText = "Zu wenig Credits!"; msg.style.color = "#ff00ff";
             }
-            updateUI();
-            updateShopUI();
+            updateUI(); updateShopUI();
         }
 
         function hireStaff(type, price) {
-            let currentCount = state.staff[type];
-            let realPrice = Math.floor(price * Math.pow(1.2, currentCount));
-
+            let count = state.staff[type];
+            let realPrice = Math.floor(price * Math.pow(1.2, count));
             if (state.money >= realPrice) {
                 state.money -= realPrice;
                 state.staff[type]++;
                 msg.innerText = "Aktiviert: " + staffData[type].name;
-                playSound('buy'); // SOUND
-                updateUI();
-                updateShopUI(); 
+                playSound('buy');
+                updateUI(); updateShopUI(); 
             } else {
-                msg.innerText = "Zu wenig Credits! Fehlt: " + (realPrice - state.money) + " €";
-                msg.style.color = "#ff00ff";
+                msg.innerText = "Zu wenig Credits!"; msg.style.color = "#ff00ff";
             }
         }
 
@@ -623,19 +669,22 @@
             updateShopUI();
         }
 
-        // --- UI & TABS ---
         function showTab(tabName) {
             document.getElementById('tab-weapons').classList.add('hidden');
             document.getElementById('tab-staff').classList.add('hidden');
+            document.getElementById('tab-casino').classList.add('hidden'); // Casino ausblenden
             
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
             if (tabName === 'weapons') {
                 document.getElementById('tab-weapons').classList.remove('hidden');
                 document.querySelector('button[onclick="showTab(\'weapons\')"]').classList.add('active');
-            } else {
+            } else if (tabName === 'staff') {
                 document.getElementById('tab-staff').classList.remove('hidden');
                 document.querySelector('button[onclick="showTab(\'staff\')"]').classList.add('active');
+            } else {
+                document.getElementById('tab-casino').classList.remove('hidden'); // Casino zeigen
+                document.querySelector('button[onclick="showTab(\'casino\')"]').classList.add('active');
             }
         }
 
@@ -654,40 +703,29 @@
 
         function updateShopUI() {
             document.querySelectorAll('#tab-weapons .shop-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.classList.remove('owned');
+                btn.classList.remove('active'); btn.classList.remove('owned');
             });
-            
             state.inventory.forEach(key => {
                 let btn = document.getElementById('w-' + key);
-                if(btn) {
-                    btn.classList.add('owned');
-                    btn.querySelector('small').innerText = "BEREIT";
-                }
+                if(btn) { btn.classList.add('owned'); btn.querySelector('small').innerText = "BEREIT"; }
             });
-            
             let activeBtn = document.getElementById('w-' + state.currentWeapon);
             if(activeBtn) activeBtn.classList.add('active');
 
             for (let type in state.staff) {
                 let count = state.staff[type];
                 let badge = document.getElementById('cnt-' + type);
-                if(badge && count > 0) {
-                    badge.innerText = count;
-                    badge.classList.remove('hidden');
-                }
+                if(badge && count > 0) { badge.innerText = count; badge.classList.remove('hidden'); }
             }
         }
 
-        // --- PARTICLES ---
         function spawnParticles(x, y, count, color) {
             for (let i = 0; i < count; i++) {
                 let p = document.createElement('div');
                 p.classList.add('particle');
                 p.style.backgroundColor = color;
                 p.style.boxShadow = "0 0 5px " + color;
-                p.style.left = x + 'px';
-                p.style.top = y + 'px';
+                p.style.left = x + 'px'; p.style.top = y + 'px';
                 let tx = (Math.random() - 0.5) * 150;
                 let ty = (Math.random() - 0.5) * 150;
                 p.style.setProperty('--tx', tx + 'px');
@@ -697,7 +735,6 @@
             }
         }
 
-        // --- SAVE / LOAD ---
         function saveGame() {
             localStorage.setItem('zDovSave_Oguz', JSON.stringify(state));
             saveNotify.style.opacity = 1;
@@ -711,12 +748,9 @@
                     let parsed = JSON.parse(saved);
                     state = { ...state, ...parsed };
                     if(state.hp <= 0) state.hp = 1; 
-                } catch(e) {
-                    console.log("Savegame fehlerhaft");
-                }
+                } catch(e) { }
             }
         }
-
     </script>
 </body>
 </html>
