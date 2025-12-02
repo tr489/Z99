@@ -2,280 +2,204 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z' DÖV - Keli Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Z' DÖV</title>
     <style>
-        /* --- HIER IST DAS DESIGN (CSS) --- */
-        :root {
-            --bg-color: #1a1a2e;
-            --card-bg: #16213e;
-            --text-color: #fff;
-            --accent-color: #e94560;
-            --green: #2ed573;
-        }
-
         body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            user-select: none; /* Kein Text markieren */
-        }
-
-        .game-card {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background-color: black;
+            color: white;
+            font-family: "Courier New", Courier, monospace; /* Hacker-Style Font */
             text-align: center;
-            width: 90%;
-            max-width: 400px;
-            border: 2px solid #333;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden; /* Kein Scrollen */
+            user-select: none;
         }
 
-        h1 { margin: 0; color: var(--accent-color); font-size: 2rem; text-transform: uppercase; }
-        
-        .score-board {
+        h1 {
+            color: red;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stats {
             font-size: 1.2rem;
-            margin: 15px 0;
-            background: rgba(255,255,255,0.1);
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        /* Das Spielfeld */
-        .arena {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        /* Der Glatzkopf */
-        #keli-face {
-            font-size: 120px; /* Hier Größe ändern */
-            cursor: pointer;
-            transition: transform 0.1s;
-            line-height: 1;
-            margin: 10px 0;
+            margin-bottom: 20px;
+            border: 1px solid white;
+            padding: 10px;
             display: inline-block;
         }
 
-        /* Animation beim Schlag */
-        .hit-anim {
-            transform: scale(0.9) rotate(15deg);
+        /* Der Glatzkopf Bereich */
+        .enemy-container {
+            margin: 30px auto;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .dead-anim {
+        #face {
+            font-size: 150px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        /* Animationen */
+        .hit {
+            transform: scale(0.9) rotate(20deg);
+            color: red; /* Wird rot beim Schlag */
+        }
+
+        .dead {
+            transform: rotate(180deg);
             filter: grayscale(100%);
             opacity: 0.5;
-            transform: rotate(180deg);
-            pointer-events: none;
         }
 
-        /* Lebensbalken */
-        .bar-container {
-            width: 100%;
-            background: #333;
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
+        /* Der dicke Button */
+        #hit-btn {
+            background-color: red;
+            color: white;
+            border: 5px solid white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 20px 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: "Courier New", Courier, monospace;
+            margin-top: 20px;
+            box-shadow: 0 0 15px red;
+        }
+
+        #hit-btn:active {
+            background-color: darkred;
+            transform: scale(0.95);
+        }
+
+        /* Energie Balken simpel */
+        .bar-border {
+            border: 2px solid white;
+            width: 80%;
+            max-width: 400px;
+            height: 30px;
+            margin: 10px auto;
             position: relative;
         }
 
         .bar-fill {
+            background-color: red;
             height: 100%;
             width: 100%;
-            transition: width 0.2s ease, background-color 0.2s;
+            transition: width 0.1s;
         }
 
-        #enemy-bar { background-color: var(--accent-color); }
-        #player-bar { background-color: var(--green); }
-
-        .bar-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-bottom: 2px;
-            color: #ccc;
-        }
-
-        /* Buttons */
-        .btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
+        .bar-text {
+            position: absolute;
             width: 100%;
+            text-align: center;
+            top: 2px;
             font-weight: bold;
-            box-shadow: 0 4px 0 #c0392b;
-            transition: transform 0.1s;
+            text-shadow: 1px 1px 2px black;
         }
 
-        .btn:active { transform: translateY(4px); box-shadow: none; }
-        .btn:disabled { background-color: #555; box-shadow: none; cursor: not-allowed; }
-
-        .btn-reset { background-color: var(--green); box-shadow: 0 4px 0 #218c74; }
-        
         .hidden { display: none; }
-        .log { margin-top: 15px; font-style: italic; min-height: 20px; color: #aaa; }
-
     </style>
 </head>
 <body>
 
-    <div class="game-card">
-        <header>
-            <h1>Z' DÖV</h1>
-            <small>Keli Edition</small>
-        </header>
+    <h1>Z' DÖV</h1>
+    <h2>Keli Edition</h2>
 
-        <div class="score-board">
-            Schläge: <strong id="score">0</strong>
-        </div>
-
-        <main class="arena">
-            
-            <div style="width: 100%;">
-                <div class="bar-label"><span>Du</span></div>
-                <div class="bar-container">
-                    <div id="player-bar" class="bar-fill"></div>
-                </div>
-            </div>
-
-            <div id="keli-face">👨‍🦲</div>
-
-            <div style="width: 100%;">
-                <div class="bar-label"><span>Keli</span> <span id="hp-text">100%</span></div>
-                <div class="bar-container">
-                    <div id="enemy-bar" class="bar-fill"></div>
-                </div>
-            </div>
-
-        </main>
-
-        <div class="controls">
-            <button id="hit-btn" class="btn">BAM! 👊</button>
-            <button id="reset-btn" class="btn btn-reset hidden">Nochmal? 🔄</button>
-        </div>
-
-        <p id="msg" class="log">Keli guckt frech...</p>
+    <div class="stats">
+        Schläge: <span id="score">0</span>
     </div>
 
+    <div>
+        <h3>KELI ENERGIE</h3>
+        <div class="bar-border">
+            <div id="health" class="bar-fill"></div>
+            <div class="bar-text"><span id="hp-text">100</span>%</div>
+        </div>
+    </div>
+
+    <div class="enemy-container">
+        <div id="face">👨‍🦲</div>
+    </div>
+
+    <button id="hit-btn" onclick="schlagen()">BAM!</button>
+    <button id="reset-btn" onclick="reset()" class="hidden" style="background:green; color:white; font-size:1.5rem; padding:10px;">NOCHMAL?</button>
+
+    <h3 id="msg" style="color: yellow; min-height: 30px;"></h3>
+
     <script>
-        // Variablen
-        let score = 0;
-        let enemyHp = 100;
-        let playerHp = 100;
-        let isGameOver = false;
+        let hp = 100;
+        let clicks = 0;
+        let face = document.getElementById('face');
+        let bar = document.getElementById('health');
+        let txt = document.getElementById('hp-text');
+        let btn = document.getElementById('hit-btn');
+        let msg = document.getElementById('msg');
+        let resetBtn = document.getElementById('reset-btn');
 
-        // Elemente
-        const face = document.getElementById('keli-face');
-        const scoreEl = document.getElementById('score');
-        const enemyBar = document.getElementById('enemy-bar');
-        const playerBar = document.getElementById('player-bar');
-        const hpText = document.getElementById('hp-text');
-        const msg = document.getElementById('msg');
-        const hitBtn = document.getElementById('hit-btn');
-        const resetBtn = document.getElementById('reset-btn');
+        function schlagen() {
+            if (hp <= 0) return;
 
-        // Klick Events
-        hitBtn.addEventListener('click', attack);
-        face.addEventListener('click', attack); // Man kann auch aufs Gesicht klicken
-        resetBtn.addEventListener('click', restart);
+            // Zähler hoch
+            clicks++;
+            document.getElementById('score').innerText = clicks;
 
-        function attack() {
-            if (isGameOver) return;
+            // Schaden (fester Wert damit es schneller geht)
+            let dmg = Math.floor(Math.random() * 10) + 5;
+            hp = hp - dmg;
+            if (hp < 0) hp = 0;
 
-            // 1. Daten ändern
-            score++;
-            scoreEl.textContent = score;
+            // Update Grafik
+            bar.style.width = hp + "%";
+            txt.innerText = hp;
 
-            // Schaden (Zufall 10-20)
-            let damage = Math.floor(Math.random() * 11) + 10;
-            enemyHp -= damage;
+            // Animation
+            face.classList.add("hit");
+            face.innerText = "😖"; // Gesicht verziehen
             
-            // Spieler verliert etwas Kraft (1-3)
-            playerHp -= Math.floor(Math.random() * 3) + 1;
-
-            if (enemyHp < 0) enemyHp = 0;
-            if (playerHp < 0) playerHp = 0;
-
-            // 2. Visuelles Update
-            updateBars();
-            animateFace();
-
-            msg.textContent = "PATS! -" + damage + " Schaden!";
-
-            // 3. Check ob tot
-            if (enemyHp <= 0) {
-                gameOver(true);
-            } else if (playerHp <= 0) {
-                gameOver(false);
-            }
-        }
-
-        function animateFace() {
-            face.classList.add('hit-anim');
-            face.textContent = "🤕"; // Aua Gesicht
-
-            setTimeout(() => {
-                face.classList.remove('hit-anim');
-                if (!isGameOver) {
-                    face.textContent = "👨‍🦲"; // Zurück zum Normalen Gesicht
+            setTimeout(function() {
+                if (hp > 0) {
+                    face.classList.remove("hit");
+                    face.innerText = "👨‍🦲";
                 }
-            }, 200);
-        }
+            }, 150);
 
-        function updateBars() {
-            enemyBar.style.width = enemyHp + "%";
-            playerBar.style.width = playerHp + "%";
-            hpText.textContent = enemyHp + "%";
-
-            // Rot wenn wenig Leben
-            if (enemyHp < 30) enemyBar.style.backgroundColor = "red";
-        }
-
-        function gameOver(won) {
-            isGameOver = true;
-            hitBtn.classList.add('hidden');
-            resetBtn.classList.remove('hidden');
-
-            if (won) {
-                msg.textContent = "🏆 GEWONNEN! Glatze poliert!";
-                face.textContent = "😵"; // K.O. Gesicht
-                face.classList.add('dead-anim');
-            } else {
-                msg.textContent = "💀 VERLOREN! Du bist zu müde.";
+            // Ist er K.O.?
+            if (hp <= 0) {
+                kill();
             }
         }
 
-        function restart() {
-            score = 0;
-            enemyHp = 100;
-            playerHp = 100;
-            isGameOver = false;
+        function kill() {
+            face.innerText = "😵";
+            face.classList.remove("hit");
+            face.classList.add("dead");
+            btn.classList.add("hidden");
+            resetBtn.classList.remove("hidden");
+            msg.innerText = "KELI IST K.O.!!";
+            document.body.style.backgroundColor = "#220000"; // Hintergrund dunkelrot
+        }
 
-            scoreEl.textContent = "0";
-            msg.textContent = "Neues Spiel!";
+        function reset() {
+            hp = 100;
+            clicks = 0;
+            document.getElementById('score').innerText = "0";
+            bar.style.width = "100%";
+            txt.innerText = "100";
             
-            face.textContent = "👨‍🦲";
-            face.classList.remove('dead-anim');
-            enemyBar.style.backgroundColor = "#e94560"; // Reset Farbe
+            face.className = ""; // Klassen weg
+            face.innerText = "👨‍🦲";
             
-            hitBtn.classList.remove('hidden');
-            resetBtn.classList.add('hidden');
-
-            updateBars();
+            btn.classList.remove("hidden");
+            resetBtn.classList.add("hidden");
+            msg.innerText = "";
+            document.body.style.backgroundColor = "black";
         }
     </script>
 </body>
