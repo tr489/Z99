@@ -132,15 +132,45 @@
         let msg = document.getElementById('msg');
         let resetBtn = document.getElementById('reset-btn');
 
+        // Funktion um das Gesicht je nach HP zu ändern
+        function updateFaceState() {
+            if (hp <= 0) return; // Wenn tot, mach nix hier
+
+            // Hier ändern wir das Emoji dauerhaft je nach Schaden
+            if (hp > 75) {
+                face.innerText = "👨‍🦲"; // Normal
+            } else if (hp > 50) {
+                face.innerText = "😠"; // Wütend
+            } else if (hp > 25) {
+                face.innerText = "🤕"; // Verletzt
+            } else {
+                face.innerText = "🤢"; // Fast K.O.
+            }
+        }
+
         function schlagen() {
             if (hp <= 0) return;
 
-            // Zähler
             score++;
             scoreEl.innerText = score;
 
-            // Schaden (Zufall 5-10)
-            let dmg = Math.floor(Math.random() * 6) + 5;
+            // Kritischer Treffer Berechnung (15% Chance)
+            let isCrit = Math.random() < 0.15; 
+            let dmg = Math.floor(Math.random() * 6) + 5; // Normaler Schaden
+
+            if (isCrit) {
+                dmg = dmg * 3; // Dreifacher Schaden!
+                msg.innerText = "💥 KRITISCHER TREFFER! 💥";
+                msg.style.color = "red";
+                msg.style.fontSize = "1.5rem";
+                
+                // Bildschirm wackelt stärker bei Crit
+                document.body.style.backgroundColor = "#500"; 
+                setTimeout(() => document.body.style.backgroundColor = "black", 100);
+            } else {
+                msg.innerText = ""; // Text weg bei normalem Schlag
+            }
+
             hp -= dmg;
             if (hp < 0) hp = 0;
 
@@ -148,19 +178,21 @@
             bar.style.width = hp + "%";
             hpVal.innerText = hp;
 
-            // Animation
+            // Kurz Aua-Gesicht machen, außer er ist fast tot
             face.classList.add("hit");
-            face.innerText = "😖"; // Gesicht verzieht sich
+            if (hp > 0) {
+                 face.innerText = "😫"; 
+            }
 
-            // Vibration auf Handy (wenn unterstützt)
-            if (navigator.vibrate) navigator.vibrate(50);
+            // Handy vibriert
+            if (navigator.vibrate) {
+                navigator.vibrate(isCrit ? 200 : 50); // Lang bei Crit, kurz bei normal
+            }
 
-            // Nach kurz zurücksetzen
+            // Nach kurz zurücksetzen zum aktuellen Status (Wütend, Verletzt etc.)
             setTimeout(() => {
-                if (hp > 0) {
-                    face.classList.remove("hit");
-                    face.innerText = "👨‍🦲";
-                }
+                face.classList.remove("hit");
+                updateFaceState(); 
             }, 150);
 
             // Check Tod
@@ -173,10 +205,11 @@
             face.innerText = "😵";
             face.classList.remove("hit");
             face.classList.add("dead");
-            msg.innerText = "K.O.!!!";
-            document.body.style.backgroundColor = "#500"; // Dunkelrot
+            msg.innerText = "K.O.!!! Keli schläft!";
+            msg.style.color = "yellow";
+            document.body.style.backgroundColor = "#220000"; 
             resetBtn.classList.remove("hidden");
-            if (navigator.vibrate) navigator.vibrate(500);
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 500]); // Sieges-Vibration
         }
 
         function reset() {
@@ -186,8 +219,8 @@
             bar.style.width = "100%";
             hpVal.innerText = "100";
             
-            face.innerText = "👨‍🦲";
-            face.className = ""; // Alle Klassen weg
+            face.className = ""; 
+            updateFaceState(); // Setzt Gesicht zurück
             
             msg.innerText = "";
             document.body.style.backgroundColor = "black";
