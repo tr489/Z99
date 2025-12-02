@@ -272,7 +272,7 @@
         <div id="tab-weapons" class="shop-grid">
             <button id="w-fist" class="shop-btn active" onclick="equip('fist')">
                 <span class="icon">👊</span>
-                <div><h4>Kerenin yumrugu</h4><small>Gratis</small></div>
+                <div><h4>Keremin yumrugu</h4><small>Gratis</small></div>
             </button>
             <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)">
                 <span class="icon">🩴</span>
@@ -297,20 +297,20 @@
         </div>
 
         <div id="tab-staff" class="shop-grid hidden">
-            <button class="shop-btn" onclick="hireStaff('kuseng', 100)">
+            <button class="shop-btn" onclick="hireStaff('Champ', 100)">
                 <span class="icon">🧢</span>
-                <div><h4>Lion</h4><small>100 € (1/s)</small></div>
-                <div id="cnt-kuseng" class="count-badge hidden">0</div>
+                <div><h4>Champ</h4><small>100 € (1/s)</small></div>
+                <div id="cnt-Champ" class="count-badge hidden">0</div>
             </button>
-            <button class="shop-btn" onclick="hireStaff('brudi', 500)">
+            <button class="shop-btn" onclick="hireStaff('Lion', 500)">
                 <span class="icon">🕶️</span>
                 <div><h4>Lion</h4><small>500 € (5/s)</small></div>
-                <div id="cnt-brudi" class="count-badge hidden">0</div>
+                <div id="cnt-Lion" class="count-badge hidden">0</div>
             </button>
-             <button class="shop-btn" onclick="hireStaff('gang', 2000)">
+             <button class="shop-btn" onclick="hireStaff('Haji Han', 2000)">
                 <span class="icon">🚐</span>
                 <div><h4>Haji Han</h4><small>2k € (25/s)</small></div>
-                <div id="cnt-gang" class="count-badge hidden">0</div>
+                <div id="cnt-Haji Han" class="count-badge hidden">0</div>
             </button>
         </div>
     </div>
@@ -325,15 +325,15 @@
             inventory: ['fist'],
             currentWeapon: 'fist',
             staff: {
-                Champ: 0, // Anzahl Kusengs
-                Lion: 0,
-                Haji Han: 0
+                'Champ': 0, // Hier hast du die Namen geändert
+                'Lion': 0,
+                'Haji Han': 0
             }
         };
 
         let isDead = false;
 
-        // Waffen Daten (Konstanten)
+        // Waffen Daten
         const weapons = {
             'fist':    { dmg: [5, 9],    icon: '👊', name: 'Keremin yumrugu' },
             'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik' },
@@ -343,11 +343,11 @@
             'fart':    { dmg: [500, 999], icon: '☣️', name: 'Sakirden uppercut' }
         };
 
-        // Staff Daten
+        // Staff Daten - Namen müssen exakt mit 'state.staff' übereinstimmen!
         const staffData = {
             'Champ': { dps: 1, name: "Champ" },
             'Lion':  { dps: 5, name: "Lion" },
-            'Haji Han':   { dps: 25, name: "Haji Han" }
+            'Haji Han': { dps: 25, name: "Haji Han" }
         };
 
         // Elemente
@@ -362,32 +362,28 @@
         const saveNotify = document.getElementById('save-notify');
 
         // --- INIT ---
-        loadGame(); // Spielstand laden beim Start
+        loadGame(); 
         updateUI();
         updateShopUI();
         
-        // Auto-Döv Loop (Jede Sekunde)
         setInterval(autoAttack, 1000);
-        // Auto-Save Loop (Alle 5 Sekunden)
         setInterval(saveGame, 5000);
 
         // --- ATTACK SYSTEM ---
         function manualAttack(e) {
             if (isDead) return;
-            // Bei manuellem Klick: Mouse Position für Partikel nutzen
             attackLogic(true, e.clientX, e.clientY);
         }
 
         function autoAttack() {
             if (isDead) return;
             
-            // Berechne Gesamt-DPS der Mitarbeiter
-            let totalDps = (state.staff.kuseng * staffData.kuseng.dps) + 
-                           (state.staff.brudi * staffData.brudi.dps) + 
-                           (state.staff.gang * staffData.gang.dps);
+            // HIER WAR DER FEHLER: Wir müssen jetzt Champ, Lion und Haji Han nutzen
+            let totalDps = (state.staff['Champ'] * staffData['Champ'].dps) + 
+                           (state.staff['Lion'] * staffData['Lion'].dps) + 
+                           (state.staff['Haji Han'] * staffData['Haji Han'].dps);
             
             if (totalDps > 0) {
-                // Zufällige Position auf dem Gesicht für Auto-Partikel
                 const rect = face.getBoundingClientRect();
                 const randX = rect.left + rect.width/2 + (Math.random()-0.5)*50;
                 const randY = rect.top + rect.height/2 + (Math.random()-0.5)*50;
@@ -401,10 +397,8 @@
             let currentW = weapons[state.currentWeapon];
 
             if (isManual) {
-                // Waffen Schaden
                 dmg = Math.floor(Math.random() * (currentW.dmg[1] - currentW.dmg[0] + 1)) + currentW.dmg[0];
                 
-                // Crit Chance nur bei manuellem Klick
                 if (Math.random() < 0.15) {
                     dmg = Math.floor(dmg * 2);
                     spawnParticles(x, y, 10, 'red');
@@ -417,15 +411,10 @@
                     msg.style.color = "yellow";
                 }
                 
-                // Waffen Animation nur bei manuellem Klick
                 animateWeapon(currentW.icon);
-                
-                // Geld pro Schlag
                 state.money += Math.floor(Math.random() * 3) + state.level;
             } else {
-                // Auto Schaden
                 dmg = autoDmg;
-                // Kleiner visueller Effekt auch bei Auto
                 spawnParticles(x, y, 1, 'lime'); 
             }
 
@@ -478,7 +467,7 @@
             if (navigator.vibrate) navigator.vibrate([100,50,100]);
             
             updateUI();
-            saveGame(); // Sofort speichern bei Kill
+            saveGame(); 
         }
 
         function nextLevel() {
@@ -517,7 +506,6 @@
         }
 
         function hireStaff(type, price) {
-            // Staff wird jedes Mal teurer (Preis * 1.2 ^ Anzahl)
             let currentCount = state.staff[type];
             let realPrice = Math.floor(price * Math.pow(1.2, currentCount));
 
@@ -526,7 +514,7 @@
                 state.staff[type]++;
                 msg.innerText = "Eingestellt: " + staffData[type].name;
                 updateUI();
-                updateShopUI(); // Wichtig um Preis zu aktualisieren
+                updateShopUI(); 
             } else {
                 msg.innerText = "Fehlt: " + (realPrice - state.money) + " €";
                 msg.style.color = "orange";
@@ -562,19 +550,16 @@
             hpVal.innerText = state.hp + " / " + state.maxHp;
             lvlBadge.innerText = "LVL " + state.level;
             
-            // Hintergrund dunkler je Level
             let r = Math.max(17 - (state.level), 0);
             document.body.style.backgroundColor = `rgb(${r}, ${r}, ${r})`;
         }
 
         function updateShopUI() {
-            // Waffen Update
             document.querySelectorAll('#tab-weapons .shop-btn').forEach(btn => {
                 btn.classList.remove('active');
                 btn.classList.remove('owned');
             });
             
-            // Inventar prüfen
             state.inventory.forEach(key => {
                 let btn = document.getElementById('w-' + key);
                 if(btn) {
@@ -583,19 +568,17 @@
                 }
             });
             
-            // Aktive Waffe
             let activeBtn = document.getElementById('w-' + state.currentWeapon);
             if(activeBtn) activeBtn.classList.add('active');
 
-            // Staff Badges und Preise Update
+            // HIER AUCH KORRIGIERT: Badge IDs passend zu den neuen Namen
             for (let type in state.staff) {
                 let count = state.staff[type];
                 let badge = document.getElementById('cnt-' + type);
-                if(count > 0) {
+                if(badge && count > 0) {
                     badge.innerText = count;
                     badge.classList.remove('hidden');
                 }
-                // Preisanzeige aktualisieren wäre cool, aber für diesen simplen Code lassen wir es statisch oder berechnen es beim Klick.
             }
         }
 
@@ -618,22 +601,19 @@
 
         // --- SAVE / LOAD ---
         function saveGame() {
-            localStorage.setItem('zDovSave', JSON.stringify(state));
+            // Neuer Speicher-Name, damit es keine Konflikte gibt
+            localStorage.setItem('zDovSave_Oguz', JSON.stringify(state));
             
-            // Kleines "Gespeichert" Feedback
             saveNotify.style.opacity = 1;
             setTimeout(() => { saveNotify.style.opacity = 0; }, 1000);
         }
 
         function loadGame() {
-            let saved = localStorage.getItem('zDovSave');
+            let saved = localStorage.getItem('zDovSave_Oguz');
             if (saved) {
                 try {
                     let parsed = JSON.parse(saved);
-                    // Merge mit Default State falls neue Felder dazu kamen
                     state = { ...state, ...parsed };
-                    
-                    // Sicherstellen dass HP nicht buggt
                     if(state.hp <= 0) state.hp = 1; 
                 } catch(e) {
                     console.log("Savegame fehlerhaft");
