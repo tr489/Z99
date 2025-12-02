@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - Shop Edition</title>
+    <title>Z' DÖV</title>
     <style>
         body {
             background-color: #111;
@@ -12,81 +12,117 @@
             text-align: center;
             margin: 0;
             padding: 10px;
-            overflow-x: hidden;
+            overflow: hidden; /* Wichtig für Partikel */
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            transition: background-color 1s ease;
         }
 
-        h1 { color: #ff4757; margin: 0; font-size: 2rem; text-transform: uppercase; }
+        h1 { 
+            color: #ff4757; 
+            margin: 0; 
+            font-size: 2.5rem; 
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
         
+        .level-badge {
+            background: #ff4757;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            vertical-align: middle;
+        }
+
         /* Stats Zeile */
         .stats-bar {
-            background: #222;
+            background: rgba(255,255,255,0.1);
             padding: 10px;
             margin-top: 10px;
             border-radius: 10px;
             display: flex;
             justify-content: space-around;
-            font-size: 1.1rem;
-            border: 1px solid #444;
+            font-size: 1rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
         .money { color: gold; font-weight: bold; }
 
-        /* Der Kopf */
+        /* Arena */
         .arena {
-            height: 220px;
+            height: 240px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            margin-top: 10px;
         }
 
         #face {
-            font-size: 140px;
+            font-size: 130px;
             cursor: pointer;
             transition: transform 0.05s;
-            padding: 10px;
-            z-index: 2;
+            z-index: 10;
+            /* Leuchtender Schein hinter dem Kopf */
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
         }
 
         #face:active { transform: scale(0.9); }
 
-        /* Waffe die neben dem Kopf erscheint beim Schlag */
+        /* Waffe Animation */
         #weapon-anim {
             position: absolute;
             font-size: 80px;
             opacity: 0;
             pointer-events: none;
-            z-index: 3;
+            z-index: 11;
             transition: all 0.1s;
+        }
+
+        .smash-anim {
+            opacity: 1 !important;
+            transform: scale(1.2) rotate(-45deg) !important;
+            left: 55% !important; 
+        }
+
+        /* Partikel (Tropfen) */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            background: cyan; /* Schweiß */
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: fly 0.6s linear forwards;
+        }
+        @keyframes fly {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
         }
 
         /* Animationen */
         .hit { color: #ff4757; transform: rotate(15deg) scale(0.95); }
         .dead { filter: grayscale(100%); opacity: 0.5; transform: rotate(180deg); pointer-events: none; }
-        
-        .smash-anim {
-            opacity: 1 !important;
-            transform: scale(1.2) rotate(-45deg) !important;
-            left: 55% !important; /* Waffe trifft von rechts */
-        }
 
         /* Balken */
         .bar-container {
             width: 90%;
-            height: 30px;
-            border: 2px solid white;
+            height: 25px;
+            border: 2px solid rgba(255,255,255,0.5);
             margin: 0 auto;
             position: relative;
-            background: #222;
-            border-radius: 5px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            overflow: hidden;
         }
 
         .bar-fill {
             height: 100%;
-            background-color: #ff4757;
+            background: linear-gradient(90deg, #ff4757, #ff6b81);
             width: 100%;
             transition: width 0.1s;
         }
@@ -95,65 +131,70 @@
             position: absolute;
             width: 100%;
             text-align: center;
-            top: 4px;
+            top: 2px;
+            font-size: 0.9rem;
             font-weight: bold;
             text-shadow: 1px 1px 2px black;
         }
 
-        /* SHOP BEREICH */
+        /* SHOP */
         .shop-area {
-            margin-top: 20px;
-            border-top: 2px dashed #444;
+            margin-top: 10px;
             padding-top: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px 20px 0 0;
+            padding-bottom: 50px;
         }
-        .shop-title { color: gold; margin-bottom: 10px; }
+        .shop-title { color: gold; margin-bottom: 10px; font-size: 1.2rem; }
         
         .shop-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
             max-width: 400px;
             margin: 0 auto;
+            padding: 0 10px;
         }
 
         .shop-btn {
-            background: #333;
-            color: #aaa;
-            border: 2px solid #555;
-            padding: 10px;
+            background: #2f3542;
+            color: #ccc;
+            border: 1px solid #57606f;
+            padding: 8px;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
             transition: 0.2s;
+            text-align: left;
         }
 
-        .shop-btn h4 { margin: 5px 0 0 0; font-size: 1.2rem; }
-        .shop-btn small { font-size: 0.8rem; }
-        .shop-btn .icon { font-size: 2rem; }
+        .shop-btn .icon { font-size: 1.8rem; }
+        .shop-btn div { display: flex; flex-direction: column; }
+        .shop-btn h4 { margin: 0; font-size: 1rem; }
+        .shop-btn small { font-size: 0.75rem; color: #a4b0be; }
 
-        /* Wenn gekauft / aktiv */
-        .shop-btn.owned { border-color: gold; color: white; background: #222; }
-        .shop-btn.active { background: gold; color: black; border-color: white; transform: scale(1.05); box-shadow: 0 0 10px gold; }
+        .shop-btn.owned { border-color: gold; color: white; background: #2f3542; }
+        .shop-btn.active { background: linear-gradient(45deg, gold, orange); color: black; border-color: white; transform: scale(1.02); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
         
-        /* Nachricht */
-        #msg { min-height: 25px; color: yellow; margin-top: 5px; font-weight: bold; }
+        #msg { min-height: 25px; color: yellow; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
 
-        /* Reset Button */
         #reset-btn {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            padding: 20px 40px;
-            font-size: 1.5rem;
+            padding: 15px 30px;
+            font-size: 1.2rem;
             background: #2ed573;
             border: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            z-index: 10;
+            box-shadow: 0 0 20px rgba(46, 213, 115, 0.6);
+            z-index: 20;
+            white-space: nowrap;
         }
         .hidden { display: none; }
 
@@ -161,53 +202,59 @@
 </head>
 <body>
 
-    <h1>Z' DÖV</h1>
+    <h1>Z' DÖV <span class="level-badge" id="lvl-badge">LVL 1</span></h1>
+    
     <div class="stats-bar">
-        <span>Schläge: <b id="score">0</b></span>
-        <span class="money">Geld: <b id="money-val">0</b> €</span>
+        <span>Oguz HP: <b id="hp-val">100</b></span>
+        <span class="money"><span id="money-val">0</span> €</span>
     </div>
 
-    <p id="msg"></p>
+    <p id="msg">Mach ihn fertig!</p>
 
     <div class="bar-container">
         <div id="health" class="bar-fill"></div>
-        <div class="hp-text"><span id="hp-val">100</span>%</div>
     </div>
 
     <div class="arena">
         <div id="weapon-anim">👊</div>
         
-        <div id="face" onclick="attack()">👨‍🦲</div>
+        <div id="face" onclick="attack(event)">👨‍🦲</div>
         
-        <button id="reset-btn" class="hidden" onclick="restart()">NÄCHSTER KAMPF! 🔄</button>
+        <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >>></button>
     </div>
 
     <div class="shop-area">
-        <h3 class="shop-title">WAFFEN SHOP 🛒</h3>
+        <h3 class="shop-title">WAFFEN LAGER</h3>
         <div class="shop-grid">
             
             <button id="w-fist" class="shop-btn active" onclick="equip('fist')">
                 <span class="icon">👊</span>
-                <h4>Keremin yumrugu</h4>
-                <small>Gratis</small>
+                <div><h4>Keremin yumrugu</h4><small>Gratis</small></div>
             </button>
 
             <button id="w-slipper" class="shop-btn" onclick="buy('slipper', 50)">
                 <span class="icon">🩴</span>
-                <h4>Terlik</h4>
-                <small>50 €</small>
+                <div><h4>Terlik</h4><small>50 €</small></div>
             </button>
 
-            <button id="w-pan" class="shop-btn" onclick="buy('pan', 200)">
+            <button id="w-pan" class="shop-btn" onclick="buy('pan', 250)">
                 <span class="icon">🍳</span>
-                <h4>Pfanne</h4>
-                <small>200 €</small>
+                <div><h4>Pfanne</h4><small>250 €</small></div>
             </button>
 
-            <button id="w-hammer" class="shop-btn" onclick="buy('hammer', 500)">
+            <button id="w-hammer" class="shop-btn" onclick="buy('hammer', 600)">
                 <span class="icon">🔨</span>
-                <h4>Hammer</h4>
-                <small>500 €</small>
+                <div><h4>Hammer</h4><small>600 €</small></div>
+            </button>
+            
+             <button id="w-bat" class="shop-btn" onclick="buy('bat', 1500)">
+                <span class="icon">🏏</span>
+                <div><h4>Keule</h4><small>1500 €</small></div>
+            </button>
+
+            <button id="w-fart" class="shop-btn" onclick="buy('fart', 5000)">
+                <span class="icon">☣️</span>
+                <div><h4>Sakirden uppercut</h4><small>5000 €</small></div>
             </button>
 
         </div>
@@ -215,99 +262,114 @@
 
     <script>
         // Spiel Variablen
+        let level = 1;
+        let maxHp = 100;
         let hp = 100;
-        let score = 0;
         let money = 0;
         let isDead = false;
 
-        // Waffen Daten
-        let inventory = ['fist']; // Was wir besitzen
+        // Inventar
+        let inventory = ['fist'];
         let currentWeapon = 'fist';
         
         const weapons = {
-            'fist':    { dmg: [5, 10],  icon: '👊', name: 'Yumruk' },
-            'slipper': { dmg: [15, 25], icon: '🩴', name: 'Terlik' },
-            'pan':     { dmg: [30, 45], icon: '🍳', name: 'Pfanne' },
-            'hammer':  { dmg: [60, 90], icon: '🔨', name: 'Ederson' }
+            'fist':    { dmg: [5, 9],    icon: '👊', name: 'Faust' },
+            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Schlappen' },
+            'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Pfanne' },
+            'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer' },
+            'bat':     { dmg: [150, 250], icon: '🏏', name: 'Keule' },
+            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Atom-Döv' }
         };
 
         // Elemente
         const face = document.getElementById('face');
         const hpBar = document.getElementById('health');
         const hpVal = document.getElementById('hp-val');
-        const scoreEl = document.getElementById('score');
         const moneyEl = document.getElementById('money-val');
         const msg = document.getElementById('msg');
         const weaponAnim = document.getElementById('weapon-anim');
         const resetBtn = document.getElementById('reset-btn');
+        const lvlBadge = document.getElementById('lvl-badge');
 
-        // Funktion: Angreifen
-        function attack() {
+        // Funktion: Angreifen (mit Event für Partikel Position)
+        function attack(e) {
             if (isDead) return;
 
-            // 1. Schläge zählen
-            score++;
-            scoreEl.innerText = score;
-
-            // 2. Schaden berechnen (basierend auf Waffe)
             let w = weapons[currentWeapon];
             let dmg = Math.floor(Math.random() * (w.dmg[1] - w.dmg[0] + 1)) + w.dmg[0];
             
-            // Kritischer Treffer (10% Chance)
-            let isCrit = Math.random() < 0.1;
+            // Crit Chance
+            let isCrit = Math.random() < 0.15;
             if (isCrit) {
-                dmg = Math.floor(dmg * 1.5);
-                msg.innerText = "💥 BOOM! " + dmg + " Schaden!";
-                msg.style.color = "red";
+                dmg = Math.floor(dmg * 2);
+                msg.innerText = "💥 BAM! " + dmg + "!!";
+                msg.style.color = "#ff4757";
+                spawnParticles(e.clientX, e.clientY, 10, 'red'); // Rotes Blut bei Crit
             } else {
                 msg.innerText = "-" + dmg; 
                 msg.style.color = "yellow";
+                spawnParticles(e.clientX, e.clientY, 5, 'cyan'); // Blauer Schweiß normal
             }
 
             hp -= dmg;
             if (hp < 0) hp = 0;
 
-            // 3. Geld verdienen (1-5 € pro Schlag)
-            let loot = Math.floor(Math.random() * 5) + 1;
+            // Geld: Basis + Level Bonus
+            let loot = Math.floor(Math.random() * 5) + (level * 2);
             money += loot;
             updateMoney();
 
-            // 4. Update UI
-            hpBar.style.width = hp + "%";
-            hpVal.innerText = hp;
+            updateUI();
             
             // Animationen
             face.classList.add("hit");
             weaponAnim.innerText = w.icon;
-            
-            // Waffe erscheint kurz
-            weaponAnim.style.left = "60%"; // Startposition
+            weaponAnim.style.left = "60%"; 
             weaponAnim.style.top = "20%";
             setTimeout(() => { weaponAnim.classList.add("smash-anim"); }, 10);
             
             // Gesicht Update
+            let hpPercent = (hp / maxHp) * 100;
             if (hp > 0) {
-                if (hp < 30) face.innerText = "🤢";
-                else if (hp < 60) face.innerText = "🤕";
+                if (hpPercent < 30) face.innerText = "🤢";
+                else if (hpPercent < 60) face.innerText = "🤕";
                 else face.innerText = "😠";
             }
 
-            // Reset Animationen
             setTimeout(() => {
                 face.classList.remove("hit");
                 weaponAnim.classList.remove("smash-anim");
                 weaponAnim.style.opacity = "0";
                 
-                // Gesicht normalisieren (außer fast tot)
-                if (hp > 0 && hp > 60) face.innerText = "👨‍🦲";
+                let hpPercent = (hp / maxHp) * 100;
+                if (hp > 0 && hpPercent > 60) face.innerText = "👨‍🦲";
             }, 150);
 
-            // Tod Check
             if (hp <= 0) {
                 kill();
             }
             
-            if (navigator.vibrate) navigator.vibrate(50);
+            if (navigator.vibrate) navigator.vibrate(isCrit ? 100 : 30);
+        }
+
+        // Partikel Effekt Funktion
+        function spawnParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                let p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.backgroundColor = color;
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                
+                // Zufällige Richtung
+                let tx = (Math.random() - 0.5) * 200;
+                let ty = (Math.random() - 0.5) * 200;
+                p.style.setProperty('--tx', tx + 'px');
+                p.style.setProperty('--ty', ty + 'px');
+                
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 600); // Löschen nach Animation
+            }
         }
 
         function kill() {
@@ -315,45 +377,53 @@
             face.innerText = "😵";
             face.classList.add("dead");
             
-            // K.O. Bonus Geld
-            let bonus = 50;
+            let bonus = 50 * level; // Mehr Bonus in höheren Levels
             money += bonus;
             updateMoney();
             
-            msg.innerText = "K.O.! +50 € Bonus!";
+            msg.innerText = "K.O.! Level " + level + " geschafft!";
             msg.style.color = "#2ed573";
             
             resetBtn.classList.remove("hidden");
-            if (navigator.vibrate) navigator.vibrate([100,50,100]);
+            if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
         }
 
-        function restart() {
-            hp = 100;
+        function nextLevel() {
+            level++;
+            maxHp = Math.floor(maxHp * 1.5); // 50% mehr Leben pro Level
+            hp = maxHp;
             isDead = false;
             
-            hpBar.style.width = "100%";
-            hpVal.innerText = "100";
+            lvlBadge.innerText = "LVL " + level;
+            
             face.innerText = "👨‍🦲";
             face.classList.remove("dead");
             resetBtn.classList.add("hidden");
-            msg.innerText = "Neue Runde!";
+            msg.innerText = "Z sinirlendi geri geldi kelek!";
+            msg.style.color = "white";
+            
+            updateUI();
+            
+            // Hintergrund dunkler/anders machen
+            let r = Math.max(17 - (level*2), 0);
+            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${r})`;
         }
 
-        // --- SHOP SYSTEM ---
+        function updateUI() {
+            let percent = (hp / maxHp) * 100;
+            hpBar.style.width = percent + "%";
+            hpVal.innerText = hp + " / " + maxHp;
+        }
 
         function updateMoney() {
             moneyEl.innerText = money;
-            // Prüfen ob wir uns was leisten können (Visuelles Feedback könnte man hier ergänzen)
         }
 
         function buy(weaponKey, price) {
-            // Wenn wir es schon haben, einfach ausrüsten
             if (inventory.includes(weaponKey)) {
                 equip(weaponKey);
                 return;
             }
-
-            // Wenn wir genug Geld haben
             if (money >= price) {
                 money -= price;
                 updateMoney();
@@ -361,7 +431,7 @@
                 equip(weaponKey);
                 msg.innerText = "GEKAUFT: " + weapons[weaponKey].name;
             } else {
-                msg.innerText = "Zu teuer! Du brauchst " + price + " €";
+                msg.innerText = "Fehlt: " + (price - money) + " €";
                 msg.style.color = "orange";
                 if (navigator.vibrate) navigator.vibrate(200);
             }
@@ -370,25 +440,22 @@
         function equip(weaponKey) {
             currentWeapon = weaponKey;
             
-            // Alle Buttons zurücksetzen
             document.querySelectorAll('.shop-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            // Gekauften Button markieren
             let btnId = 'w-' + weaponKey;
             let btn = document.getElementById(btnId);
             
             btn.classList.add('active');
-            btn.classList.add('owned'); // Zeigt dass wir es besitzen
+            btn.classList.add('owned');
             
-            // Text im Button ändern
             let smallText = btn.querySelector('small');
             if (smallText.innerText.includes('€')) {
                 smallText.innerText = "Im Besitz";
             }
 
-            msg.innerText = "Ausgerüstet: " + weapons[weaponKey].name;
+            msg.innerText = "Ausrüstung: " + weapons[weaponKey].name;
             msg.style.color = "white";
         }
     </script>
