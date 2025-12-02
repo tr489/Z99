@@ -1,157 +1,251 @@
-/* --- Grundeinstellungen --- */
+/* Farben & Grundlayout */
 :root {
     --bg: #121212;
     --card: #1e1e24;
     --text: #ffffff;
     --accent: #ff4757;
     --green: #2ed573;
+    --shadow: 0 10px 25px rgba(0,0,0,0.45);
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg);
+    background: var(--bg);
     color: var(--text);
+    font-family: "Segoe UI", sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    overflow-x: hidden;
+    justify-content: center;
+    padding: 20px;
 }
 
-/* --- Container --- */
 .game-wrapper {
     width: 100%;
-    max-width: 450px;
-    padding: 20px;
-    text-align: center;
+    max-width: 480px;
 }
 
 .game-container {
-    background-color: var(--card);
-    padding: 20px;
+    background: var(--card);
+    padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border: 1px solid #333;
+    box-shadow: var(--shadow);
+    border: 1px solid #272727;
+}
+
+/* Header */
+.top-header {
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 h1 {
     color: var(--accent);
-    font-size: 2.5rem;
-    margin-bottom: 5px;
+    font-size: 2.3rem;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-bottom: 6px;
 }
 
-/* --- Arena Layout --- */
-.arena {
+.badge {
+    background: var(--green);
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: .9rem;
+}
+
+.zone {
+    font-style: italic;
+    opacity: .8;
+}
+
+/* Status */
+.status-box {
+    margin-top: 10px;
+}
+
+.status-row {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin: 20px 0;
-    align-items: center;
-}
-
-/* --- Balken --- */
-.status-col {
-    width: 100%;
-    text-align: left;
-    font-size: 0.9rem;
-    color: #aaa;
+    justify-content: space-between;
+    font-size: .9rem;
+    margin-top: 6px;
 }
 
 .bar-bg {
-    width: 100%;
-    height: 15px;
     background: #333;
-    border-radius: 10px;
+    height: 15px;
+    border-radius: 8px;
     overflow: hidden;
-    margin-top: 5px;
+    margin: 5px 0 10px;
 }
 
 .bar-fill {
-    height: 100%;
     background: var(--green);
-    transition: width 0.2s ease, background-color 0.2s;
+    height: 100%;
+    width: 100%;
+    transition: width .3s, background-color .3s;
 }
 
-.enemy-fill {
-    background: var(--accent);
+/* Arena */
+.arena {
+    text-align: center;
+    margin: 20px 0;
 }
 
-/* --- DER KELI (Das Gesicht) --- */
+.enemy-title {
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
 .keli-zone {
-    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .keli-avatar {
-    font-size: 120px; /* Größe des Gesichts */
+    font-size: 110px;
     cursor: pointer;
-    transition: transform 0.1s;
-    user-select: none; /* Verhindert Markieren beim Klicken */
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+    transition: .12s;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.14));
 }
 
-/* Wenn getroffen */
 .keli-avatar.hit {
-    transform: scale(0.9) rotate(5deg);
+    transform: scale(0.9) rotate(4deg);
 }
 
-/* Wenn tot */
 .keli-avatar.dead {
+    opacity: 0.45;
     filter: grayscale(100%);
-    opacity: 0.6;
+    pointer-events: none;     /* ❗ Jetzt WIRKT es */
     transform: rotate(180deg);
-    pointer-events: none;
 }
 
-/* --- Buttons & Log --- */
+.weapon-anim {
+    font-size: 2.5rem;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: 0.2s;
+}
+
+/* Logs */
 .log-text {
-    min-height: 25px;
-    margin-bottom: 15px;
-    font-style: italic;
-    color: #ccc;
+    margin-top: 10px;
+    opacity: 0.85;
+    min-height: 24px;
 }
 
+/* Buttons */
 .btn-main {
-    background-color: var(--accent);
+    margin-top: 10px;
+    padding: 15px 30px;
+    width: 100%;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: .15s;
+}
+
+.btn-main:hover {
+    filter: brightness(1.1);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 15px;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #2a2a2a;
+    color: #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .15s;
+}
+
+.tab.active {
+    background: var(--accent);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    margin-top: 15px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Casino */
+.casino-box {
+    background: #18181d;
+    padding: 15px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #2a2a2a;
+}
+
+.casino-title {
+    text-align: center;
+    margin-bottom: 10px;
+    color: gold;
+}
+
+.cards {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.reel {
+    font-size: 2.5rem;
+}
+
+.coin-display {
+    font-size: 3.5rem;
+    margin: 10px 0;
+}
+
+/* Casino Buttons */
+.c-btn {
+    background: #444;
     color: white;
     border: none;
-    padding: 15px 40px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    border-radius: 50px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
-    transition: transform 0.1s;
+    margin-top: 10px;
     width: 100%;
 }
 
-.btn-main:active {
-    transform: scale(0.95);
-}
+.c-btn.green { background: var(--green); color: #000; }
+.c-btn.red { background: var(--accent); }
 
-.btn-main:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.btn-reset {
-    background-color: var(--green);
-    color: #121212;
+.bet-in {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
     border: none;
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    width: 100%;
+    margin-top: 8px;
+    background: #2a2a2a;
+    color: white;
 }
 
-.hidden { display: none; }
+/* Utility */
+.hidden { display: none !important; }
