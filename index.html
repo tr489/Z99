@@ -3,49 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - V5 FINAL</title>
+    <title>Z' DÖV - COMPLETE</title>
     <style>
-        /* --- RESET & BASIS --- */
-        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
+        /* --- GRUNDLAGEN & ZOOM-SCHUTZ --- */
+        * { 
+            touch-action: manipulation; /* Verhindert Doppeltipp-Zoom */
+            -webkit-tap-highlight-color: transparent; 
+            box-sizing: border-box; 
+            user-select: none; 
+        }
+        
         body {
-            background-color: #111; color: white; font-family: "Courier New", Courier, monospace; 
-            text-align: center; margin: 0; padding: 10px; overflow: hidden; transition: background 0.5s;
+            background-color: #111; color: white;
+            font-family: "Courier New", Courier, monospace; 
+            text-align: center; margin: 0; padding: 10px;
+            overflow: hidden; /* Kein Scrollen des Body */
+            transition: background 0.5s ease;
+            height: 100vh; /* Volle Höhe */
+            width: 100vw; /* Volle Breite */
         }
 
         /* ZONEN */
-        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); } /* Hinterhof */
-        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); } /* Shisha */
-        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); } /* Boxclub */
+        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); }
+        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); }
+        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); }
 
-        h1 { margin: 0; font-size: 2rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        h1 { margin: 0; font-size: 1.8rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
         .badge { background: cyan; color: black; padding: 2px 6px; font-size: 0.8rem; font-weight: bold; border-radius: 4px; }
         
         /* STATUS */
         .stats-bar {
-            background: #222; border: 1px solid #555; padding: 8px; margin-top: 10px; border-radius: 8px;
-            display: flex; justify-content: space-around; font-size: 1rem;
+            background: #222; border: 1px solid #555; padding: 5px; margin-top: 5px; border-radius: 8px;
+            display: flex; justify-content: space-around; font-size: 0.9rem;
         }
         .money { color: gold; font-weight: bold; }
 
         /* HP BAR */
-        .bar-wrap { width: 100%; height: 20px; background: #333; margin: 10px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
-        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.2s; }
+        .bar-wrap { width: 100%; height: 15px; background: #333; margin: 5px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
+        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.1s; }
 
         /* ARENA */
-        .arena { height: 240px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #enemy-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 5px black; }
+        .arena { height: 220px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #enemy-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 5px black; }
         
         #face {
-            font-size: 120px; cursor: pointer; z-index: 10; 
+            font-size: 110px; cursor: pointer; z-index: 10; 
             filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));
-            transition: transform 0.1s;
+            /* Keine Transition für transform, damit Animationen snappen */
         }
         #face:active { transform: scale(0.95); }
         
-        /* Animation Klassen */
-        .anim-hit { animation: shake 0.2s; color: #ff4757; }
-        .anim-dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; }
-        
+        /* ANIMATIONEN */
+        .anim-hit { animation: shake 0.15s ease-in-out; color: #ff4757; }
         @keyframes shake {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(-5px, 5px) rotate(5deg); }
@@ -53,11 +62,13 @@
             100% { transform: translate(0, 0) rotate(0deg); }
         }
 
+        .dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; transition: transform 0.5s; }
+
         #weapon-anim { 
-            position: absolute; font-size: 90px; opacity: 0; pointer-events: none; 
+            position: absolute; font-size: 80px; opacity: 0; pointer-events: none; 
             top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20;
         }
-        .anim-smash { animation: smash 0.2s forwards; }
+        .anim-smash { animation: smash 0.15s forwards; }
         @keyframes smash {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5) rotate(-45deg); }
@@ -67,58 +78,67 @@
         #next-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #00ff00; color: black; border: 3px solid white; padding: 15px 30px;
-            font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px;
-            box-shadow: 0 0 30px #00ff00; display: none;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px;
+            box-shadow: 0 0 20px #00ff00; display: none;
         }
 
         /* SHOP & TABS */
-        .shop-area { height: 380px; background: #1a1a1a; border-top: 3px solid cyan; margin-top: 10px; display: flex; flex-direction: column; }
+        .shop-area { 
+            height: 400px; background: #1a1a1a; border-top: 3px solid cyan; margin-top: 5px; 
+            display: flex; flex-direction: column; 
+        }
         .tabs { display: flex; background: #333; }
-        .tab { flex: 1; padding: 12px; background: transparent; border: none; color: #aaa; cursor: pointer; font-weight: bold; }
+        .tab { flex: 1; padding: 10px; background: transparent; border: none; color: #aaa; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         .tab.active { background: cyan; color: black; }
         .content { flex: 1; overflow-y: auto; padding: 10px; display: none; }
         .content.active { display: block; }
 
         /* ITEMS */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .item { background: #222; border: 1px solid #444; padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; border-radius: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .item { background: #222; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; border-radius: 5px; }
         .item.owned { border-color: gold; }
         .item.active { border-color: cyan; background: #003333; }
-        .item h4 { margin: 0; font-size: 0.8rem; }
-        .item small { font-size: 0.7rem; color: #888; }
-        .icon { font-size: 1.5rem; }
+        .item h4 { margin: 0; font-size: 0.75rem; }
+        .item small { font-size: 0.65rem; color: #888; }
+        .icon { font-size: 1.3rem; }
 
-        /* CASINO */
+        /* CASINO STYLES */
         .casino-box { background: #252525; border: 2px solid gold; padding: 10px; margin-bottom: 15px; border-radius: 10px; }
-        .c-btn { background: gold; color: black; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; border-radius: 5px; }
-        .bet-in { background: black; color: white; border: 1px solid #555; width: 80px; text-align: center; padding: 8px; font-size: 1rem; }
+        .c-title { color: gold; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; text-transform: uppercase; }
+        .c-btn { background: gold; color: black; border: none; padding: 8px 15px; margin: 3px; cursor: pointer; font-weight: bold; border-radius: 5px; font-size: 0.8rem; }
+        .bet-in { background: black; color: white; border: 1px solid #555; width: 70px; text-align: center; padding: 5px; font-size: 0.9rem; }
         
-        /* ROULETTE WHEEL */
-        .wheel-container { width: 100px; height: 100px; margin: 10px auto; position: relative; }
-        .arrow { 
-            position: absolute; top: -10px; left: 45px; width: 0; height: 0; 
-            border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 15px solid gold; z-index: 5; 
-        }
-        .wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid white;
-            /* Grün: 0-20deg, Rot: 20-200deg, Schwarz: 200-360deg */
-            background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg);
-            transform: rotate(0deg); 
-            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
-        }
+        /* Coin Flip */
+        .coin-container { width: 50px; height: 50px; margin: 5px auto; perspective: 600px; }
+        .coin { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1s; }
+        .coin-side { position: absolute; width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; backface-visibility: hidden; border: 2px solid gold; font-weight:bold; color:black;}
+        .heads { background: gold; }
+        .tails { background: orange; transform: rotateY(180deg); }
 
-        /* BLACKJACK */
-        .cards { min-height: 50px; display: flex; justify-content: center; gap: 5px; margin: 10px; }
-        .card { background: white; color: black; padding: 5px 8px; border-radius: 4px; font-weight: bold; width: 35px; text-align: center; border: 1px solid #999; }
+        /* Slots */
+        .slot-row { display: flex; justify-content: center; gap: 5px; margin: 5px 0; background: #000; padding: 5px; border: 1px solid gold; }
+        .slot { width: 30px; height: 40px; background: white; color: black; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
 
-        #msg { color: cyan; font-weight: bold; min-height: 25px; margin: 5px; font-size: 1.1rem; }
+        /* Roulette */
+        .wheel-container { width: 80px; height: 80px; margin: 5px auto; position: relative; }
+        .arrow { position: absolute; top: -8px; left: 35px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 2px solid white; background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg); transform: rotate(0deg); transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1); }
+
+        /* Blackjack */
+        .cards { min-height: 40px; display: flex; justify-content: center; gap: 5px; margin: 5px; }
+        .card { background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold; width: 30px; text-align: center; border: 1px solid #999; }
+
+        #msg { color: cyan; font-weight: bold; min-height: 20px; margin: 5px; font-size: 0.9rem; }
+        #save-notify { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ff00; opacity: 0; transition: opacity 0.5s; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body class="zone-1">
 
+    <div id="save-notify">💾 SAVED</div>
+
     <h1>Z' DÖV <span class="badge" id="lvl-badge">LVL 1</span></h1>
-    <div id="zone-name" style="color:cyan; margin-bottom:5px">📍 HINTERHOF</div>
+    <div id="zone-name" style="color:cyan; margin-bottom:5px; font-size:0.8rem;">📍 HINTERHOF</div>
 
     <div class="stats-bar">
         <span>HP: <span id="hp-txt">100</span></span>
@@ -134,7 +154,7 @@
         <button id="next-btn" onclick="nextLevel()">WEITER >></button>
     </div>
     
-    <div id="msg">Klick ihn weg!</div>
+    <div id="msg">Mach ihn platt!</div>
 
     <div class="shop-area">
         <div class="tabs">
@@ -152,42 +172,71 @@
         </div>
 
         <div id="tab-casino" class="content">
+            
             <div class="casino-box">
-                <div style="color:gold; font-weight:bold; margin-bottom:5px">🃏 BLACKJACK (3:2)</div>
+                <div class="c-title">🟡 YAZI TURA (x2)</div>
+                <div class="coin-container">
+                    <div id="coin" class="coin">
+                        <div class="coin-side heads">Y</div>
+                        <div class="coin-side tails">T</div>
+                    </div>
+                </div>
+                <input type="number" id="coin-bet" class="bet-in" placeholder="Einsatz">
+                <button class="c-btn" onclick="spinCoin()">WERFEN</button>
+            </div>
+
+            <div class="casino-box">
+                <div class="c-title">🎰 SLOTS (High Risk)</div>
+                <div class="slot-row">
+                    <div id="slot1" class="slot">👊</div>
+                    <div id="slot2" class="slot">🍒</div>
+                    <div id="slot3" class="slot">💎</div>
+                </div>
+                <button class="c-btn" onclick="spinSlots()">100€ DREHEN</button>
+            </div>
+
+            <div class="casino-box">
+                <div class="c-title">🃏 BLACKJACK (3:2)</div>
                 <div style="font-size:0.8rem">Dealer: <span id="d-score">0</span></div>
                 <div id="d-cards" class="cards"></div>
                 <div style="font-size:0.8rem">Du: <span id="p-score">0</span></div>
                 <div id="p-cards" class="cards"></div>
                 
                 <input type="number" id="bj-bet" class="bet-in" value="100">
-                <br>
-                <div id="bj-start-div"><button class="c-btn" onclick="startBJ()">START</button></div>
-                <div id="bj-play-div" class="hidden">
-                    <button class="c-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
-                    <button class="c-btn" style="background:#e74c3c; color:white" onclick="standBJ()">STAND</button>
+                <div style="margin-top:5px">
+                    <span id="bj-start-div"><button class="c-btn" onclick="startBJ()">START</button></span>
+                    <span id="bj-play-div" class="hidden">
+                        <button class="c-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
+                        <button class="c-btn" style="background:#e74c3c; color:white" onclick="standBJ()">STAND</button>
+                    </span>
                 </div>
             </div>
 
             <div class="casino-box">
-                <div style="color:gold; font-weight:bold">🎲 ROULETTE</div>
+                <div class="c-title">🎲 ROULETTE</div>
                 <div class="wheel-container">
                     <div class="arrow"></div>
                     <div id="wheel" class="wheel"></div>
                 </div>
                 <input type="number" id="roulette-bet" class="bet-in" placeholder="Einsatz">
-                <br>
-                <button class="c-btn" style="background:#e74c3c; color:white" onclick="spinRoulette('red')">ROT</button>
-                <button class="c-btn" style="background:#333; color:white" onclick="spinRoulette('black')">BLK</button>
-                <button class="c-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
+                <div style="margin-top:5px">
+                    <button class="c-btn" style="background:#e74c3c; color:white" onclick="spinRoulette('red')">ROT</button>
+                    <button class="c-btn" style="background:#333; color:white" onclick="spinRoulette('black')">BLK</button>
+                    <button class="c-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // --- SOUNDS ---
-        // Wenn hit.m4a fehlt, stürzt es nicht ab
         const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
         function snd(t){ try{ let s=sounds[t].cloneNode(); s.volume=0.5; s.play().catch(()=>{}); }catch(e){} }
+
+        // --- PREVENT ZOOM (JS Backup) ---
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
 
         // --- DATEN ---
         const weapons = {
@@ -207,40 +256,35 @@
 
         // --- STATE ---
         let game = {
-            money: 0,
-            level: 1,
-            hp: 100,
-            maxHp: 100,
-            inv: ['fist'],
-            weapon: 'fist',
+            money: 0, level: 1, hp: 100, maxHp: 100,
+            inv: ['fist'], weapon: 'fist',
             staff: { 'champ':0, 'lion':0, 'haji':0 }
         };
         let isDead = false;
 
-        // --- START ---
-        // V5 Speicherstand laden
-        let saved = localStorage.getItem('zDovV5_Final');
-        if(saved) {
-            try { game = {...game, ...JSON.parse(saved)}; } catch(e) {}
-        }
+        // --- INIT ---
+        // V6 Laden (Neuer Name = Reset)
+        load();
         
-        // Setup UI
-        renderShop();
-        updateUI();
-        updateZone();
-        checkDead();
+        // Safety: Wenn geladen und tot
+        if(game.hp <= 0) {
+            isDead = true;
+            game.hp = 0;
+            document.getElementById('face').classList.add('dead');
+            document.getElementById('face').innerText = "😵";
+            document.getElementById('next-btn').style.display = "block";
+        }
 
-        // Auto DPS
+        renderShop(); updateUI(); updateZone();
+
+        // Loops
         setInterval(()=>{
             if(isDead) return;
             let dps = (game.staff.champ*1) + (game.staff.lion*5) + (game.staff.haji*25);
             if(dps>0) damage(dps);
         }, 1000);
 
-        // Auto Save
-        setInterval(()=>{
-            localStorage.setItem('zDovV5_Final', JSON.stringify(game));
-        }, 3000);
+        setInterval(save, 3000);
 
         // --- KAMPF ---
         function hit(e) {
@@ -249,38 +293,28 @@
             
             let w = weapons[game.weapon];
             let dmg = Math.floor(Math.random()*(w.dmg[1]-w.dmg[0]+1)+w.dmg[0]);
-            
-            // Crit?
-            if(Math.random()<0.15) { dmg*=2; msg("CRIT! "+dmg, "red"); }
-            
-            // Geld
+            if(Math.random()<0.15) { dmg*=2; showMsg("CRIT! "+dmg, "red"); }
             game.money += Math.floor(Math.random()*3 + game.level);
             
-            // ANIMATION (Clone Trick - Funktioniert immer)
+            // ANIMATION FIX (Reflow)
             let face = document.getElementById('face');
             let anim = document.getElementById('weapon-anim');
             
-            // Gesicht Wackeln
-            let newFace = face.cloneNode(true);
-            face.parentNode.replaceChild(newFace, face);
-            newFace.classList.add('anim-hit');
-            newFace.onpointerdown = hit; // Event wieder dranmachen
+            face.classList.remove('anim-hit');
+            void face.offsetWidth; // Trigger Reflow
+            face.classList.add('anim-hit');
             
-            // Waffe Schlag
             anim.innerText = w.icon;
-            let newAnim = anim.cloneNode(true);
-            anim.parentNode.replaceChild(newAnim, anim);
-            newAnim.classList.add('anim-smash');
+            anim.classList.remove('anim-smash');
+            void anim.offsetWidth; 
+            anim.classList.add('anim-smash');
 
             damage(dmg);
         }
 
         function damage(amount) {
             game.hp -= amount;
-            if(game.hp <= 0) {
-                game.hp = 0;
-                kill();
-            }
+            if(game.hp <= 0) { game.hp = 0; kill(); }
             updateUI();
         }
 
@@ -291,11 +325,10 @@
             document.getElementById('face').innerText = "😵";
             document.getElementById('face').classList.add('dead');
             document.getElementById('next-btn').style.display = "block";
-            
             let bonus = 50 * game.level;
             game.money += bonus;
-            msg("SIEG! +"+bonus+"€", "#00ff00");
-            saveNow();
+            showMsg("SIEG! +"+bonus+"€", "#00ff00");
+            save();
         }
 
         function nextLevel() {
@@ -303,17 +336,10 @@
             game.maxHp = Math.floor(game.maxHp * 1.4);
             game.hp = game.maxHp;
             isDead = false;
-            
-            let face = document.getElementById('face');
-            face.classList.remove('dead');
-            face.style.transform = "rotate(0deg)";
-            
+            document.getElementById('face').classList.remove('dead');
             document.getElementById('next-btn').style.display = "none";
-            msg("Level "+game.level, "cyan");
-            
-            updateZone();
-            updateUI();
-            saveNow();
+            showMsg("Level "+game.level, "cyan");
+            updateZone(); updateUI(); save();
         }
 
         function updateZone() {
@@ -324,114 +350,67 @@
 
             body.className = '';
             if(game.level <= 10) {
-                body.classList.add('zone-1');
-                name.innerText = "VS OGUZ";
-                zone.innerText = "📍 HINTERHOF";
-                if(!isDead) face.innerText = "👨‍🦲";
+                body.classList.add('zone-1'); name.innerText="VS OGUZ"; zone.innerText="📍 HINTERHOF";
+                if(!isDead) face.innerText="👨‍🦲";
             } else if(game.level <= 20) {
-                body.classList.add('zone-2');
-                name.innerText = "VS YNSANON";
-                zone.innerText = "📍 SHISHA BAR";
-                if(!isDead) face.innerText = "🧔🏻";
+                body.classList.add('zone-2'); name.innerText="VS YNSANON"; zone.innerText="📍 SHISHA BAR";
+                if(!isDead) face.innerText="🧔🏻";
             } else {
-                body.classList.add('zone-3');
-                name.innerText = "VS MIKAUTADZE";
-                zone.innerText = "📍 BOX CLUB";
-                if(!isDead) face.innerText = "🧑‍🦱";
+                body.classList.add('zone-3'); name.innerText="VS MIKAUTADZE"; zone.innerText="📍 BOX CLUB";
+                if(!isDead) face.innerText="🧑‍🦱";
             }
         }
 
-        function checkDead() {
-            // Falls beim Laden Gegner schon tot ist
-            if(game.hp <= 0) {
-                isDead = true;
-                game.hp = 0;
-                document.getElementById('face').classList.add('dead');
-                document.getElementById('face').innerText = "😵";
-                document.getElementById('next-btn').style.display = "block";
-            }
+        // --- CASINO ---
+        // 1. Yazi Tura
+        function spinCoin() {
+            let bet = parseInt(document.getElementById('coin-bet').value);
+            if(bet>game.money||isNaN(bet)||bet<=0) return showMsg("Einsatz?", "red");
+            game.money -= bet; updateUI();
+            let c = document.getElementById('coin');
+            c.style.transition = "none"; c.style.transform = "rotateY(0deg)";
+            setTimeout(()=>{
+                let win = Math.random() < 0.5;
+                let rot = 1800 + (win ? 0 : 180);
+                c.style.transition = "transform 1.5s ease-out";
+                c.style.transform = `rotateY(${rot}deg)`;
+                setTimeout(()=>{
+                    if(win) { game.money += bet*2; showMsg("YAZI! SIEG!", "#00ff00"); snd('buy'); }
+                    else showMsg("TURA! VERLOREN!", "red");
+                    updateUI();
+                }, 1500);
+            }, 50);
         }
 
-        // --- SHOP ---
-        function renderShop() {
-            // Waffen
-            let wHTML = "";
-            for(let key in weapons) {
-                let w = weapons[key];
-                let owned = game.inv.includes(key);
-                let active = game.weapon === key;
-                let btnClass = active ? "item active" : (owned ? "item owned" : "item");
-                let sub = owned ? "Besitz" : w.price + " €";
-                
-                wHTML += `<div class="${btnClass}" onclick="buyW('${key}')">
-                    <div class="icon">${w.icon}</div>
-                    <div><h4>${w.name}</h4><small>${sub}</small></div>
-                </div>`;
-            }
-            document.getElementById('weapon-list').innerHTML = wHTML;
-
-            // Crew
-            let sHTML = "";
-            for(let key in staff) {
-                let s = staff[key];
-                let count = game.staff[key];
-                let cost = Math.floor(s.price * Math.pow(1.2, count));
-                
-                sHTML += `<div class="item" onclick="buyS('${key}')">
-                    <div class="icon">${s.icon}</div>
-                    <div style="flex:1"><h4>${s.name}</h4><small>${cost} € (+${s.dps}/s)</small></div>
-                    <div style="background:red; padding:2px 5px; border-radius:50%; font-size:0.7rem">${count}</div>
-                </div>`;
-            }
-            document.getElementById('staff-list').innerHTML = sHTML;
+        // 2. Slots
+        function spinSlots() {
+            if(game.money < 100) return showMsg("Brauchst 100€", "red");
+            game.money -= 100; updateUI();
+            let s1=document.getElementById('slot1'), s2=document.getElementById('slot2'), s3=document.getElementById('slot3');
+            s1.innerText="🌀"; s2.innerText="🌀"; s3.innerText="🌀";
+            setTimeout(()=>{
+                let sym = ["👊","🩴","🍒","💎"];
+                let r1=sym[Math.floor(Math.random()*4)], r2=sym[Math.floor(Math.random()*4)], r3=sym[Math.floor(Math.random()*4)];
+                s1.innerText=r1; s2.innerText=r2; s3.innerText=r3;
+                if(r1==r3 && r2==r3) { 
+                    let w = r1=='💎'?1000:300; game.money+=w; showMsg("JACKPOT! +"+w, "gold"); snd('win'); 
+                } else showMsg("Niete!", "red");
+                updateUI();
+            }, 1000);
         }
 
-        function buyW(key) {
-            let w = weapons[key];
-            if(game.inv.includes(key)) {
-                game.weapon = key;
-            } else {
-                if(game.money >= w.price) {
-                    game.money -= w.price;
-                    game.inv.push(key);
-                    game.weapon = key;
-                    snd('buy');
-                } else { msg("Zu teuer!", "red"); }
-            }
-            renderShop(); updateUI();
-        }
-
-        function buyS(key) {
-            let s = staff[key];
-            let cost = Math.floor(s.price * Math.pow(1.2, game.staff[key]));
-            if(game.money >= cost) {
-                game.money -= cost;
-                game.staff[key]++;
-                snd('buy');
-            } else { msg("Zu teuer!", "red"); }
-            renderShop(); updateUI();
-        }
-
-        // --- CASINO: BLACKJACK ---
-        let deck=[], pHand=[], dHand=[], bjBet=0, bjActive=false;
+        // 3. Blackjack
+        let deck=[], pHand=[], dHand=[], bjBet=0;
         function startBJ() {
-            if(bjActive) return;
             let bet = parseInt(document.getElementById('bj-bet').value);
-            if(bet > game.money || bet <= 0 || isNaN(bet)) return msg("Einsatz?", "red");
-            
+            if(bet>game.money||bet<=0||isNaN(bet)) return showMsg("Einsatz?", "red");
             game.money -= bet; bjBet=bet; updateUI();
-            bjActive = true;
-            
             document.getElementById('bj-start-div').classList.add('hidden');
             document.getElementById('bj-play-div').classList.remove('hidden');
-            
-            // Simples Deck (unendlich)
             deck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11]; 
-            pHand = [draw(), draw()];
-            dHand = [draw()];
-            
+            pHand = [draw(), draw()]; dHand = [draw()];
             renderBJ();
-            if(score(pHand) === 21) endBJ(true); // Instant Blackjack
+            if(score(pHand) === 21) endBJ(true);
         }
         function draw() { return deck[Math.floor(Math.random()*deck.length)]; }
         function score(h) {
@@ -450,107 +429,120 @@
             pHand.push(draw()); renderBJ();
             if(score(pHand)>21) endBJ(false);
         }
-        function standBJ() {
-            // Dealer zieht verzögert (Visualisierung)
-            dealerLoop();
-        }
+        function standBJ() { dealerLoop(); }
         function dealerLoop() {
             if(score(dHand) < 17) {
-                dHand.push(draw());
-                renderBJ();
-                setTimeout(dealerLoop, 800); // 800ms Pause
+                dHand.push(draw()); renderBJ();
+                setTimeout(dealerLoop, 800);
             } else {
-                let p = score(pHand); let d = score(dHand);
+                let p = score(pHand), d = score(dHand);
                 if(d>21 || p>d) endBJ(true);
                 else if(p==d) endBJ('tie');
                 else endBJ(false);
             }
         }
         function endBJ(win) {
-            bjActive = false;
-            if(win===true) { game.money += Math.floor(bjBet*2); msg("BJ: SIEG!", "#00ff00"); snd('buy'); }
-            else if(win==='tie') { game.money += bjBet; msg("BJ: Unentschieden", "orange"); }
-            else msg("BJ: Verloren", "red");
-            
+            if(win===true) { game.money += Math.floor(bjBet*2); showMsg("BJ: SIEG!", "#00ff00"); snd('buy'); }
+            else if(win==='tie') { game.money += bjBet; showMsg("BJ: Unentschieden", "orange"); }
+            else showMsg("BJ: Verloren", "red");
             document.getElementById('bj-start-div').classList.remove('hidden');
             document.getElementById('bj-play-div').classList.add('hidden');
             updateUI();
         }
 
-        // --- CASINO: ROULETTE ---
-        let spinning = false;
+        // 4. Roulette
+        let spinning=false;
         function spinRoulette(color) {
             if(spinning) return;
             let bet = parseInt(document.getElementById('roulette-bet').value);
-            if(bet>game.money || isNaN(bet) || bet<=0) return msg("Einsatz?", "red");
-            
+            if(bet>game.money||isNaN(bet)||bet<=0) return showMsg("Einsatz?", "red");
             game.money -= bet; updateUI(); spinning=true;
-            
-            let wheel = document.getElementById('wheel');
-            // Reset Animation
-            wheel.style.transition = "none";
-            wheel.style.transform = "rotate(0deg)";
-            
-            // Delay für Reflow
+            let w = document.getElementById('wheel');
+            w.style.transition="none"; w.style.transform="rotate(0deg)";
             setTimeout(()=>{
-                let rot = Math.floor(Math.random() * 360); // 0-359
-                // Wir drehen extra 5 Runden (1800 Grad)
+                let rot = Math.floor(Math.random()*360);
                 let totalRot = 1800 + rot; 
-                
-                wheel.style.transition = "transform 3s cubic-bezier(0.1, 0.7, 0.1, 1)";
-                wheel.style.transform = `rotate(${totalRot}deg)`;
-                
-                // Berechnung (Pfeil oben = 0 Grad)
-                // Wir müssen berechnen, wo der Pfeil relativ zum Rad ist.
-                // Da Rad im Uhrzeigersinn dreht, ist der Wert unter dem Pfeil: (360 - rot)
-                let finalAngle = (360 - rot) % 360;
-                
-                // Zonen laut CSS Gradient:
-                // Grün: 0-20
-                // Rot: 20-200
-                // Schwarz: 200-360
-                
+                w.style.transition="transform 3s cubic-bezier(0.1,0.7,0.1,1)";
+                w.style.transform=`rotate(${totalRot}deg)`;
+                let final = (360-rot)%360;
                 setTimeout(()=>{
                     let res='';
-                    if(finalAngle >= 0 && finalAngle < 20) res='green';
-                    else if(finalAngle >= 20 && finalAngle < 200) res='red';
+                    if(final>=0 && final<20) res='green';
+                    else if(final>=20 && final<200) res='red';
                     else res='black';
-                    
-                    if(color === res) {
-                        let win = (color=='green') ? bet*14 : bet*2;
-                        game.money += win;
-                        msg(res.toUpperCase() + "! SIEG! +"+win, "#00ff00");
-                        snd('buy');
-                    } else {
-                        msg("Es kam "+res.toUpperCase(), "red");
-                    }
+                    if(color===res) {
+                        let win = color=='green'?bet*14 : bet*2;
+                        game.money+=win; showMsg(res.toUpperCase()+"! SIEG!", "#00ff00"); snd('buy');
+                    } else showMsg("Es kam "+res, "red");
                     updateUI(); spinning=false;
-                }, 3000);
-            }, 50);
+                },3000);
+            },50);
         }
 
-        // --- UI ---
+        // --- SHOP RENDER ---
+        function renderShop() {
+            let wHTML = "";
+            for(let key in weapons) {
+                let w = weapons[key];
+                let owned = game.inv.includes(key);
+                let active = game.weapon === key;
+                let btnClass = active ? "item active" : (owned ? "item owned" : "item");
+                let sub = owned ? "Besitz" : w.price + " €";
+                wHTML += `<div class="${btnClass}" onclick="buyW('${key}')">
+                    <div class="icon">${w.icon}</div>
+                    <div><h4>${w.name}</h4><small>${sub}</small></div>
+                </div>`;
+            }
+            document.getElementById('weapon-list').innerHTML = wHTML;
+
+            let sHTML = "";
+            for(let key in staff) {
+                let s = staff[key];
+                let count = game.staff[key];
+                let cost = Math.floor(s.price * Math.pow(1.2, count));
+                sHTML += `<div class="item" onclick="buyS('${key}')">
+                    <div class="icon">${s.icon}</div>
+                    <div style="flex:1"><h4>${s.name}</h4><small>${cost} €</small></div>
+                    <div style="background:red; padding:2px 5px; border-radius:50%; font-size:0.7rem">${count}</div>
+                </div>`;
+            }
+            document.getElementById('staff-list').innerHTML = sHTML;
+        }
+
+        function buyW(key) {
+            let w = weapons[key];
+            if(game.inv.includes(key)) { game.weapon = key; } 
+            else {
+                if(game.money >= w.price) { game.money -= w.price; game.inv.push(key); game.weapon = key; snd('buy'); } 
+                else showMsg("Zu teuer!", "red");
+            }
+            renderShop(); updateUI();
+        }
+        function buyS(key) {
+            let s = staff[key];
+            let cost = Math.floor(s.price * Math.pow(1.2, game.staff[key]));
+            if(game.money >= cost) { game.money -= cost; game.staff[key]++; snd('buy'); } 
+            else showMsg("Zu teuer!", "red");
+            renderShop(); updateUI();
+        }
+
+        // --- HELPER ---
         function updateUI() {
             document.getElementById('money-txt').innerText = game.money;
-            document.getElementById('hp-txt').innerText = game.hp + "/" + game.maxHp;
-            document.getElementById('lvl-badge').innerText = "LVL " + game.level;
-            document.getElementById('hp-bar').style.width = (game.hp/game.maxHp*100) + "%";
+            document.getElementById('hp-txt').innerText = game.hp+"/"+game.maxHp;
+            document.getElementById('lvl-badge').innerText = "LVL "+game.level;
+            let p = (game.hp/game.maxHp)*100; if(p<0)p=0;
+            document.getElementById('hp-bar').style.width = p+"%";
         }
-
-        function msg(txt, col) {
-            let m = document.getElementById('msg');
-            m.innerText = txt;
-            m.style.color = col || "cyan";
-        }
-
-        function tab(name) {
+        function showMsg(txt, col) { let m=document.getElementById('msg'); m.innerText=txt; m.style.color=col||"cyan"; }
+        function tab(n) {
             document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-            document.getElementById('tab-'+name).classList.add('active');
+            document.getElementById('tab-'+n).classList.add('active');
             event.target.classList.add('active');
         }
-
-        function saveNow() { localStorage.setItem('zDovV5_Final', JSON.stringify(game)); }
+        function save() { localStorage.setItem('zDovV6_Final', JSON.stringify(game)); document.getElementById('save-notify').style.opacity=1; setTimeout(()=>document.getElementById('save-notify').style.opacity=0,1000); }
+        function load() { try{let s=JSON.parse(localStorage.getItem('zDovV6_Final')); if(s) game={...game,...s}; }catch(e){} }
     </script>
 </body>
 </html>
