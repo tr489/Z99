@@ -3,102 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - FIXED EDITION</title>
+    <title>Z' DÖV - FINAL FIX</title>
     <style>
         /* --- GRUNDLAGEN --- */
-        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        * { 
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent; 
+            box-sizing: border-box; 
+            user-select: none;
+        }
         
         body {
             background-color: #111; color: white;
             font-family: "Courier New", Courier, monospace; 
             text-align: center; margin: 0; padding: 10px;
-            overflow: hidden; user-select: none; -webkit-user-select: none;
+            overflow: hidden;
             transition: background 0.5s ease;
         }
 
-        /* HINTERGRÜNDE */
+        /* ZONEN HINTERGRÜNDE */
         body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000000 100%); } /* Hinterhof */
-        body.zone-2 { background: radial-gradient(circle, #4b0082 0%, #000000 100%); } /* Shisha Bar (Lila) */
-        body.zone-3 { background: radial-gradient(circle, #b33939 0%, #222 100%); } /* Stadion (Rot) */
+        body.zone-2 { background: radial-gradient(circle, #300030 0%, #000000 100%); } /* Shisha (Lila/Dunkel) */
+        body.zone-3 { background: radial-gradient(circle, #004d00 0%, #000000 100%); } /* Stadion (Grün/Dunkel) */
 
-        h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .zone-badge { display: block; font-size: 0.8rem; margin-top: 5px; letter-spacing: 2px; color: cyan; text-shadow: 0 0 5px cyan; }
-        #save-notify { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ffff; opacity: 0; transition: opacity 0.5s; }
+        h1 { margin: 0; font-size: 2rem; text-transform: uppercase; text-shadow: 0 0 10px white; }
+        .zone-badge { display: block; font-size: 0.9rem; margin-top: 5px; color: cyan; text-shadow: 0 0 5px cyan; font-weight: bold; }
+        
+        /* Speicher-Nachricht */
+        #save-notify { 
+            position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ff00; 
+            opacity: 0; transition: opacity 0.5s; font-weight: bold; pointer-events: none;
+        }
 
         /* --- STATS --- */
         .stats-bar {
-            background: rgba(0,0,0,0.6); padding: 5px; margin-top: 5px; border: 1px solid rgba(255,255,255,0.3);
-            display: flex; justify-content: space-around; font-size: 0.9rem; backdrop-filter: blur(5px); border-radius: 5px;
+            background: rgba(20,20,20,0.8); padding: 8px; margin-top: 10px; 
+            border: 1px solid #555; border-radius: 8px;
+            display: flex; justify-content: space-around; font-size: 1rem; 
         }
-        .money { color: gold; font-weight: bold; }
+        .money { color: #f1c40f; font-weight: bold; }
 
         /* --- ARENA --- */
-        .arena { height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; margin-top: 10px; }
-        .enemy-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 10px black; }
-        
-        #face {
-            font-size: 110px; cursor: pointer; z-index: 10;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
-            /* Animationen werden jetzt per JS gesteuert */
+        .arena { 
+            height: 240px; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; position: relative; margin-top: 10px; 
         }
-        #face:active { transform: scale(0.95); }
+        .enemy-name { 
+            font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px black; color: white;
+        }
         
+        /* Das Gesicht */
+        #face {
+            font-size: 120px; cursor: pointer; z-index: 10;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+            transition: filter 0.2s;
+        }
+        /* Wenn man drückt, leuchtet es kurz rot */
+        #face:active { filter: drop-shadow(0 0 10px red); }
+        
+        /* Waffe Animation Container */
         #weapon-anim { 
-            position: absolute; font-size: 80px; opacity: 0; 
+            position: absolute; font-size: 90px; opacity: 0; 
             pointer-events: none; z-index: 11; top: 50%; left: 50%; 
             transform: translate(-50%, -50%); 
         }
         
+        /* Partikel */
         .particle {
-            position: absolute; pointer-events: none; width: 6px; height: 6px; border-radius: 50%;
-            z-index: 99; animation: fly 0.6s linear forwards;
+            position: absolute; pointer-events: none; width: 8px; height: 8px; border-radius: 50%;
+            z-index: 99; animation: fly 0.5s linear forwards;
         }
-        @keyframes fly { 0% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
+        @keyframes fly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); } }
         
-        .dead { filter: grayscale(100%) brightness(0.5); transform: rotate(180deg); pointer-events: none; transition: transform 0.5s; }
+        .dead { filter: grayscale(100%) brightness(0.4); transform: rotate(180deg); pointer-events: none; }
 
         /* --- HP BAR --- */
-        .bar-container { width: 90%; height: 15px; border: 2px solid white; margin: 5px auto; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s; }
+        .bar-container { 
+            width: 100%; height: 20px; border: 2px solid white; margin: 5px auto; 
+            background: #333; border-radius: 10px; overflow: hidden; 
+        }
+        .bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s linear; }
 
-        /* --- TABS --- */
-        .shop-area { margin-top: 5px; padding-top: 5px; background: rgba(0,0,0,0.8); border-top: 2px solid white; height: 380px; overflow-y: auto; }
-        .tab-buttons { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px; }
-        .tab-btn { background: rgba(255,255,255,0.1); border: 1px solid #555; color: #ccc; padding: 8px; cursor: pointer; font-family: sans-serif; text-transform: uppercase; font-size: 0.75rem; flex: 1; border-radius: 5px; }
-        .tab-btn.active { background: white; color: black; font-weight: bold; }
+        /* --- TABS & SHOP --- */
+        .shop-area { 
+            margin-top: 10px; padding-top: 10px; background: #1a1a1a; 
+            border-top: 3px solid #00ffff; height: 350px; overflow-y: auto; 
+        }
+        .tab-buttons { display: flex; gap: 5px; padding: 0 5px; margin-bottom: 10px; }
+        .tab-btn { 
+            background: #333; border: none; color: #888; padding: 10px; flex: 1; 
+            font-weight: bold; cursor: pointer; border-radius: 5px 5px 0 0; 
+        }
+        .tab-btn.active { background: #00ffff; color: black; }
 
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 10px; }
-        .shop-btn { background: #222; color: #aaa; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; text-align: left; border-radius: 5px; }
-        .shop-btn.owned { border-color: gold; color: white; }
-        .shop-btn.active { border-color: cyan; box-shadow: 0 0 5px cyan; background: #333; }
-        .shop-btn .icon { font-size: 1.5rem; }
-        .shop-btn h4 { margin: 0; font-size: 0.75rem; }
-        .shop-btn small { font-size: 0.65rem; color: #888; }
-        .count-badge { position: absolute; top: 2px; right: 2px; background: red; color: white; width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .shop-btn { 
+            background: #222; border: 1px solid #444; padding: 10px; cursor: pointer; 
+            display: flex; align-items: center; gap: 10px; text-align: left; border-radius: 5px; position: relative;
+        }
+        .shop-btn.owned { border-color: gold; }
+        .shop-btn.active { border-color: #00ffff; background: #003333; }
+        .shop-btn h4 { margin: 0; font-size: 0.8rem; }
+        .shop-btn small { font-size: 0.7rem; color: #aaa; }
+        .count-badge { position: absolute; top: 5px; right: 5px; background: red; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 10px; }
 
         /* --- CASINO --- */
-        .casino-box { background: #333; border: 1px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-        .casino-title { color: gold; margin: 0 0 5px 0; font-size: 0.9rem; text-transform: uppercase; }
-        .bet-input { background: #111; color: white; border: 1px solid #555; width: 70px; text-align: center; padding: 5px; }
-        .casino-btn { background: gold; color: black; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold; margin: 2px; border-radius: 3px; }
+        .casino-box { background: #2a2a2a; border: 2px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 10px; }
+        .bet-input { background: #000; color: gold; border: 1px solid gold; padding: 5px; width: 80px; text-align: center; font-size: 1rem; }
+        .casino-btn { background: gold; border: none; color: black; padding: 8px 15px; font-weight: bold; cursor: pointer; margin-top: 5px; border-radius: 5px; }
         
-        .bj-cards { display: flex; justify-content: center; gap: 5px; min-height: 40px; margin: 5px 0; }
-        .bj-card { background: white; color: black; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #999; }
+        .bj-cards { display: flex; justify-content: center; gap: 5px; margin: 10px 0; min-height: 40px; }
+        .bj-card { background: white; color: black; width: 30px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; }
 
-        .roulette-wrapper { width: 80px; height: 80px; margin: 10px auto; position: relative; }
-        .roulette-wheel { width: 100%; height: 100%; border-radius: 50%; border: 3px solid white; background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg); transform: rotate(0deg); transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .roulette-arrow { position: absolute; top: -10px; left: 35px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
+        .roulette-wheel { 
+            width: 80px; height: 80px; margin: 10px auto; border-radius: 50%; border: 3px solid white;
+            background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg);
+            transform: rotate(0deg); 
+        }
 
-        #msg { min-height: 20px; color: white; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
+        #msg { min-height: 25px; color: #00ffff; margin: 10px 0; font-weight: bold; font-size: 1rem; }
         
-        /* WICHTIG: Reset Button Style Update für Sichtbarkeit */
+        /* NEXT LEVEL BUTTON (Gross und Auffällig) */
         #reset-btn { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            padding: 15px 30px; font-size: 1.2rem; background: #2ed573; border: 3px solid white; 
-            color: black; font-weight: bold; cursor: pointer; z-index: 999; border-radius: 50px; 
-            box-shadow: 0 0 20px #2ed573; display: none; /* Standardmäßig aus */
+            padding: 20px 40px; font-size: 1.5rem; background: #00ff00; border: 3px solid white; 
+            color: black; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px; 
+            box-shadow: 0 0 30px #00ff00; display: none; 
         }
-        #reset-btn.show { display: block !important; }
+        #reset-btn.show { display: block !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1); } }
         
         .hidden { display: none !important; }
     </style>
@@ -119,9 +152,12 @@
     
     <div class="arena">
         <div id="enemy-name" class="enemy-name">VS OGUZ</div>
+        
         <div id="weapon-anim">👊</div>
-        <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
-        <button id="reset-btn" onclick="nextLevel()">NÄCHSTES LEVEL >></button>
+        
+        <div id="face" onpointerdown="manualAttack(event)">👨‍🦲</div>
+        
+        <button id="reset-btn" onclick="nextLevel()">WEITER REISEN >></button>
     </div>
     
     <p id="msg">Mach ihn platt!</p>
@@ -130,7 +166,7 @@
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="showTab('weapons')">⚔️ Waffen</button>
             <button class="tab-btn" onclick="showTab('staff')">👥 Crew</button>
-            <button class="tab-btn" onclick="showTab('casino')" style="color: gold; border-color: gold;">🎰 Casino</button>
+            <button class="tab-btn" onclick="showTab('casino')" style="color: gold;">🎰 Casino</button>
         </div>
 
         <div id="tab-weapons" class="shop-grid">
@@ -151,14 +187,13 @@
         <div id="tab-casino" class="hidden">
             <div class="casino-box">
                 <h4 class="casino-title">🃏 BLACKJACK</h4>
-                <div style="text-align:center">
+                <div style="text-align:center; color:white;">
                     <small>Gegner: <span id="bj-d-score">0</span></small>
                     <div id="bj-d-cards" class="bj-cards"></div>
-                    <hr style="border-color:#555; margin:5px 0">
                     <small>Du: <span id="bj-p-score">0</span></small>
                     <div id="bj-p-cards" class="bj-cards"></div>
                 </div>
-                <div style="margin-top:5px">
+                <div style="margin-top:5px; text-align:center;">
                     <input type="number" id="bet-bj" class="bet-input" value="100">
                     <button id="btn-bj-start" class="casino-btn" onclick="startBJ()">START</button>
                     <span id="bj-acts" class="hidden">
@@ -170,12 +205,13 @@
 
             <div class="casino-box">
                 <h4 class="casino-title">🎲 ROULETTE</h4>
-                <div class="roulette-wrapper">
-                    <div class="roulette-arrow"></div>
+                <div style="position:relative; width:100px; margin:0 auto;">
+                    <div style="position:absolute; top:-10px; left:45px; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:10px solid gold; z-index:5;"></div>
                     <div id="wheel" class="roulette-wheel"></div>
                 </div>
-                <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
-                <div style="margin-top:5px">
+                <div style="text-align:center; margin-top:10px;">
+                    <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
+                    <br>
                     <button class="casino-btn" style="background:#e74c3c" onclick="spinRoulette('red')">ROT</button>
                     <button class="casino-btn" style="background:#333; color:white; border:1px solid #555" onclick="spinRoulette('black')">SCHW</button>
                     <button class="casino-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
@@ -186,9 +222,15 @@
 
     <script>
         // --- SOUNDS ---
+        // Wenn hit.m4a nicht existiert, passiert einfach nichts (kein Fehler)
         const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
-        function playSound(t) { try{sounds[t].cloneNode().play().catch(()=>{});}catch(e){} }
-        document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
+        function playSound(t) { 
+            try { 
+                let s = sounds[t].cloneNode(); 
+                s.volume = 0.5;
+                s.play().catch(()=>{}); // Fehler ignorieren
+            } catch(e){} 
+        }
 
         // --- STATE ---
         let state = {
@@ -216,9 +258,16 @@
 
         // --- INIT ---
         loadGame(); 
-        updateZone(); 
-        updateUI(); 
-        updateShopUI();
+        
+        // Safety Check: Falls er schon tot geladen wurde
+        if (state.hp <= 0) {
+            isDead = true;
+            els.reset.classList.add('show');
+            els.face.classList.add('dead');
+            els.face.innerText = "😵";
+        }
+
+        updateZone(); updateUI(); updateShopUI();
         setInterval(autoAttack, 1000); 
         setInterval(saveGame, 5000);
 
@@ -229,7 +278,6 @@
             els.body.className = ''; 
             
             if(state.level <= 10) {
-                // ZONE 1: HINTERHOF - Oguz
                 els.body.classList.add('zone-1');
                 els.zoneName.innerText = "📍 HINTERHOF";
                 els.zoneName.style.color = "cyan";
@@ -237,15 +285,13 @@
                 els.face.innerText = "👨‍🦲";
             } 
             else if(state.level <= 20) {
-                // ZONE 2: SHISHA BAR - Ynsanon (Dunkelhaarig)
                 els.body.classList.add('zone-2');
                 els.zoneName.innerText = "📍 SHISHA BAR";
                 els.zoneName.style.color = "#d980fa";
                 els.enemyName.innerText = "VS YNSANON";
-                els.face.innerText = "🧑🏻"; 
+                els.face.innerText = "🧔🏻"; 
             } 
             else {
-                // ZONE 3: BOX CLUB - Mikautadze (Locken)
                 els.body.classList.add('zone-3');
                 els.zoneName.innerText = "📍 BOX CLUB";
                 els.zoneName.style.color = "#ff4757";
@@ -255,7 +301,14 @@
         }
 
         // --- GAME CORE ---
-        function manualAttack(e) { if(!isDead) attackLogic(true, e.clientX, e.clientY); }
+        function manualAttack(e) { 
+            if(isDead) return;
+            // Maus/Touch Position
+            let x = e.clientX || (e.touches && e.touches[0].clientX) || window.innerWidth/2;
+            let y = e.clientY || (e.touches && e.touches[0].clientY) || window.innerHeight/2;
+            attackLogic(true, x, y); 
+        }
+
         function autoAttack() {
             if(isDead) return;
             let dps = (state.staff.Champ*1)+(state.staff.Lion*5)+(state.staff.Haji*25);
@@ -267,71 +320,87 @@
 
         function attackLogic(manual, x, y, autoDmg=0) {
             let dmg = 0; let w = weapons[state.currentWeapon];
+            
             if(manual) {
                 playSound('hit');
                 dmg = rand(w.dmg[0], w.dmg[1]);
                 if(Math.random()<0.15) { dmg*=2; spawnParticles(x,y,10,'#ff00ff'); }
                 else { spawnParticles(x,y,4,'cyan'); }
                 
-                triggerAnimations(w.icon); // NEUE ANIMATIONSTECHNIK
+                // Neue Animations-Methode (Stoppt alte, startet neue)
+                runAnimations(w.icon);
                 
                 state.money += Math.floor(rand(1,3)+state.level);
-            } else { dmg = autoDmg; spawnParticles(x,y,1,'lime'); }
+            } else { 
+                dmg = autoDmg; 
+                spawnParticles(x,y,1,'lime'); 
+            }
             
-            state.hp -= dmg; if(state.hp<0) state.hp=0;
+            state.hp -= dmg; 
+            if(state.hp < 0) state.hp = 0;
             updateUI();
             
-            if(state.hp<=0) kill();
+            if(state.hp <= 0 && !isDead) kill();
         }
 
-        // NEUE ANIMATIONS FUNKTION (Web Animations API - Funktioniert immer)
-        function triggerAnimations(icon) {
-            // Waffe Animation
+        function runAnimations(icon) {
+            // 1. Waffe (mit Web Animations API für Zuverlässigkeit)
             els.wAnim.innerText = icon;
+            // Vorherige Animationen stoppen
+            els.wAnim.getAnimations().forEach(a => a.cancel());
+            
             els.wAnim.animate([
                 { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5) rotate(0deg)' },
-                { opacity: 1, transform: 'translate(-50%, -50%) scale(1.2) rotate(-45deg)', offset: 0.2 },
-                { opacity: 0, transform: 'translate(-50%, -50%) scale(1.0) rotate(-45deg)' }
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1.5) rotate(-45deg)', offset: 0.3 },
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(1.0) rotate(-90deg)' }
             ], {
                 duration: 150,
-                fill: 'forwards'
+                fill: 'none'
             });
 
-            // Gesicht Wackeln
-            if(!isDead) {
-                els.face.animate([
-                    { transform: 'rotate(0deg) scale(1)' },
-                    { transform: 'rotate(15deg) scale(0.95)' },
-                    { transform: 'rotate(-10deg) scale(0.95)' },
-                    { transform: 'rotate(0deg) scale(1)' }
-                ], {
-                    duration: 100
-                });
-            }
+            // 2. Gesicht (Zucken)
+            els.face.getAnimations().forEach(a => a.cancel());
+            els.face.animate([
+                { transform: 'scale(1) rotate(0deg)' },
+                { transform: 'scale(0.9) rotate(10deg)' },
+                { transform: 'scale(1) rotate(0deg)' }
+            ], {
+                duration: 100,
+                fill: 'none'
+            });
         }
 
         function kill() {
-            isDead = true; playSound('win');
-            els.face.innerText = "😵"; els.face.classList.add('dead');
+            isDead = true; 
+            playSound('win');
             
-            let bonus = 50 * state.level; state.money += bonus;
+            els.face.innerText = "😵"; 
+            els.face.classList.add('dead');
+            
+            let bonus = 50 * state.level; 
+            state.money += bonus;
             els.msg.innerText = "SIEG! +"+bonus+"€";
+            els.msg.style.color = "#00ff00";
             
-            // Zeige Button per Klasse 'show'
+            // Button anzeigen
             els.reset.classList.add('show');
-            updateUI(); saveGame();
+            updateUI(); 
+            saveGame();
         }
 
         function nextLevel() {
             state.level++; 
-            state.maxHp = Math.floor(state.maxHp*1.4); 
+            state.maxHp = Math.floor(state.maxHp * 1.4); 
             state.hp = state.maxHp;
             isDead = false; 
             
             els.face.classList.remove('dead');
-            els.face.style.transform = "rotate(0deg)"; // Reset rotation manually too
+            // Rotation resetten falls hängen geblieben
+            els.face.style.transform = "rotate(0deg)"; 
+            
             els.reset.classList.remove('show');
             els.msg.innerText = "Nächste Runde!";
+            els.msg.style.color = "white";
             
             updateZone(); 
             updateUI(); 
@@ -404,11 +473,20 @@
             if(isNaN(bet)||bet<=0||bet>state.money) return els.msg.innerText="Ungültiger Einsatz!";
             state.money-=bet; updateUI(); spinning=true;
             const w = document.getElementById('wheel');
-            w.style.transition='none'; w.style.transform='rotate(0deg)'; w.offsetHeight;
+            // Animation Reset
+            w.getAnimations().forEach(a => a.cancel());
+            
             let rot = Math.floor(Math.random()*360);
             let totalRot = 1440 + (360-rot);
-            w.style.transition="transform 3s cubic-bezier(0.1,0.7,0.1,1)";
-            w.style.transform=`rotate(${totalRot}deg)`;
+            
+            w.animate([
+                { transform: 'rotate(0deg)' },
+                { transform: `rotate(${totalRot}deg)` }
+            ], {
+                duration: 3000,
+                easing: 'cubic-bezier(0.1, 0.7, 0.1, 1)',
+                fill: 'forwards'
+            });
             
             setTimeout(()=>{
                 let res='';
@@ -424,7 +502,8 @@
         // --- UTILS ---
         function updateUI() {
             els.money.innerText = Math.floor(state.money);
-            els.hpBar.style.width = (state.hp/state.maxHp*100)+"%";
+            let p = (state.hp/state.maxHp)*100; if(p<0)p=0;
+            els.hpBar.style.width = p+"%";
             els.hpVal.innerText = Math.floor(state.hp)+"/"+Math.floor(state.maxHp);
             els.lvl.innerText = state.level;
         }
@@ -451,15 +530,13 @@
                 document.body.appendChild(p); setTimeout(()=>p.remove(),600);
             }
         }
-        function saveGame() { localStorage.setItem('zDovFinal_V2', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
+        // Neuer Speichername für frischen Start
+        function saveGame() { localStorage.setItem('zDovV3_Final', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
         function loadGame() { 
-            try {
-                let s=JSON.parse(localStorage.getItem('zDovFinal_V2')); 
-                if(s) { 
-                    state={...state,...s}; 
-                    if(state.hp<=0) state.hp=1; // Verhindert Start mit 0 HP
-                }
-            } catch(e) {} 
+            try{
+                let s=JSON.parse(localStorage.getItem('zDovV3_Final')); 
+                if(s) { state={...state,...s}; }
+            } catch(e){} 
         }
     </script>
 </body>
