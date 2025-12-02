@@ -66,7 +66,7 @@ function endGame(won) {
     resetBtn.classList.remove('hidden');
 
     if (won) {
-        msgLog.innerText = "🏆 SIEG! Keli liegt flach!";
+        msgLog.innerText = "🏆 HELAL! Kelek yerde!";
         msgLog.style.color = "#2ed573";
         keliFace.innerText = "😵"; // K.O. Gesicht
         keliFace.classList.add('dead');
