@@ -1,275 +1,139 @@
 :root {
-    --bg-dark: #282c34;        /* Hintergrund dunkel */
-    --bg-card: #3c4049;        /* Karten-Hintergrund */
-    --text-main: #e0e0e0;      /* Text hell */
-    --accent-red: #ff5555;     /* Rot für Schaden/Titel */
-    --accent-green: #50fa7b;   /* Grün für Leben */
-    --accent-yellow: #f1fa8c;  /* Gelb für Zahlen */
-    --skin-color: #f3d0b1;     /* Hautfarbe Dummy */
-    --skin-shadow: #e0b090;    /* Schatten für 3D Effekt */
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    --bg-color: #1a1a2e;
+    --card-bg: #16213e;
+    --text-color: #fff;
+    --accent: #e94560;
+    --player-col: #4caf50;
+    --enemy-col: #f44336;
 }
 
 body {
-    touch-action: manipulation; /* Verhindert Zoom bei Doppelklick */
-    -webkit-tap-highlight-color: transparent; /* Entfernt das blaue Blinken bei Klick */
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     min-height: 100vh;
-    padding: 20px;
-    user-select: none; /* Verhindert Markieren von Text beim wilden Klicken */
-}
-
-/* --- HEADER --- */
-.game-header {
+    margin: 0;
     text-align: center;
-    margin-bottom: 25px;
 }
 
-.game-header h1 {
-    font-size: 2.8rem;
-    color: var(--accent-red);
-    text-shadow: 3px 3px 0px rgba(0,0,0,0.5);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.game-header p {
-    color: #888;
-    font-weight: bold;
-    letter-spacing: 4px;
-}
-
-/* --- HAUPT CONTAINER --- */
 .game-container {
-    background-color: var(--bg-card);
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-    padding: 30px;
-    width: 100%;
-    max-width: 400px;
-    border: 3px solid #555;
-    position: relative;
-}
-
-/* --- STATISTIK --- */
-.stats-panel {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    background: rgba(0,0,0,0.2);
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.stat-box {
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-.stat-value {
-    color: var(--accent-yellow);
-    margin-left: 5px;
-    font-size: 1.2rem;
-}
-
-/* --- ENERGIE LEISTE --- */
-.health-bar-container {
-    background-color: #222;
-    height: 30px;
+    background-color: var(--card-bg);
+    padding: 2rem;
     border-radius: 15px;
-    margin-bottom: 30px;
-    overflow: hidden;
-    position: relative;
-    border: 2px solid #555;
-    box-shadow: inset 0 0 10px #000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    max-width: 500px;
+    width: 90%;
 }
 
-.health-bar-label {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    line-height: 28px;
-    font-size: 0.85rem;
+h1 { margin: 0; color: var(--accent); font-size: 2.5rem; text-transform: uppercase; }
+h2 { margin-top: 5px; opacity: 0.7; font-weight: normal; }
+
+.stats-board {
+    margin: 20px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+.stat-box .value {
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
-    z-index: 10;
+    display: block;
+}
+
+.arena {
+    margin: 20px 0;
+}
+
+.health-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 5px 0;
+    border: 2px solid rgba(255,255,255,0.1);
 }
 
 .health-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-green), #40c060);
-    width: 100%;
-    transition: width 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s;
+    background-color: var(--player-col);
+    transition: width 0.3s ease;
 }
 
-/* --- DER GLATZKOPF (DUMMY) --- */
-.dummy-container {
-    height: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+.health-bar.enemy-bar {
+    background-color: var(--enemy-col);
 }
 
-.dummy-hitbox {
-    width: 170px;
-    height: 210px;
-    background-color: var(--skin-color);
-    border-radius: 70px 70px 90px 90px; /* Die Kopfform */
-    border: 4px solid #222;
-    position: relative;
-    cursor: crosshair; /* Fadenkreuz-Cursor */
-    box-shadow: inset -10px -10px 0 var(--skin-shadow); /* 3D Schatten */
-    transition: transform 0.05s;
-}
-
-/* Augenbrauen (Böse) */
-.dummy-hitbox::before {
-    content: '';
-    position: absolute;
-    top: 65px; 
-    left: 30px;
-    width: 45px; 
-    height: 12px;
-    background: #222;
-    transform: rotate(20deg); /* Linke Braue */
-    box-shadow: 60px -20px 0 #222; /* Rechte Braue (versetzt) */
-    /* Hinweis: Rechte Braue durch Rotation etwas tricky, aber wirkl einfach: */
-}
-/* Korrektur für rechte Braue (eigenes Element wäre sauberer, aber wir tricksen mit Shadow) */
-
-/* Augen */
-.dummy-hitbox::after {
-    content: '';
-    position: absolute;
-    top: 85px; 
-    left: 40px;
-    width: 20px; 
-    height: 12px;
-    background: #000;
-    border-radius: 50%;
-    box-shadow: 65px 0 0 #000; /* Rechtes Auge */
-}
-
-/* Mund (Grimmig) */
-/* WICHTIG: In HTML <div class="mouth-shape"></div> einfügen! */
-.mouth-shape {
-    position: absolute;
-    bottom: 50px; 
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px; 
-    height: 6px;
-    background: #222;
-    border-radius: 5px;
-}
-
-/* Ohren (Optional, über box-shadow am Hauptkopf oder pseudo elements) */
-
-/* --- ANIMATIONEN --- */
-
-/* Wenn geschlagen (JS fügt diese Klasse hinzu) */
-.dummy-hitbox.punched {
-    transform: scale(0.92) rotate(3deg);
-    background-color: #ffaa88; /* Rötet sich vor Wut/Schmerz */
-}
-
-/* BAM Text Effekt */
-.hit-effect {
-    position: absolute;
-    top: 50%; 
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.5);
-    font-size: 3.5rem;
-    font-weight: 900;
+.vs {
+    margin: 15px 0;
+    font-weight: bold;
     font-style: italic;
-    color: #fff;
-    -webkit-text-stroke: 2px #000; /* Schwarzer Rand um Text */
-    pointer-events: none; /* Klicks gehen durch den Text durch */
-    opacity: 0;
-    z-index: 100;
+    opacity: 0.5;
 }
 
-/* Die Animation, die JS auslöst */
-.show-bam {
-    animation: textPop 0.4s ease-out forwards;
-}
-
-@keyframes textPop {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); }
-    50% { transform: translate(-50%, -120%) scale(1.2) rotate(10deg); }
-    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
-}
-
-/* --- UI ELEMENTE --- */
-.message-area {
-    margin-top: 20px;
-    font-size: 1.4rem;
-    font-weight: bold;
-    text-align: center;
-    color: var(--accent-green);
-    text-shadow: 0 2px 0 #000;
-    min-height: 30px;
-}
-
-.restart-btn {
-    width: 100%;
-    margin-top: 20px;
-    padding: 15px;
-    background-color: var(--accent-red);
-    color: #fff;
+.btn-attack {
+    background-color: var(--accent);
+    color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: uppercase;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 5px 0 #aa3333; /* 3D Button Effekt */
-    transition: transform 0.1s, box-shadow 0.1s;
-}
-
-.restart-btn:active {
-    transform: translateY(5px); /* Button eindrücken */
-    box-shadow: 0 0 0 #aa3333;
-}
-
-.restart-btn:hover {
-    background-color: #ff6666;
-}
-
-.hidden {
-    display: none !important;
-}
-/* K.O.-Augen (Das X) */
-.dummy-hitbox.dead::after {
-    background: transparent;
-    box-shadow: none;
-    content: 'X  X';
-    color: #000;
-    font-size: 30px;
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    transition: transform 0.1s;
     font-weight: bold;
-    font-family: sans-serif;
-    top: 70px;
-    left: 45px;
-    width: auto;
-    height: auto;
-    letter-spacing: 25px; /* Abstand zwischen den Augen */
-    transform: rotate(0deg);
 }
 
-/* Augenbrauen weg bei Tod (sieht entspannter aus) */
-.dummy-hitbox.dead::before {
-    display: none;
+.btn-attack:active {
+    transform: scale(0.95);
+}
+
+.btn-attack:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-reset {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.hidden { display: none; }
+
+.log {
+    margin-top: 20px;
+    font-style: italic;
+    color: #aaa;
+    min-height: 24px;
+}
+
+/* Animationen */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake {
+    animation: shake 0.5s;
+    animation-iteration-count: 1;
 }
