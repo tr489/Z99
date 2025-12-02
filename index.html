@@ -390,6 +390,30 @@
     </div>
 
     <script>
+        // --- SOUNDS ---
+        const sounds = {
+            // Hier steht jetzt dein exakter Dateiname!
+            hit: new Audio('hit.m4a'),
+            
+            // Die anderen kannst du später hochladen:
+            buy: new Audio('buy.mp3'),
+            win: new Audio('win.mp3')
+        };
+        // Lautstärke anpassen
+        sounds.hit.volume = 0.6;
+        sounds.buy.volume = 0.8;
+        sounds.win.volume = 1.0;
+
+        function playSound(type) {
+            try {
+                let s = sounds[type].cloneNode();
+                s.volume = sounds[type].volume;
+                s.play().catch(e => console.log("Audio play error:", e));
+            } catch (e) {
+                // Falls Datei nicht gefunden, Fehler ignorieren
+            }
+        }
+
         // --- GAME STATE ---
         let state = {
             level: 1,
@@ -470,6 +494,9 @@
             let currentW = weapons[state.currentWeapon];
 
             if (isManual) {
+                // SOUND!
+                playSound('hit');
+
                 dmg = Math.floor(Math.random() * (currentW.dmg[1] - currentW.dmg[0] + 1)) + currentW.dmg[0];
                 
                 if (Math.random() < 0.15) {
@@ -527,6 +554,8 @@
 
         function kill() {
             isDead = true;
+            playSound('win'); // SOUND
+
             face.innerText = "😵";
             face.classList.add("dead");
             
@@ -570,6 +599,7 @@
                 state.inventory.push(key);
                 equip(key);
                 msg.innerText = "Erworben: " + weapons[key].name;
+                playSound('buy'); // SOUND
             } else {
                 msg.innerText = "Zu wenig Credits! Fehlt: " + (price - state.money) + " €";
                 msg.style.color = "#ff00ff";
@@ -586,6 +616,7 @@
                 state.money -= realPrice;
                 state.staff[type]++;
                 msg.innerText = "Aktiviert: " + staffData[type].name;
+                playSound('buy'); // SOUND
                 updateUI();
                 updateShopUI(); 
             } else {
@@ -623,7 +654,6 @@
             hpVal.innerText = state.hp + " / " + state.maxHp;
             lvlBadge.innerText = "LVL " + state.level;
             
-            // Hintergrund Farbe im Cyber Look
             let base = 10;
             let r = Math.max(base - state.level, 0);
             let b = Math.min(base + (state.level*2), 50);
@@ -663,7 +693,7 @@
                 let p = document.createElement('div');
                 p.classList.add('particle');
                 p.style.backgroundColor = color;
-                p.style.boxShadow = "0 0 5px " + color; // Neon Glow für Partikel
+                p.style.boxShadow = "0 0 5px " + color;
                 p.style.left = x + 'px';
                 p.style.top = y + 'px';
                 let tx = (Math.random() - 0.5) * 150;
