@@ -3,540 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - FINAL FIX</title>
+    <title>Z' DÖV - REPAIR EDITION</title>
     <style>
-        /* --- GRUNDLAGEN --- */
-        * { 
-            touch-action: manipulation; 
-            -webkit-tap-highlight-color: transparent; 
-            box-sizing: border-box; 
-            user-select: none;
-        }
-        
+        /* --- BASIS --- */
+        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
         body {
-            background-color: #111; color: white;
-            font-family: "Courier New", Courier, monospace; 
-            text-align: center; margin: 0; padding: 10px;
-            overflow: hidden;
-            transition: background 0.5s ease;
+            background-color: #111; color: white; font-family: "Courier New", Courier, monospace; 
+            text-align: center; margin: 0; padding: 10px; overflow: hidden; transition: background 0.5s;
         }
 
-        /* ZONEN HINTERGRÜNDE */
-        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000000 100%); } /* Hinterhof */
-        body.zone-2 { background: radial-gradient(circle, #300030 0%, #000000 100%); } /* Shisha (Lila/Dunkel) */
-        body.zone-3 { background: radial-gradient(circle, #004d00 0%, #000000 100%); } /* Stadion (Grün/Dunkel) */
+        /* ZONEN FARBEN */
+        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000 100%); }
+        body.zone-2 { background: radial-gradient(circle, #4a004a 0%, #000 100%); }
+        body.zone-3 { background: radial-gradient(circle, #500 0%, #000 100%); }
 
-        h1 { margin: 0; font-size: 2rem; text-transform: uppercase; text-shadow: 0 0 10px white; }
-        .zone-badge { display: block; font-size: 0.9rem; margin-top: 5px; color: cyan; text-shadow: 0 0 5px cyan; font-weight: bold; }
+        h1 { margin: 0; font-size: 2rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        .badge { background: cyan; color: black; padding: 2px 5px; font-size: 0.8rem; font-weight: bold; }
         
-        /* Speicher-Nachricht */
-        #save-notify { 
-            position: absolute; top: 10px; right: 10px; font-size: 0.8rem; color: #00ff00; 
-            opacity: 0; transition: opacity 0.5s; font-weight: bold; pointer-events: none;
-        }
-
-        /* --- STATS --- */
+        /* STATUS */
         .stats-bar {
-            background: rgba(20,20,20,0.8); padding: 8px; margin-top: 10px; 
-            border: 1px solid #555; border-radius: 8px;
-            display: flex; justify-content: space-around; font-size: 1rem; 
+            background: #222; border: 1px solid #555; padding: 8px; margin-top: 10px; border-radius: 5px;
+            display: flex; justify-content: space-around; font-size: 1rem;
         }
-        .money { color: #f1c40f; font-weight: bold; }
+        .money { color: gold; font-weight: bold; }
 
-        /* --- ARENA --- */
-        .arena { 
-            height: 240px; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; position: relative; margin-top: 10px; 
-        }
-        .enemy-name { 
-            font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px black; color: white;
-        }
+        /* HP BAR */
+        .bar-wrap { width: 100%; height: 20px; background: #444; margin: 10px 0; border: 2px solid white; border-radius: 10px; overflow: hidden; }
+        .bar { width: 100%; height: 100%; background: #ff4757; transition: width 0.1s; }
+
+        /* ARENA */
+        .arena { height: 240px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #enemy-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 5px black; }
         
-        /* Das Gesicht */
         #face {
-            font-size: 120px; cursor: pointer; z-index: 10;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
-            transition: filter 0.2s;
+            font-size: 120px; cursor: pointer; z-index: 10; transition: transform 0.1s;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
         }
-        /* Wenn man drückt, leuchtet es kurz rot */
-        #face:active { filter: drop-shadow(0 0 10px red); }
-        
-        /* Waffe Animation Container */
+        #face:active { transform: scale(0.9); }
+        .hit { color: #ff4757; transform: scale(0.95) rotate(5deg) !important; }
+        .dead { filter: grayscale(100%); transform: rotate(180deg) !important; pointer-events: none; }
+
         #weapon-anim { 
-            position: absolute; font-size: 90px; opacity: 0; 
-            pointer-events: none; z-index: 11; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
+            position: absolute; font-size: 80px; opacity: 0; pointer-events: none; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.1s;
         }
+        .smash { opacity: 1 !important; transform: translate(-50%, -50%) scale(1.5) rotate(-45deg) !important; }
+
+        /* NEXT LEVEL BUTTON */
+        #next-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #00ff00; color: black; border: 3px solid white; padding: 15px 30px;
+            font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px;
+            box-shadow: 0 0 20px #00ff00; display: none;
+        }
+
+        /* SHOP & TABS */
+        .shop-area { height: 350px; background: #1a1a1a; border-top: 2px solid cyan; margin-top: 10px; display: flex; flex-direction: column; }
+        .tabs { display: flex; }
+        .tab { flex: 1; padding: 10px; background: #333; border: none; color: #aaa; cursor: pointer; border-bottom: 1px solid #555; }
+        .tab.active { background: cyan; color: black; font-weight: bold; }
+        .content { flex: 1; overflow-y: auto; padding: 10px; display: none; }
+        .content.active { display: block; }
+
+        /* ITEMS */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .item { background: #222; border: 1px solid #444; padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; text-align: left; }
+        .item.owned { border-color: gold; }
+        .item.active { border-color: cyan; background: #003333; }
+        .item h4 { margin: 0; font-size: 0.8rem; }
+        .item small { font-size: 0.7rem; color: #888; }
+        .icon { font-size: 1.5rem; }
+
+        /* CASINO */
+        .casino-box { background: #2a2a2a; border: 1px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        .c-btn { background: gold; color: black; border: none; padding: 8px 15px; margin: 2px; cursor: pointer; font-weight: bold; }
+        .bet-in { background: black; color: white; border: 1px solid #555; width: 80px; text-align: center; padding: 5px; }
         
-        /* Partikel */
-        .particle {
-            position: absolute; pointer-events: none; width: 8px; height: 8px; border-radius: 50%;
-            z-index: 99; animation: fly 0.5s linear forwards;
+        /* ROULETTE WHEEL */
+        .wheel-container { width: 80px; height: 80px; margin: 10px auto; position: relative; }
+        .wheel { 
+            width: 100%; height: 100%; border-radius: 50%; border: 2px solid white;
+            background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg);
+            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
-        @keyframes fly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); } }
-        
-        .dead { filter: grayscale(100%) brightness(0.4); transform: rotate(180deg); pointer-events: none; }
+        .arrow { position: absolute; top: -5px; left: 35px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5; }
 
-        /* --- HP BAR --- */
-        .bar-container { 
-            width: 100%; height: 20px; border: 2px solid white; margin: 5px auto; 
-            background: #333; border-radius: 10px; overflow: hidden; 
-        }
-        .bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s linear; }
+        /* BLACKJACK */
+        .cards { min-height: 40px; display: flex; justify-content: center; gap: 5px; margin: 5px; }
+        .card { background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold; width: 30px; text-align: center; }
 
-        /* --- TABS & SHOP --- */
-        .shop-area { 
-            margin-top: 10px; padding-top: 10px; background: #1a1a1a; 
-            border-top: 3px solid #00ffff; height: 350px; overflow-y: auto; 
-        }
-        .tab-buttons { display: flex; gap: 5px; padding: 0 5px; margin-bottom: 10px; }
-        .tab-btn { 
-            background: #333; border: none; color: #888; padding: 10px; flex: 1; 
-            font-weight: bold; cursor: pointer; border-radius: 5px 5px 0 0; 
-        }
-        .tab-btn.active { background: #00ffff; color: black; }
-
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 10px; }
-        .shop-btn { 
-            background: #222; border: 1px solid #444; padding: 10px; cursor: pointer; 
-            display: flex; align-items: center; gap: 10px; text-align: left; border-radius: 5px; position: relative;
-        }
-        .shop-btn.owned { border-color: gold; }
-        .shop-btn.active { border-color: #00ffff; background: #003333; }
-        .shop-btn h4 { margin: 0; font-size: 0.8rem; }
-        .shop-btn small { font-size: 0.7rem; color: #aaa; }
-        .count-badge { position: absolute; top: 5px; right: 5px; background: red; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 10px; }
-
-        /* --- CASINO --- */
-        .casino-box { background: #2a2a2a; border: 2px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 10px; }
-        .bet-input { background: #000; color: gold; border: 1px solid gold; padding: 5px; width: 80px; text-align: center; font-size: 1rem; }
-        .casino-btn { background: gold; border: none; color: black; padding: 8px 15px; font-weight: bold; cursor: pointer; margin-top: 5px; border-radius: 5px; }
-        
-        .bj-cards { display: flex; justify-content: center; gap: 5px; margin: 10px 0; min-height: 40px; }
-        .bj-card { background: white; color: black; width: 30px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; }
-
-        .roulette-wheel { 
-            width: 80px; height: 80px; margin: 10px auto; border-radius: 50%; border: 3px solid white;
-            background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg);
-            transform: rotate(0deg); 
-        }
-
-        #msg { min-height: 25px; color: #00ffff; margin: 10px 0; font-weight: bold; font-size: 1rem; }
-        
-        /* NEXT LEVEL BUTTON (Gross und Auffällig) */
-        #reset-btn { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            padding: 20px 40px; font-size: 1.5rem; background: #00ff00; border: 3px solid white; 
-            color: black; font-weight: bold; cursor: pointer; z-index: 100; border-radius: 50px; 
-            box-shadow: 0 0 30px #00ff00; display: none; 
-        }
-        #reset-btn.show { display: block !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1); } }
-        
         .hidden { display: none !important; }
+        #msg { color: cyan; font-weight: bold; min-height: 20px; margin: 5px; }
     </style>
 </head>
 <body class="zone-1">
 
-    <div id="save-notify">💾 SAVED</div>
+    <h1>Z' DÖV <span class="badge" id="lvl-badge">LVL 1</span></h1>
+    <div id="zone-name" style="color:cyan; margin-bottom:5px">📍 HINTERHOF</div>
 
-    <h1>Z' DÖV</h1>
-    <span id="zone-name" class="zone-badge">📍 HINTERHOF</span>
-    
     <div class="stats-bar">
-        <span>LVL <b id="lvl-val">1</b></span>
-        <span class="money"><span id="money-val">0</span> €</span>
+        <span>HP: <span id="hp-txt">100</span></span>
+        <span class="money"><span id="money-txt">0</span> €</span>
     </div>
 
-    <div class="bar-container"><div id="health" class="bar-fill"></div></div>
+    <div class="bar-wrap"><div id="hp-bar" class="bar"></div></div>
     
     <div class="arena">
-        <div id="enemy-name" class="enemy-name">VS OGUZ</div>
-        
+        <div id="enemy-name">VS OGUZ</div>
         <div id="weapon-anim">👊</div>
-        
-        <div id="face" onpointerdown="manualAttack(event)">👨‍🦲</div>
-        
-        <button id="reset-btn" onclick="nextLevel()">WEITER REISEN >></button>
+        <div id="face" onpointerdown="hit(event)">👨‍🦲</div>
+        <button id="next-btn" onclick="nextLevel()">WEITER >></button>
     </div>
     
-    <p id="msg">Mach ihn platt!</p>
+    <div id="msg">Klick ihn weg!</div>
 
     <div class="shop-area">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('weapons')">⚔️ Waffen</button>
-            <button class="tab-btn" onclick="showTab('staff')">👥 Crew</button>
-            <button class="tab-btn" onclick="showTab('casino')" style="color: gold;">🎰 Casino</button>
+        <div class="tabs">
+            <button class="tab active" onclick="tab('waffen')">⚔️ Waffen</button>
+            <button class="tab" onclick="tab('crew')">👥 Crew</button>
+            <button class="tab" onclick="tab('casino')" style="color:gold">🎰 Casino</button>
         </div>
 
-        <div id="tab-weapons" class="shop-grid">
-            <button id="w-fist" class="shop-btn active" onclick="equip('fist')"><span class="icon">👊</span><div><h4>Faust</h4><small>Gratis</small></div></button>
-            <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)"><span class="icon">🩴</span><div><h4>Terlik v2</h4><small>50 €</small></div></button>
-            <button id="w-pan" class="shop-btn" onclick="buyWeapon('pan', 250)"><span class="icon">🍳</span><div><h4>Pfanne</h4><small>250 €</small></div></button>
-            <button id="w-hammer" class="shop-btn" onclick="buyWeapon('hammer', 600)"><span class="icon">🔨</span><div><h4>Hammer</h4><small>600 €</small></div></button>
-            <button id="w-bat" class="shop-btn" onclick="buyWeapon('bat', 1500)"><span class="icon">🏏</span><div><h4>Keule</h4><small>1500 €</small></div></button>
-            <button id="w-fart" class="shop-btn" onclick="buyWeapon('fart', 6868)"><span class="icon">☣️</span><div><h4>Atom-Döv</h4><small>6868 €</small></div></button>
-        </div>
-
-        <div id="tab-staff" class="shop-grid hidden">
-            <button class="shop-btn" onclick="hireStaff('Champ', 100)"><span class="icon">🧢</span><div><h4>Champ</h4><small>100 €</small></div><div id="cnt-Champ" class="count-badge hidden">0</div></button>
-            <button class="shop-btn" onclick="hireStaff('Lion', 500)"><span class="icon">🕶️</span><div><h4>Lion</h4><small>500 €</small></div><div id="cnt-Lion" class="count-badge hidden">0</div></button>
-            <button class="shop-btn" onclick="hireStaff('Haji', 2000)"><span class="icon">😎</span><div><h4>Haji Han</h4><small>2k €</small></div><div id="cnt-Haji" class="count-badge hidden">0</div></button>
-        </div>
-
-        <div id="tab-casino" class="hidden">
-            <div class="casino-box">
-                <h4 class="casino-title">🃏 BLACKJACK</h4>
-                <div style="text-align:center; color:white;">
-                    <small>Gegner: <span id="bj-d-score">0</span></small>
-                    <div id="bj-d-cards" class="bj-cards"></div>
-                    <small>Du: <span id="bj-p-score">0</span></small>
-                    <div id="bj-p-cards" class="bj-cards"></div>
+        <div id="tab-waffen" class="content active">
+            <div class="grid" id="weapon-list">
                 </div>
-                <div style="margin-top:5px; text-align:center;">
-                    <input type="number" id="bet-bj" class="bet-input" value="100">
-                    <button id="btn-bj-start" class="casino-btn" onclick="startBJ()">START</button>
-                    <span id="bj-acts" class="hidden">
-                        <button class="casino-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
-                        <button class="casino-btn" style="background:#e74c3c" onclick="standBJ()">STAND</button>
-                    </span>
+        </div>
+
+        <div id="tab-crew" class="content">
+            <div class="grid" id="staff-list">
+                </div>
+        </div>
+
+        <div id="tab-casino" class="content">
+            <div class="casino-box">
+                <div style="color:gold; font-weight:bold; margin-bottom:5px">🃏 BLACKJACK</div>
+                <div style="font-size:0.8rem">Dealer: <span id="d-score">0</span></div>
+                <div id="d-cards" class="cards"></div>
+                <div style="font-size:0.8rem">Du: <span id="p-score">0</span></div>
+                <div id="p-cards" class="cards"></div>
+                
+                <input type="number" id="bj-bet" class="bet-in" value="100">
+                <br>
+                <div id="bj-start-div"><button class="c-btn" onclick="startBJ()">START</button></div>
+                <div id="bj-play-div" class="hidden">
+                    <button class="c-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
+                    <button class="c-btn" style="background:#e74c3c; color:white" onclick="standBJ()">STAND</button>
                 </div>
             </div>
 
             <div class="casino-box">
-                <h4 class="casino-title">🎲 ROULETTE</h4>
-                <div style="position:relative; width:100px; margin:0 auto;">
-                    <div style="position:absolute; top:-10px; left:45px; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:10px solid gold; z-index:5;"></div>
-                    <div id="wheel" class="roulette-wheel"></div>
+                <div style="color:gold; font-weight:bold">🎲 ROULETTE</div>
+                <div class="wheel-container">
+                    <div class="arrow"></div>
+                    <div id="wheel" class="wheel"></div>
                 </div>
-                <div style="text-align:center; margin-top:10px;">
-                    <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
-                    <br>
-                    <button class="casino-btn" style="background:#e74c3c" onclick="spinRoulette('red')">ROT</button>
-                    <button class="casino-btn" style="background:#333; color:white; border:1px solid #555" onclick="spinRoulette('black')">SCHW</button>
-                    <button class="casino-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
-                </div>
+                <input type="number" id="roulette-bet" class="bet-in" placeholder="Einsatz">
+                <br>
+                <button class="c-btn" style="background:#e74c3c; color:white" onclick="spinRoulette('red')">ROT</button>
+                <button class="c-btn" style="background:#333; color:white" onclick="spinRoulette('black')">BLK</button>
+                <button class="c-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SOUNDS ---
-        // Wenn hit.m4a nicht existiert, passiert einfach nichts (kein Fehler)
+        // --- CONFIG ---
+        // Bitte 'hit.m4a' auf GitHub hochladen (oder den existierenden Namen nehmen)
         const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
-        function playSound(t) { 
-            try { 
-                let s = sounds[t].cloneNode(); 
-                s.volume = 0.5;
-                s.play().catch(()=>{}); // Fehler ignorieren
-            } catch(e){} 
-        }
+        function snd(t){ try{ let s=sounds[t].cloneNode(); s.volume=0.5; s.play().catch(()=>{}); }catch(e){} }
+
+        const weapons = {
+            'fist': {name:'Faust', dmg:[5,10], icon:'👊', price:0},
+            'slipper': {name:'Terlik', dmg:[15,25], icon:'🩴', price:50},
+            'pan': {name:'Pfanne', dmg:[35,50], icon:'🍳', price:250},
+            'hammer': {name:'Hammer', dmg:[70,100], icon:'🔨', price:600},
+            'bat': {name:'Keule', dmg:[150,250], icon:'🏏', price:1500},
+            'fart': {name:'Atom-Döv', dmg:[500,999], icon:'☣️', price:5000}
+        };
+
+        const staff = {
+            'champ': {name:'Champ', dps:1, price:100, icon:'🧢'},
+            'lion': {name:'Lion', dps:5, price:500, icon:'🕶️'},
+            'haji': {name:'Haji Han', dps:25, price:2000, icon:'😎'}
+        };
 
         // --- STATE ---
-        let state = {
-            level: 1, maxHp: 100, hp: 100, money: 0,
-            inventory: ['fist'], currentWeapon: 'fist',
-            staff: { 'Champ':0, 'Lion':0, 'Haji':0 }
+        let game = {
+            money: 0,
+            level: 1,
+            hp: 100,
+            maxHp: 100,
+            inv: ['fist'],
+            weapon: 'fist',
+            staff: { 'champ':0, 'lion':0, 'haji':0 }
         };
         let isDead = false;
 
-        // Config
-        const weapons = {
-            'fist':{dmg:[5,9],icon:'👊',name:'Faust'}, 'slipper':{dmg:[15,25],icon:'🩴',name:'Terlik'},
-            'pan':{dmg:[35,55],icon:'🍳',name:'Pfanne'}, 'hammer':{dmg:[70,100],icon:'🔨',name:'Hammer'},
-            'bat':{dmg:[150,250],icon:'🏏',name:'Keule'}, 'fart':{dmg:[500,999],icon:'☣️',name:'Atom'}
-        };
-        const staffData = {'Champ':1, 'Lion':5, 'Haji':25};
-
-        // --- ELEMENTS ---
-        const els = {
-            body: document.body, zoneName: document.getElementById('zone-name'), enemyName: document.getElementById('enemy-name'),
-            face: document.getElementById('face'), hpBar: document.getElementById('health'), hpVal: document.getElementById('hp-val'),
-            money: document.getElementById('money-val'), msg: document.getElementById('msg'), lvl: document.getElementById('lvl-val'),
-            wAnim: document.getElementById('weapon-anim'), reset: document.getElementById('reset-btn'), save: document.getElementById('save-notify')
-        };
-
         // --- INIT ---
-        loadGame(); 
+        load();
+        renderShop();
+        updateUI();
+        updateZone();
         
-        // Safety Check: Falls er schon tot geladen wurde
-        if (state.hp <= 0) {
-            isDead = true;
-            els.reset.classList.add('show');
-            els.face.classList.add('dead');
-            els.face.innerText = "😵";
-        }
-
-        updateZone(); updateUI(); updateShopUI();
-        setInterval(autoAttack, 1000); 
-        setInterval(saveGame, 5000);
-
-        // --- ZONE LOGIC ---
-        function updateZone() {
+        // Auto DPS
+        setInterval(()=>{
             if(isDead) return;
+            let dps = (game.staff.champ*1) + (game.staff.lion*5) + (game.staff.haji*25);
+            if(dps>0) damage(dps, false);
+        }, 1000);
 
-            els.body.className = ''; 
-            
-            if(state.level <= 10) {
-                els.body.classList.add('zone-1');
-                els.zoneName.innerText = "📍 HINTERHOF";
-                els.zoneName.style.color = "cyan";
-                els.enemyName.innerText = "VS OGUZ";
-                els.face.innerText = "👨‍🦲";
-            } 
-            else if(state.level <= 20) {
-                els.body.classList.add('zone-2');
-                els.zoneName.innerText = "📍 SHISHA BAR";
-                els.zoneName.style.color = "#d980fa";
-                els.enemyName.innerText = "VS YNSANON";
-                els.face.innerText = "🧔🏻"; 
-            } 
-            else {
-                els.body.classList.add('zone-3');
-                els.zoneName.innerText = "📍 BOX CLUB";
-                els.zoneName.style.color = "#ff4757";
-                els.enemyName.innerText = "VS MIKAUTADZE";
-                els.face.innerText = "🧑‍🦱";
-            }
-        }
+        // Save Loop
+        setInterval(save, 3000);
 
-        // --- GAME CORE ---
-        function manualAttack(e) { 
+        // --- FIGHT SYSTEM ---
+        function hit(e) {
             if(isDead) return;
-            // Maus/Touch Position
-            let x = e.clientX || (e.touches && e.touches[0].clientX) || window.innerWidth/2;
-            let y = e.clientY || (e.touches && e.touches[0].clientY) || window.innerHeight/2;
-            attackLogic(true, x, y); 
+            snd('hit');
+            
+            let w = weapons[game.weapon];
+            let dmg = Math.floor(Math.random()*(w.dmg[1]-w.dmg[0]+1)+w.dmg[0]);
+            
+            // Crit?
+            if(Math.random()<0.15) { dmg*=2; showMsg("CRIT! "+dmg, "red"); }
+            
+            // Geld
+            game.money += Math.floor(Math.random()*3 + game.level);
+            
+            // Animation Reset Trick
+            let face = document.getElementById('face');
+            let anim = document.getElementById('weapon-anim');
+            
+            face.classList.remove('hit');
+            void face.offsetWidth; // Force Reflow
+            face.classList.add('hit');
+            
+            anim.innerText = w.icon;
+            anim.classList.remove('smash');
+            void anim.offsetWidth;
+            anim.classList.add('smash');
+            setTimeout(()=>{ anim.classList.remove('smash'); }, 150);
+
+            damage(dmg, true);
         }
 
-        function autoAttack() {
-            if(isDead) return;
-            let dps = (state.staff.Champ*1)+(state.staff.Lion*5)+(state.staff.Haji*25);
-            if(dps>0) {
-                const r = els.face.getBoundingClientRect();
-                attackLogic(false, r.left+r.width/2, r.top+r.height/2, dps);
+        function damage(amount, manual) {
+            game.hp -= amount;
+            if(game.hp <= 0) {
+                game.hp = 0;
+                kill();
             }
-        }
-
-        function attackLogic(manual, x, y, autoDmg=0) {
-            let dmg = 0; let w = weapons[state.currentWeapon];
-            
-            if(manual) {
-                playSound('hit');
-                dmg = rand(w.dmg[0], w.dmg[1]);
-                if(Math.random()<0.15) { dmg*=2; spawnParticles(x,y,10,'#ff00ff'); }
-                else { spawnParticles(x,y,4,'cyan'); }
-                
-                // Neue Animations-Methode (Stoppt alte, startet neue)
-                runAnimations(w.icon);
-                
-                state.money += Math.floor(rand(1,3)+state.level);
-            } else { 
-                dmg = autoDmg; 
-                spawnParticles(x,y,1,'lime'); 
-            }
-            
-            state.hp -= dmg; 
-            if(state.hp < 0) state.hp = 0;
             updateUI();
-            
-            if(state.hp <= 0 && !isDead) kill();
-        }
-
-        function runAnimations(icon) {
-            // 1. Waffe (mit Web Animations API für Zuverlässigkeit)
-            els.wAnim.innerText = icon;
-            // Vorherige Animationen stoppen
-            els.wAnim.getAnimations().forEach(a => a.cancel());
-            
-            els.wAnim.animate([
-                { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5) rotate(0deg)' },
-                { opacity: 1, transform: 'translate(-50%, -50%) scale(1.5) rotate(-45deg)', offset: 0.3 },
-                { opacity: 0, transform: 'translate(-50%, -50%) scale(1.0) rotate(-90deg)' }
-            ], {
-                duration: 150,
-                fill: 'none'
-            });
-
-            // 2. Gesicht (Zucken)
-            els.face.getAnimations().forEach(a => a.cancel());
-            els.face.animate([
-                { transform: 'scale(1) rotate(0deg)' },
-                { transform: 'scale(0.9) rotate(10deg)' },
-                { transform: 'scale(1) rotate(0deg)' }
-            ], {
-                duration: 100,
-                fill: 'none'
-            });
         }
 
         function kill() {
-            isDead = true; 
-            playSound('win');
+            if(isDead) return;
+            isDead = true;
+            snd('win');
+            document.getElementById('face').innerText = "😵";
+            document.getElementById('face').classList.add('dead');
+            document.getElementById('next-btn').style.display = "block";
             
-            els.face.innerText = "😵"; 
-            els.face.classList.add('dead');
-            
-            let bonus = 50 * state.level; 
-            state.money += bonus;
-            els.msg.innerText = "SIEG! +"+bonus+"€";
-            els.msg.style.color = "#00ff00";
-            
-            // Button anzeigen
-            els.reset.classList.add('show');
-            updateUI(); 
-            saveGame();
+            let bonus = 50 * game.level;
+            game.money += bonus;
+            showMsg("SIEG! +"+bonus+"€", "#00ff00");
+            save();
         }
 
         function nextLevel() {
-            state.level++; 
-            state.maxHp = Math.floor(state.maxHp * 1.4); 
-            state.hp = state.maxHp;
-            isDead = false; 
+            game.level++;
+            game.maxHp = Math.floor(game.maxHp * 1.4);
+            game.hp = game.maxHp;
+            isDead = false;
             
-            els.face.classList.remove('dead');
-            // Rotation resetten falls hängen geblieben
-            els.face.style.transform = "rotate(0deg)"; 
+            document.getElementById('face').classList.remove('dead');
+            document.getElementById('next-btn').style.display = "none";
+            showMsg("Level "+game.level, "cyan");
             
-            els.reset.classList.remove('show');
-            els.msg.innerText = "Nächste Runde!";
-            els.msg.style.color = "white";
-            
-            updateZone(); 
-            updateUI(); 
-            saveGame();
+            updateZone();
+            updateUI();
+            save();
         }
 
-        // --- SHOP ---
-        function buyWeapon(k,p) {
-            if(state.inventory.includes(k)) { equip(k); return; }
-            if(state.money>=p) { state.money-=p; state.inventory.push(k); equip(k); playSound('buy'); }
-            updateUI(); updateShopUI();
-        }
-        function hireStaff(t,p) {
-            let cost = Math.floor(p * Math.pow(1.2, state.staff[t]));
-            if(state.money>=cost) { state.money-=cost; state.staff[t]++; playSound('buy'); }
-            updateUI(); updateShopUI();
-        }
-        function equip(k) { state.currentWeapon=k; updateShopUI(); }
+        function updateZone() {
+            let body = document.body;
+            let name = document.getElementById('enemy-name');
+            let zone = document.getElementById('zone-name');
+            let face = document.getElementById('face');
 
-        // --- CASINO: BLACKJACK ---
-        let bjDeck=[], bjP=[], bjD=[], bjBet=0, bjActive=false;
+            body.className = '';
+            if(game.level <= 10) {
+                body.classList.add('zone-1');
+                name.innerText = "VS OGUZ";
+                zone.innerText = "📍 HINTERHOF";
+                if(!isDead) face.innerText = "👨‍🦲";
+            } else if(game.level <= 20) {
+                body.classList.add('zone-2');
+                name.innerText = "VS YNSANON";
+                zone.innerText = "📍 SHISHA BAR";
+                if(!isDead) face.innerText = "🧔🏻";
+            } else {
+                body.classList.add('zone-3');
+                name.innerText = "VS MIKAUTADZE";
+                zone.innerText = "📍 BOX CLUB";
+                if(!isDead) face.innerText = "🧑‍🦱";
+            }
+        }
+
+        // --- SHOP SYSTEM ---
+        function renderShop() {
+            // Waffen
+            let wHTML = "";
+            for(let key in weapons) {
+                let w = weapons[key];
+                let owned = game.inv.includes(key);
+                let active = game.weapon === key;
+                let btnClass = active ? "item active" : (owned ? "item owned" : "item");
+                let sub = owned ? "Besitz" : w.price + " €";
+                
+                wHTML += `<div class="${btnClass}" onclick="buyW('${key}')">
+                    <div class="icon">${w.icon}</div>
+                    <div><h4>${w.name}</h4><small>${sub}</small></div>
+                </div>`;
+            }
+            document.getElementById('weapon-list').innerHTML = wHTML;
+
+            // Staff
+            let sHTML = "";
+            for(let key in staff) {
+                let s = staff[key];
+                let count = game.staff[key];
+                let cost = Math.floor(s.price * Math.pow(1.2, count));
+                
+                sHTML += `<div class="item" onclick="buyS('${key}')">
+                    <div class="icon">${s.icon}</div>
+                    <div style="flex:1"><h4>${s.name}</h4><small>${cost} € (+${s.dps}/s)</small></div>
+                    <div style="background:red; padding:2px 5px; border-radius:50%; font-size:0.7rem">${count}</div>
+                </div>`;
+            }
+            document.getElementById('staff-list').innerHTML = sHTML;
+        }
+
+        function buyW(key) {
+            let w = weapons[key];
+            if(game.inv.includes(key)) {
+                game.weapon = key;
+            } else {
+                if(game.money >= w.price) {
+                    game.money -= w.price;
+                    game.inv.push(key);
+                    game.weapon = key;
+                    snd('buy');
+                } else { showMsg("Zu teuer!", "red"); }
+            }
+            renderShop(); updateUI();
+        }
+
+        function buyS(key) {
+            let s = staff[key];
+            let cost = Math.floor(s.price * Math.pow(1.2, game.staff[key]));
+            if(game.money >= cost) {
+                game.money -= cost;
+                game.staff[key]++;
+                snd('buy');
+            } else { showMsg("Zu teuer!", "red"); }
+            renderShop(); updateUI();
+        }
+
+        // --- CASINO ---
+        // Blackjack
+        let deck=[], pHand=[], dHand=[], bjBet=0;
         function startBJ() {
-            if(bjActive) return;
-            let bet = parseInt(document.getElementById('bet-bj').value);
-            if(isNaN(bet)||bet<=0||bet>state.money) return els.msg.innerText="Ungültiger Einsatz!";
-            state.money-=bet; bjBet=bet; updateUI();
-            bjDeck=[2,3,4,5,6,7,8,9,10,10,10,10,11]; bjActive=true;
-            bjP=[draw(),draw()]; bjD=[draw(),draw()];
-            document.getElementById('btn-bj-start').classList.add('hidden');
-            document.getElementById('bj-acts').classList.remove('hidden');
-            updateBjUI(false);
-            if(calcBj(bjP)===21) standBJ();
+            let bet = parseInt(document.getElementById('bj-bet').value);
+            if(bet > game.money || bet <= 0) return showMsg("Einsatz?", "red");
+            
+            game.money -= bet; bjBet=bet; updateUI();
+            
+            document.getElementById('bj-start-div').classList.add('hidden');
+            document.getElementById('bj-play-div').classList.remove('hidden');
+            
+            deck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11]; // Simples Deck
+            pHand = [draw(), draw()];
+            dHand = [draw()];
+            
+            renderBJ();
         }
-        function draw(){ return bjDeck[Math.floor(Math.random()*bjDeck.length)]; }
-        function calcBj(h){ let s=h.reduce((a,b)=>a+b,0), a=h.filter(c=>c===11).length; while(s>21&&a>0){s-=10;a--;} return s; }
-        function updateBjUI(showD) {
-            document.getElementById('bj-p-cards').innerHTML = bjP.map(c=>`<div class='bj-card'>${c==11?'A':c}</div>`).join('');
-            document.getElementById('bj-p-score').innerText = calcBj(bjP);
-            let dHtml = `<div class='bj-card'>${bjD[0]==11?'A':bjD[0]}</div>`;
-            dHtml += showD ? `<div class='bj-card'>${bjD[1]==11?'A':bjD[1]}</div>` : `<div class='bj-card' style='background:#555'>?</div>`;
-            if(showD && bjD.length>2) for(let i=2;i<bjD.length;i++) dHtml+=`<div class='bj-card'>${bjD[i]==11?'A':bjD[i]}</div>`;
-            document.getElementById('bj-d-cards').innerHTML = dHtml;
-            document.getElementById('bj-d-score').innerText = showD ? calcBj(bjD) : "?";
+        function draw() { return deck[Math.floor(Math.random()*deck.length)]; }
+        function score(h) {
+            let s = h.reduce((a,b)=>a+b,0);
+            let aces = h.filter(x=>x==11).length;
+            while(s>21 && aces>0) { s-=10; aces--; }
+            return s;
+        }
+        function renderBJ() {
+            document.getElementById('p-score').innerText = score(pHand);
+            document.getElementById('d-score').innerText = score(dHand);
+            document.getElementById('p-cards').innerHTML = pHand.map(c=>`<div class="card">${c}</div>`).join('');
+            document.getElementById('d-cards').innerHTML = dHand.map(c=>`<div class="card">${c}</div>`).join('');
         }
         function hitBJ() {
-            bjP.push(draw()); updateBjUI(false); if(calcBj(bjP)>21) endBJ(false);
+            pHand.push(draw()); renderBJ();
+            if(score(pHand)>21) endBJ(false);
         }
         function standBJ() {
-            updateBjUI(true);
-            let loop = setInterval(()=>{
-                if(calcBj(bjD)<17) { bjD.push(draw()); updateBjUI(true); }
-                else { clearInterval(loop); let p=calcBj(bjP), d=calcBj(bjD); endBJ(d>21||p>d ? true : (p==d?'tie':false)); }
-            }, 800);
+            while(score(dHand)<17) dHand.push(draw());
+            renderBJ();
+            let p = score(pHand); let d = score(dHand);
+            if(d>21 || p>d) endBJ(true);
+            else if(p==d) endBJ('tie');
+            else endBJ(false);
         }
-        function endBJ(res) {
-            bjActive=false;
-            if(res===true) { let w=bjBet*2; if(calcBj(bjP)==21&&bjP.length==2) w=Math.floor(bjBet*2.5); state.money+=w; els.msg.innerText="BJ: SIEG!"; playSound('buy'); }
-            else if(res==='tie') { state.money+=bjBet; els.msg.innerText="BJ: Unentschieden"; }
-            else els.msg.innerText="BJ: Verloren";
-            document.getElementById('btn-bj-start').classList.remove('hidden');
-            document.getElementById('bj-acts').classList.add('hidden');
+        function endBJ(win) {
+            if(win===true) { game.money += bjBet*2; showMsg("BJ: SIEG!", "#00ff00"); snd('buy'); }
+            else if(win==='tie') { game.money += bjBet; showMsg("BJ: Unentschieden", "orange"); }
+            else showMsg("BJ: Verloren", "red");
+            
+            document.getElementById('bj-start-div').classList.remove('hidden');
+            document.getElementById('bj-play-div').classList.add('hidden');
             updateUI();
         }
 
-        // --- CASINO: ROULETTE ---
-        let spinning=false;
+        // Roulette
+        let spinning = false;
         function spinRoulette(color) {
             if(spinning) return;
-            let bet = parseInt(document.getElementById('bet-roulette').value);
-            if(isNaN(bet)||bet<=0||bet>state.money) return els.msg.innerText="Ungültiger Einsatz!";
-            state.money-=bet; updateUI(); spinning=true;
-            const w = document.getElementById('wheel');
-            // Animation Reset
-            w.getAnimations().forEach(a => a.cancel());
+            let bet = parseInt(document.getElementById('roulette-bet').value);
+            if(bet>game.money || isNaN(bet) || bet<=0) return showMsg("Einsatz?", "red");
             
-            let rot = Math.floor(Math.random()*360);
-            let totalRot = 1440 + (360-rot);
+            game.money -= bet; updateUI(); spinning=true;
             
-            w.animate([
-                { transform: 'rotate(0deg)' },
-                { transform: `rotate(${totalRot}deg)` }
-            ], {
-                duration: 3000,
-                easing: 'cubic-bezier(0.1, 0.7, 0.1, 1)',
-                fill: 'forwards'
-            });
-            
+            let wheel = document.getElementById('wheel');
+            wheel.style.transition = "none";
+            wheel.style.transform = "rotate(0deg)";
             setTimeout(()=>{
-                let res='';
-                if(rot>=0 && rot<20) res='green'; else if(rot>=20 && rot<200) res='red'; else res='black';
-                if(color==res) { 
-                    let m = color=='green'?14:2; state.money+=bet*m; 
-                    els.msg.innerText=res.toUpperCase()+"! SIEG!"; playSound('buy');
-                } else els.msg.innerText="Es kam "+res;
-                updateUI(); spinning=false;
-            },3000);
+                let rot = 1080 + Math.random()*360;
+                wheel.style.transition = "transform 3s ease-out";
+                wheel.style.transform = `rotate(${rot}deg)`;
+            }, 50);
+
+            setTimeout(()=>{
+                spinning = false;
+                // Simuliertes Ergebnis (Optik ist nur Show)
+                let roll = Math.random();
+                let res = roll < 0.05 ? 'green' : (roll < 0.5 ? 'red' : 'black');
+                
+                if(color === res) {
+                    let win = color=='green' ? bet*14 : bet*2;
+                    game.money += win;
+                    showMsg(res.toUpperCase() + "! SIEG!", "#00ff00");
+                    snd('buy');
+                } else {
+                    showMsg("Es kam "+res, "red");
+                }
+                updateUI();
+            }, 3100);
         }
 
         // --- UTILS ---
         function updateUI() {
-            els.money.innerText = Math.floor(state.money);
-            let p = (state.hp/state.maxHp)*100; if(p<0)p=0;
-            els.hpBar.style.width = p+"%";
-            els.hpVal.innerText = Math.floor(state.hp)+"/"+Math.floor(state.maxHp);
-            els.lvl.innerText = state.level;
+            document.getElementById('money-txt').innerText = game.money;
+            document.getElementById('hp-txt').innerText = game.hp + "/" + game.maxHp;
+            document.getElementById('lvl-badge').innerText = "LVL " + game.level;
+            document.getElementById('hp-bar').style.width = (game.hp/game.maxHp*100) + "%";
         }
-        function updateShopUI() {
-            state.inventory.forEach(k=>{ let b=document.getElementById('w-'+k); if(b){b.classList.add('owned'); b.querySelector('small').innerText="BESITZ";} });
-            let ab=document.getElementById('w-'+state.currentWeapon);
-            document.querySelectorAll('.shop-btn').forEach(b=>b.classList.remove('active'));
-            if(ab) ab.classList.add('active');
-            for(let k in state.staff) { let el=document.getElementById('cnt-'+k); if(el) el.innerText=state.staff[k]; }
+
+        function showMsg(txt, col) {
+            let m = document.getElementById('msg');
+            m.innerText = txt;
+            m.style.color = col || "white";
         }
-        function showTab(t) {
-            ['weapons','staff','casino'].forEach(x=>document.getElementById('tab-'+x).classList.add('hidden'));
-            document.getElementById('tab-'+t).classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+        function tab(name) {
+            document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            document.getElementById('tab-'+name).classList.add('active');
             event.target.classList.add('active');
         }
-        function rand(min,max){ return Math.floor(Math.random()*(max-min+1)+min); }
-        function spawnParticles(x,y,n,c){
-            for(let i=0;i<n;i++){
-                let p=document.createElement('div'); p.className='particle'; p.style.background=c;
-                p.style.boxShadow="0 0 5px "+c; p.style.left=x+'px'; p.style.top=y+'px';
-                p.style.setProperty('--tx',(Math.random()-0.5)*100+'px');
-                p.style.setProperty('--ty',(Math.random()-0.5)*100+'px');
-                document.body.appendChild(p); setTimeout(()=>p.remove(),600);
-            }
+
+        // --- SAVE/LOAD ---
+        function save() {
+            localStorage.setItem('zDov_REPAIR_V4', JSON.stringify(game));
         }
-        // Neuer Speichername für frischen Start
-        function saveGame() { localStorage.setItem('zDovV3_Final', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
-        function loadGame() { 
-            try{
-                let s=JSON.parse(localStorage.getItem('zDovV3_Final')); 
-                if(s) { state={...state,...s}; }
-            } catch(e){} 
+        function load() {
+            try {
+                let data = JSON.parse(localStorage.getItem('zDov_REPAIR_V4'));
+                if(data) {
+                    game = {...game, ...data};
+                    // Falls geladen wird während er tot ist, Button zeigen
+                    if(game.hp <= 0) {
+                        isDead = true;
+                        game.hp = 0;
+                        document.getElementById('face').classList.add('dead');
+                        document.getElementById('face').innerText = "😵";
+                        document.getElementById('next-btn').style.display = "block";
+                    }
+                }
+            } catch(e) {}
         }
     </script>
 </body>
