@@ -3,173 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - CASINO ULTIMATE</title>
+    <title>Z' DÖV - CITY CONQUEST</title>
     <style>
         /* --- GRUNDLAGEN --- */
         * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         body {
-            background-color: #0a0a12; color: white;
+            background-color: #111; color: white;
             font-family: "Courier New", Courier, monospace; 
             text-align: center; margin: 0; padding: 10px;
-            overflow: hidden; user-select: none; -webkit-user-select: none;
-            transition: background-color 1s ease;
-        }
-        h1 { 
-            color: #ff00ff; margin: 0; font-size: 2.0rem; text-transform: uppercase; 
-            text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
-        }
-        .level-badge {
-            background: linear-gradient(45deg, #ff00ff, #00ffff); color: black; 
-            font-weight: bold; padding: 2px 8px; border-radius: 2px; font-size: 0.8rem; vertical-align: middle;
-        }
-        #save-notify {
-            position: absolute; top: 10px; right: 10px; font-size: 0.8rem;
-            color: #00ffff; text-shadow: 0 0 5px #00ffff; opacity: 0; transition: opacity 0.5s;
+            overflow: hidden; user-select: none;
+            transition: background 1s ease, color 0.5s ease;
         }
 
-        /* --- STATS --- */
-        .stats-bar {
-            background: rgba(10, 10, 20, 0.8); padding: 5px; margin-top: 5px;
-            border: 1px solid #00ffff; display: flex; justify-content: space-around; font-size: 0.9rem;
+        /* DYNAMISCHE HINTERGRÜNDE */
+        body.zone-1 { background: radial-gradient(circle, #2c3e50 0%, #000000 100%); } /* Hinterhof */
+        body.zone-2 { background: radial-gradient(circle, #8e44ad 0%, #2c003e 100%); } /* Shisha Bar (Lila) */
+        body.zone-3 { background: radial-gradient(circle, #c0392b 0%, #4a0000 100%); } /* Box-Club (Rot) */
+
+        h1 { 
+            margin: 0; font-size: 1.8rem; text-transform: uppercase; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
-        .money { color: #f1c40f; font-weight: bold; font-size: 1.1rem; }
+        
+        .zone-badge {
+            display: block; font-size: 0.8rem; margin-top: 5px; letter-spacing: 2px;
+            color: cyan; text-shadow: 0 0 5px cyan;
+        }
+
+        #save-notify {
+            position: absolute; top: 10px; right: 10px; font-size: 0.8rem;
+            color: #00ffff; opacity: 0; transition: opacity 0.5s;
+        }
+
+        /* --- STATUS --- */
+        .stats-bar {
+            background: rgba(0,0,0,0.6); padding: 5px; margin-top: 5px;
+            border: 1px solid rgba(255,255,255,0.3); display: flex; justify-content: space-around; font-size: 0.9rem;
+            backdrop-filter: blur(5px); border-radius: 5px;
+        }
+        .money { color: gold; font-weight: bold; }
 
         /* --- ARENA --- */
         .arena {
-            height: 190px; display: flex; justify-content: center; align-items: center;
+            height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;
             position: relative; margin-top: 10px;
         }
+        .enemy-name {
+            font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;
+            text-shadow: 0 0 10px black;
+        }
         #face {
-            font-size: 100px; cursor: pointer; transition: transform 0.05s; z-index: 10;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
+            font-size: 110px; cursor: pointer; transition: transform 0.05s; z-index: 10;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
         }
         #face:active { transform: scale(0.9); }
-        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11; }
-        .smash-anim { transform: scale(1.2) rotate(-45deg); opacity: 1 !important; left: 55%; top: 20%; transition: all 0.1s; }
+        
+        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11; top: 40%; left: 50%; }
+        .smash-anim { transform: translate(-50%, -50%) scale(1.2) rotate(-45deg); opacity: 1 !important; transition: all 0.1s; }
+
         .particle {
-            position: absolute; pointer-events: none; background: #00ffff;
-            box-shadow: 0 0 5px #00ffff; width: 6px; height: 6px; border-radius: 50%;
+            position: absolute; pointer-events: none; width: 6px; height: 6px; border-radius: 50%;
             z-index: 99; animation: fly 0.6s linear forwards;
         }
         @keyframes fly { 0% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
-        .hit { color: #ff00ff; transform: rotate(15deg) scale(0.95); }
-        .dead { filter: grayscale(100%) brightness(0.5); opacity: 0.7; transform: rotate(180deg); pointer-events: none; }
+        
+        .hit { transform: rotate(15deg) scale(0.95); }
+        .dead { filter: grayscale(100%) brightness(0.5); transform: rotate(180deg); pointer-events: none; }
 
         /* --- HP BAR --- */
         .bar-container {
-            width: 90%; height: 15px; border: 1px solid #ff00ff; margin: 5px auto; background: rgba(0,0,0,0.7);
+            width: 90%; height: 15px; border: 2px solid white; margin: 5px auto; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden;
         }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #ff00ff, #00ffff); width: 100%; transition: width 0.1s; }
+        .bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s; }
 
-        /* --- SHOP/CASINO UI --- */
+        /* --- TABS --- */
         .shop-area {
-            margin-top: 5px; padding-top: 5px; background: rgba(10, 10, 15, 0.95);
-            border-top: 2px solid #00ffff; box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.2);
-            height: 400px; overflow-y: auto;
+            margin-top: 5px; padding-top: 5px; background: rgba(0,0,0,0.8);
+            border-top: 2px solid white; height: 400px; overflow-y: auto;
         }
         .tab-buttons { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px; }
         .tab-btn {
-            background: rgba(0,0,0,0.5); border: 1px solid #555; color: #888;
+            background: rgba(255,255,255,0.1); border: 1px solid #555; color: #ccc;
             padding: 8px; cursor: pointer; font-family: sans-serif; text-transform: uppercase;
-            font-size: 0.75rem; flex: 1; transition: 0.3s;
+            font-size: 0.75rem; flex: 1; border-radius: 5px;
         }
-        .tab-btn.active { background: rgba(0, 255, 255, 0.1); color: #00ffff; border-color: #00ffff; font-weight: bold; }
+        .tab-btn.active { background: white; color: black; font-weight: bold; }
 
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 10px; }
         .shop-btn {
-            background: linear-gradient(135deg, #14141e, #0a0a14); color: #aaa;
-            border: 1px solid #333; padding: 8px; cursor: pointer; display: flex;
-            align-items: center; gap: 8px; text-align: left; position: relative;
+            background: #222; color: #aaa; border: 1px solid #444; padding: 8px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; text-align: left; border-radius: 5px;
         }
-        .shop-btn.owned { border-color: #f1c40f; color: #ddd; }
-        .shop-btn.active { border-color: #00ffff; color: white; box-shadow: 0 0 5px #00ffff; }
+        .shop-btn.owned { border-color: gold; color: white; }
+        .shop-btn.active { border-color: cyan; box-shadow: 0 0 5px cyan; background: #333; }
+        .shop-btn .icon { font-size: 1.5rem; }
         .shop-btn h4 { margin: 0; font-size: 0.75rem; }
-        .shop-btn small { font-size: 0.65rem; color: #00ffff; }
+        .shop-btn small { font-size: 0.65rem; color: #888; }
         .count-badge {
-            position: absolute; top: 2px; right: 2px; background: #ff00ff; color: white;
-            width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 2px; right: 2px; background: red; color: white;
+            width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;
         }
 
-        /* --- CASINO COMPONENTS --- */
-        .casino-box {
-            background: rgba(0,0,0,0.3); border: 1px solid #444; padding: 10px;
-            margin-bottom: 15px; width: 95%; margin-left: auto; margin-right: auto;
-        }
+        /* --- CASINO --- */
+        .casino-box { background: #333; border: 1px solid gold; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
         .casino-title { color: gold; margin: 0 0 5px 0; font-size: 0.9rem; text-transform: uppercase; }
-        .bet-input { background: #111; border: 1px solid #555; color: white; width: 70px; text-align: center; }
-        .casino-btn { background: #333; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; margin: 2px; }
+        .bet-input { background: #111; color: white; border: 1px solid #555; width: 70px; text-align: center; padding: 5px; }
+        .casino-btn { background: gold; color: black; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold; margin: 2px; border-radius: 3px; }
         
-        /* Roulette Wheel */
-        .roulette-wrapper { position: relative; width: 100px; height: 100px; margin: 10px auto; }
+        /* Blackjack specific */
+        .bj-cards { display: flex; justify-content: center; gap: 5px; min-height: 40px; margin: 5px 0; }
+        .bj-card { background: white; color: black; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #999; }
+
+        /* Roulette Wheel Animation */
+        .roulette-wrapper { width: 80px; height: 80px; margin: 10px auto; position: relative; }
         .roulette-wheel {
-            width: 100%; height: 100%; border-radius: 50%; border: 4px solid white;
-            /* Green: 0-20deg, Red: 20-200deg, Black: 200-360deg */
-            background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg);
-            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
-            transform: rotate(0deg);
+            width: 100%; height: 100%; border-radius: 50%; border: 3px solid white;
+            background: conic-gradient(green 0deg 20deg, red 20deg 200deg, black 200deg 360deg);
+            transform: rotate(0deg); transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
         .roulette-arrow {
-            width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent;
-            border-top: 12px solid gold; position: absolute; top: -5px; left: 42px; z-index: 5;
+            position: absolute; top: -10px; left: 35px; width: 0; height: 0;
+            border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 10px solid gold; z-index: 5;
         }
 
-        /* Blackjack */
-        .bj-table { background: #004400; padding: 10px; border-radius: 5px; border: 2px solid #555; }
-        .cards-area { display: flex; justify-content: center; gap: 5px; margin: 5px 0; min-height: 40px; }
-        .bj-card {
-            background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold;
-            width: 30px; height: 40px; display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; border: 1px solid #aaa;
-        }
-        .bj-controls { margin-top: 5px; }
-        .bj-score { color: white; font-size: 0.8rem; margin-bottom: 5px; }
-
-        /* Animations */
-        .coin-container { width: 50px; height: 50px; margin: 10px auto; perspective: 600px; }
-        .coin { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1s ease-out; }
-        .coin-side {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            backface-visibility: hidden; border: 2px solid gold;
-        }
-        .heads { background: gold; color: black; }
-        .tails { background: orange; color: white; transform: rotateY(180deg); }
-
-        .slot-machine { display: flex; justify-content: center; gap: 5px; margin: 10px 0; background: #222; padding: 5px; }
-        .reel { width: 30px; height: 40px; background: white; color: black; line-height: 40px; border: 1px solid #555; }
-        .spinning { animation: spin 0.1s infinite linear; color: transparent; text-shadow: 0 0 5px black; }
-        @keyframes spin { 0% { transform: translateY(-2px); } 50% { transform: translateY(2px); } 100% { transform: translateY(-2px); } }
-
-        #msg { min-height: 20px; color: #00ffff; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
+        #msg { min-height: 20px; color: white; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
         #reset-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 15px 40px; font-size: 1.2rem;
-            background: linear-gradient(90deg, #00b894, #00cec9); border: 2px solid #00ff00;
-            color: black; font-weight: bold; cursor: pointer; z-index: 20;
+            padding: 15px 30px; font-size: 1.2rem; background: #2ed573; border: none; color: black;
+            font-weight: bold; cursor: pointer; z-index: 20; border-radius: 50px; box-shadow: 0 0 20px #2ed573;
         }
         .hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="zone-1">
 
     <div id="save-notify">💾 SAVED</div>
 
-    <h1>Z' DÖV <span class="level-badge" id="lvl-badge">LVL 1</span></h1>
+    <h1>Z' DÖV</h1>
+    <span id="zone-name" class="zone-badge">📍 HINTERHOF</span>
     
     <div class="stats-bar">
-        <span>HP: <b id="hp-val">100</b></span>
+        <span>LVL <b id="lvl-val">1</b></span>
         <span class="money"><span id="money-val">0</span> €</span>
     </div>
 
     <div class="bar-container"><div id="health" class="bar-fill"></div></div>
     
-    <p id="msg">Dein Imperium wartet!</p>
-
     <div class="arena">
+        <div id="enemy-name" class="enemy-name">VS OGUZ</div>
         <div id="weapon-anim">👊</div>
         <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
-        <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >>></button>
+        <button id="reset-btn" class="hidden" onclick="nextLevel()">WEITER REISEN >></button>
     </div>
+    
+    <p id="msg">Mach ihn platt!</p>
 
     <div class="shop-area">
         <div class="tab-buttons">
@@ -190,26 +177,25 @@
         <div id="tab-staff" class="shop-grid hidden">
             <button class="shop-btn" onclick="hireStaff('Champ', 100)"><span class="icon">🧢</span><div><h4>Champ</h4><small>100 €</small></div><div id="cnt-Champ" class="count-badge hidden">0</div></button>
             <button class="shop-btn" onclick="hireStaff('Lion', 500)"><span class="icon">🕶️</span><div><h4>Lion</h4><small>500 €</small></div><div id="cnt-Lion" class="count-badge hidden">0</div></button>
-            <button class="shop-btn" onclick="hireStaff('Haji Han', 2000)"><span class="icon">😎</span><div><h4>Haji Han</h4><small>2k €</small></div><div id="cnt-Haji Han" class="count-badge hidden">0</div></button>
+            <button class="shop-btn" onclick="hireStaff('Haji', 2000)"><span class="icon">😎</span><div><h4>Haji Han</h4><small>2k €</small></div><div id="cnt-Haji" class="count-badge hidden">0</div></button>
         </div>
 
         <div id="tab-casino" class="hidden">
-            
             <div class="casino-box">
-                <h4 class="casino-title">🃏 BLACKJACK (3:2)</h4>
-                <div class="bj-table">
-                    <div class="bj-score">Oguz: <span id="bj-dealer-score">0</span></div>
-                    <div id="bj-dealer-cards" class="cards-area"></div>
-                    <hr style="border-color:#444">
-                    <div class="bj-score">Du: <span id="bj-player-score">0</span></div>
-                    <div id="bj-player-cards" class="cards-area"></div>
+                <h4 class="casino-title">🃏 BLACKJACK</h4>
+                <div style="text-align:center">
+                    <small>Oguz: <span id="bj-d-score">0</span></small>
+                    <div id="bj-d-cards" class="bj-cards"></div>
+                    <hr style="border-color:#555; margin:5px 0">
+                    <small>Du: <span id="bj-p-score">0</span></small>
+                    <div id="bj-p-cards" class="bj-cards"></div>
                 </div>
                 <div style="margin-top:5px">
-                    <input type="number" id="bet-bj" class="bet-input" placeholder="€" value="100">
-                    <button id="btn-bj-start" class="casino-btn" onclick="startBlackjack()">START</button>
-                    <span id="bj-actions" class="hidden">
-                        <button class="casino-btn" style="background:#2ed573; color:black" onclick="hitBj()">HIT</button>
-                        <button class="casino-btn" style="background:#e74c3c; color:white" onclick="standBj()">STAND</button>
+                    <input type="number" id="bet-bj" class="bet-input" value="100">
+                    <button id="btn-bj-start" class="casino-btn" onclick="startBJ()">START</button>
+                    <span id="bj-acts" class="hidden">
+                        <button class="casino-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
+                        <button class="casino-btn" style="background:#e74c3c" onclick="standBJ()">STAND</button>
                     </span>
                 </div>
             </div>
@@ -221,378 +207,251 @@
                     <div id="wheel" class="roulette-wheel"></div>
                 </div>
                 <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
-                <div style="margin-top:5px;">
-                    <button class="casino-btn" style="color:#e74c3c; border-color:#e74c3c" onclick="spinRoulette('red')">ROT (x2)</button>
-                    <button class="casino-btn" style="color:#aaa; border-color:#aaa" onclick="spinRoulette('black')">SCHWARZ (x2)</button>
-                    <button class="casino-btn" style="color:#2ed573; border-color:#2ed573" onclick="spinRoulette('green')">GRÜN (x14)</button>
+                <div style="margin-top:5px">
+                    <button class="casino-btn" style="background:#e74c3c" onclick="spinRoulette('red')">ROT</button>
+                    <button class="casino-btn" style="background:#333; color:white; border:1px solid #555" onclick="spinRoulette('black')">SCHW</button>
+                    <button class="casino-btn" style="background:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
                 </div>
             </div>
-
-            <div class="casino-box">
-                <h4 class="casino-title">🟡 YAZI TURA (x2)</h4>
-                <div class="coin-container">
-                    <div id="coin" class="coin">
-                        <div class="coin-side heads">Y</div>
-                        <div class="coin-side tails">T</div>
-                    </div>
-                </div>
-                <input type="number" id="bet-coin" class="bet-input" placeholder="€">
-                <button class="casino-btn" onclick="spinCoin()">WERFEN</button>
-            </div>
-
-            <div class="casino-box">
-                <h4 class="casino-title">🎰 SLOTS</h4>
-                <div class="slot-machine">
-                    <div id="reel1" class="reel">👊</div>
-                    <div id="reel2" class="reel">🍒</div>
-                    <div id="reel3" class="reel">💎</div>
-                </div>
-                <small>100 €</small> <button class="casino-btn" onclick="spinSlots()">DREHEN</button>
-            </div>
-
         </div>
     </div>
 
     <script>
         // --- SOUNDS ---
-        const sounds = {
-            hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3')
-        };
-        sounds.hit.volume = 0.6;
+        const sounds = { hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3') };
+        function playSound(t) { try{sounds[t].cloneNode().play().catch(()=>{});}catch(e){} }
+        document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
 
-        function playSound(type) { try { sounds[type].cloneNode().play().catch(e=>{}); } catch(e){} }
-        document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
-
-        // --- GAME STATE ---
+        // --- STATE ---
         let state = {
             level: 1, maxHp: 100, hp: 100, money: 0,
             inventory: ['fist'], currentWeapon: 'fist',
-            staff: { 'Champ': 0, 'Lion': 0, 'Haji Han': 0 }
+            staff: { 'Champ':0, 'Lion':0, 'Haji':0 }
         };
         let isDead = false;
 
+        // Config
         const weapons = {
-            'fist': { dmg: [5,9], icon: '👊', name: 'Faust' },
-            'slipper': { dmg: [15,25], icon: '🩴', name: 'Terlik' },
-            'pan': { dmg: [35,55], icon: '🍳', name: 'Pfanne' },
-            'hammer': { dmg: [70,100], icon: '🔨', name: 'Hammer' },
-            'bat': { dmg: [150,250], icon: '🏏', name: 'Keule' },
-            'fart': { dmg: [500,999], icon: '☣️', name: 'Atom-Döv' }
+            'fist':{dmg:[5,9],icon:'👊',name:'Faust'}, 'slipper':{dmg:[15,25],icon:'🩴',name:'Terlik'},
+            'pan':{dmg:[35,55],icon:'🍳',name:'Pfanne'}, 'hammer':{dmg:[70,100],icon:'🔨',name:'Hammer'},
+            'bat':{dmg:[150,250],icon:'🏏',name:'Keule'}, 'fart':{dmg:[500,999],icon:'☣️',name:'Atom'}
         };
-        const staffData = { 'Champ':{dps:1,name:"Champ"}, 'Lion':{dps:5,name:"Lion"}, 'Haji Han':{dps:25,name:"Haji Han"} };
+        const staffData = {'Champ':1, 'Lion':5, 'Haji':25};
 
-        const face = document.getElementById('face');
-        const hpBar = document.getElementById('health');
-        const hpVal = document.getElementById('hp-val');
-        const moneyEl = document.getElementById('money-val');
-        const msg = document.getElementById('msg');
-        const weaponAnim = document.getElementById('weapon-anim');
-        const resetBtn = document.getElementById('reset-btn');
-        const lvlBadge = document.getElementById('lvl-badge');
-        const saveNotify = document.getElementById('save-notify');
+        // --- ELEMENTS ---
+        const els = {
+            body: document.body, zoneName: document.getElementById('zone-name'), enemyName: document.getElementById('enemy-name'),
+            face: document.getElementById('face'), hpBar: document.getElementById('health'), hpVal: document.getElementById('hp-val'),
+            money: document.getElementById('money-val'), msg: document.getElementById('msg'), lvl: document.getElementById('lvl-val'),
+            wAnim: document.getElementById('weapon-anim'), reset: document.getElementById('reset-btn'), save: document.getElementById('save-notify')
+        };
 
         // --- INIT ---
-        loadGame(); updateUI(); updateShopUI();
+        loadGame(); updateZone(); updateUI(); updateShopUI();
         setInterval(autoAttack, 1000); setInterval(saveGame, 5000);
 
-        // ================= BLACKJACK LOGIC =================
-        let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjBet = 0, bjActive = false;
-
-        function startBlackjack() {
-            if(bjActive) return;
-            let bet = parseInt(document.getElementById('bet-bj').value);
-            if(isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
-            if(bet > state.money) return msg.innerText = "Zu arm!";
+        // --- ZONE LOGIC ---
+        function updateZone() {
+            els.body.className = ''; // Reset classes
             
-            state.money -= bet; bjBet = bet; updateUI();
-            
-            // Deck erstellen (vereinfacht, unendlich)
-            bjDeck = [2,3,4,5,6,7,8,9,10,10,10,10,11]; 
-            bjPlayerHand = [drawCard(), drawCard()];
-            bjDealerHand = [drawCard(), drawCard()];
-            
-            bjActive = true;
-            document.getElementById('btn-bj-start').classList.add('hidden');
-            document.getElementById('bj-actions').classList.remove('hidden');
-            document.getElementById('bet-bj').disabled = true;
-            
-            updateBjUI(false); // Dealer Karte noch verdeckt
-            
-            // Check instant Blackjack
-            if(calcBj(bjPlayerHand) === 21) { standBj(); }
-        }
-
-        function drawCard() { return bjDeck[Math.floor(Math.random()*bjDeck.length)]; }
-
-        function calcBj(hand) {
-            let sum = hand.reduce((a,b)=>a+b, 0);
-            let aces = hand.filter(c=>c===11).length;
-            while(sum > 21 && aces > 0) { sum -= 10; aces--; }
-            return sum;
-        }
-
-        function updateBjUI(revealDealer) {
-            // Player UI
-            let pDiv = document.getElementById('bj-player-cards');
-            pDiv.innerHTML = "";
-            bjPlayerHand.forEach(c => { pDiv.innerHTML += `<div class='bj-card'>${c===11?'A':c}</div>`; });
-            document.getElementById('bj-player-score').innerText = calcBj(bjPlayerHand);
-
-            // Dealer UI
-            let dDiv = document.getElementById('bj-dealer-cards');
-            dDiv.innerHTML = "";
-            if(revealDealer) {
-                bjDealerHand.forEach(c => { dDiv.innerHTML += `<div class='bj-card'>${c===11?'A':c}</div>`; });
-                document.getElementById('bj-dealer-score').innerText = calcBj(bjDealerHand);
-            } else {
-                dDiv.innerHTML += `<div class='bj-card'>${bjDealerHand[0]===11?'A':bjDealerHand[0]}</div>`;
-                dDiv.innerHTML += `<div class='bj-card' style='background:#333; color:#333'>?</div>`;
-                document.getElementById('bj-dealer-score').innerText = "?";
+            if(state.level <= 10) {
+                // ZONE 1: HINTERHOF
+                els.body.classList.add('zone-1');
+                els.zoneName.innerText = "📍 HINTERHOF";
+                els.zoneName.style.color = "cyan";
+                els.enemyName.innerText = "VS OGUZ";
+                if(!isDead) els.face.innerText = "👨‍🦲";
+            } 
+            else if(state.level <= 20) {
+                // ZONE 2: SHISHA BAR
+                els.body.classList.add('zone-2');
+                els.zoneName.innerText = "📍 SHISHA BAR";
+                els.zoneName.style.color = "#d980fa";
+                els.enemyName.innerText = "VS YNSANON";
+                if(!isDead) els.face.innerText = "🧔"; // Ynsanon Emoji
+            } 
+            else {
+                // ZONE 3: BOX CLUB
+                els.body.classList.add('zone-3');
+                els.zoneName.innerText = "📍 BOX CLUB";
+                els.zoneName.style.color = "#ff4757";
+                els.enemyName.innerText = "VS MIKAUTADZE";
+                if(!isDead) els.face.innerText = "🥊"; // Mikautadze Emoji
             }
-        }
-
-        function hitBj() {
-            if(!bjActive) return;
-            bjPlayerHand.push(drawCard());
-            updateBjUI(false);
-            if(calcBj(bjPlayerHand) > 21) endBj(false);
-        }
-
-        function standBj() {
-            if(!bjActive) return;
-            updateBjUI(true); // Dealer aufdecken
-            let dScore = calcBj(bjDealerHand);
-            
-            // Dealer zieht bis 17
-            let drawLoop = setInterval(() => {
-                dScore = calcBj(bjDealerHand);
-                if(dScore < 17) {
-                    bjDealerHand.push(drawCard());
-                    updateBjUI(true);
-                } else {
-                    clearInterval(drawLoop);
-                    determineBjWinner();
-                }
-            }, 800);
-        }
-
-        function determineBjWinner() {
-            let p = calcBj(bjPlayerHand);
-            let d = calcBj(bjDealerHand);
-            
-            if(d > 21 || p > d) endBj(true);
-            else if(p === d) endBj('tie');
-            else endBj(false);
-        }
-
-        function endBj(result) {
-            bjActive = false;
-            if(result === true) {
-                let win = bjBet * 2;
-                if(calcBj(bjPlayerHand) === 21 && bjPlayerHand.length === 2) win = Math.floor(bjBet * 2.5); // Blackjack 3:2
-                state.money += win;
-                msg.innerText = "GEWONNEN! +" + win; playSound('buy');
-            } else if (result === 'tie') {
-                state.money += bjBet;
-                msg.innerText = "UNENTSCHIEDEN!";
-            } else {
-                msg.innerText = "DEALER GEWINNT!";
-            }
-            document.getElementById('btn-bj-start').classList.remove('hidden');
-            document.getElementById('bj-actions').classList.add('hidden');
-            document.getElementById('bet-bj').disabled = false;
-            updateUI();
-        }
-
-        // ================= ROULETTE LOGIC (FIXED) =================
-        let wheelSpinning = false;
-        function spinRoulette(color) {
-            if(wheelSpinning) return;
-            let bet = parseInt(document.getElementById('bet-roulette').value);
-            if(isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
-            if(bet > state.money) return msg.innerText = "Zu arm!";
-            state.money -= bet; updateUI(); wheelSpinning = true;
-
-            const wheel = document.getElementById('wheel');
-            
-            // Rotation zurücksetzen (Trick)
-            wheel.style.transition = 'none';
-            wheel.style.transform = 'rotate(0deg)';
-            wheel.offsetHeight; // Trigger reflow
-
-            // Zufälliges Ergebnis (0-360 Grad)
-            let finalRot = Math.floor(Math.random() * 360);
-            
-            // Extra Drehungen hinzufügen für Animation
-            let spinAmount = (360 * 5) + (360 - finalRot); // 360-finalRot weil Pfeil oben ist
-            
-            wheel.style.transition = "transform 3s cubic-bezier(0.1, 0.7, 0.1, 1)";
-            wheel.style.transform = `rotate(${spinAmount}deg)`;
-
-            setTimeout(() => {
-                // Ergebnis berechnen
-                // Gradient: Green 0-20, Red 20-200, Black 200-360
-                // Da wir gegen den Uhrzeigersinn lesen, wenn das Rad CW dreht:
-                let resultColor = "";
-                if(finalRot >= 0 && finalRot < 20) resultColor = 'green';
-                else if(finalRot >= 20 && finalRot < 200) resultColor = 'red';
-                else resultColor = 'black';
-
-                if(color === resultColor) {
-                    let win = color === 'green' ? bet * 14 : bet * 2;
-                    state.money += win;
-                    msg.innerText = resultColor.toUpperCase() + "! GEWONNEN! +" + win;
-                    playSound('buy');
-                } else {
-                    msg.innerText = "Es kam " + resultColor.toUpperCase();
-                }
-                updateUI();
-                wheelSpinning = false;
-            }, 3000);
-        }
-
-        // --- OTHER CASINO ---
-        function spinCoin() {
-            let bet = parseInt(document.getElementById('bet-coin').value);
-            if (isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
-            if (bet > state.money) return msg.innerText = "Zu arm!";
-            state.money -= bet; updateUI();
-            
-            const coin = document.getElementById('coin');
-            coin.style.animation = 'none'; coin.offsetHeight; 
-            
-            let isHeads = Math.random() < 0.5;
-            let rotate = 1800 + (isHeads ? 0 : 180); 
-            
-            coin.style.transition = "transform 1.5s ease-out";
-            coin.style.transform = `rotateY(${rotate}deg)`;
-            
-            setTimeout(() => {
-                if (isHeads) { 
-                    state.money += bet * 2; msg.innerText = "YAZI! +" + bet*2; msg.style.color="#2ed573"; playSound('buy');
-                } else { msg.innerText = "TURA!"; msg.style.color="red"; }
-                updateUI();
-                setTimeout(() => { coin.style.transition = "none"; coin.style.transform = "rotateY(0deg)"; }, 1000);
-            }, 1500);
-        }
-
-        function spinSlots() {
-            if (state.money < 100) return msg.innerText = "Brauchst 100 €!";
-            state.money -= 100; updateUI();
-            const r1 = document.getElementById('reel1'), r2 = document.getElementById('reel2'), r3 = document.getElementById('reel3');
-            r1.classList.add('spinning'); r2.classList.add('spinning'); r3.classList.add('spinning');
-            const sym = ["👊", "🩴", "👨‍🦲", "🍒", "💎"];
-            
-            setTimeout(() => { r1.classList.remove('spinning'); r1.innerText = sym[Math.floor(Math.random()*5)]; }, 500);
-            setTimeout(() => { r2.classList.remove('spinning'); r2.innerText = sym[Math.floor(Math.random()*5)]; }, 1000);
-            setTimeout(() => {
-                r3.classList.remove('spinning');
-                let s3 = sym[Math.floor(Math.random()*5)]; r3.innerText = s3;
-                let s1 = r1.innerText, s2 = r2.innerText;
-                if (s1==s3 && s2==s3) { state.money += 1000; msg.innerText="JACKPOT!"; playSound('win'); }
-                else if (s1==s2 || s2==s3 || s1==s3) { state.money += 200; msg.innerText="Kleiner Gewinn!"; playSound('buy'); }
-                else msg.innerText="Niete!";
-                updateUI();
-            }, 1500);
         }
 
         // --- GAME CORE ---
-        function manualAttack(e) { if (!isDead) attackLogic(true, e.clientX, e.clientY); }
+        function manualAttack(e) { if(!isDead) attackLogic(true, e.clientX, e.clientY); }
         function autoAttack() {
-            if (isDead) return;
-            let dps = (state.staff['Champ']*1) + (state.staff['Lion']*5) + (state.staff['Haji Han']*25);
-            if (dps > 0) { const r = face.getBoundingClientRect(); attackLogic(false, r.left+r.width/2, r.top+r.height/2, dps); }
+            if(isDead) return;
+            let dps = (state.staff.Champ*1)+(state.staff.Lion*5)+(state.staff.Haji*25);
+            if(dps>0) {
+                const r = els.face.getBoundingClientRect();
+                attackLogic(false, r.left+r.width/2, r.top+r.height/2, dps);
+            }
         }
-        function attackLogic(isManual, x, y, autoDmg=0) {
+
+        function attackLogic(manual, x, y, autoDmg=0) {
             let dmg = 0; let w = weapons[state.currentWeapon];
-            if (isManual) {
+            if(manual) {
                 playSound('hit');
-                dmg = Math.floor(Math.random() * (w.dmg[1]-w.dmg[0]+1)) + w.dmg[0];
-                if (Math.random() < 0.15) { dmg *= 2; spawnParticles(x, y, 10, '#ff00ff'); } 
-                else { spawnParticles(x, y, 4, '#00ffff'); }
+                dmg = rand(w.dmg[0], w.dmg[1]);
+                if(Math.random()<0.15) { dmg*=2; spawnParticles(x,y,10,'#ff00ff'); }
+                else { spawnParticles(x,y,4,'cyan'); }
                 animateWeapon(w.icon);
-                state.money += Math.floor(Math.random()*3)+state.level;
-            } else { dmg = autoDmg; spawnParticles(x, y, 1, '#00ff00'); }
+                state.money += Math.floor(rand(1,3)+state.level);
+            } else { dmg = autoDmg; spawnParticles(x,y,1,'lime'); }
+            
             state.hp -= dmg; if(state.hp<0) state.hp=0;
-            updateUI(); updateFace();
+            updateUI();
+            
+            // Face reaction based on Zone
+            if(state.hp>0 && manual) {
+                // Nur kurzes Wackeln
+                els.face.classList.add('hit');
+                setTimeout(()=>els.face.classList.remove('hit'), 100);
+            }
+
             if(state.hp<=0) kill();
         }
-        function animateWeapon(icon) {
-            weaponAnim.innerText = icon; weaponAnim.style.opacity = '1'; weaponAnim.classList.add('smash-anim');
-            face.classList.add('hit');
-            setTimeout(() => { face.classList.remove('hit'); weaponAnim.classList.remove('smash-anim'); weaponAnim.style.opacity = '0'; }, 100);
-        }
-        function updateFace() {
-            let p = (state.hp/state.maxHp)*100;
-            if(state.hp>0) { if(p<30) face.innerText="🤢"; else if(p<60) face.innerText="🤕"; else face.innerText="😠"; }
-        }
+
         function kill() {
             isDead = true; playSound('win');
-            face.innerText = "😵"; face.classList.add('dead');
-            state.money += 50 * state.level;
-            msg.innerText = "K.O.! + " + (50*state.level) + " €";
-            resetBtn.classList.remove('hidden'); updateUI(); saveGame();
-        }
-        function nextLevel() {
-            state.level++; state.maxHp = Math.floor(state.maxHp*1.4); state.hp = state.maxHp;
-            isDead = false; face.innerText = "👨‍🦲"; face.classList.remove('dead');
-            resetBtn.classList.add('hidden'); msg.innerText = "Oguz Rebooted!";
+            els.face.innerText = "😵"; els.face.classList.add('dead');
+            let bonus = 50 * state.level; state.money += bonus;
+            els.msg.innerText = "SIEG! +"+bonus+"€";
+            els.reset.classList.remove('hidden');
             updateUI(); saveGame();
         }
-        function buyWeapon(k, p) {
+
+        function nextLevel() {
+            state.level++; state.maxHp = Math.floor(state.maxHp*1.4); state.hp = state.maxHp;
+            isDead = false; els.face.classList.remove('dead');
+            els.reset.classList.add('hidden');
+            els.msg.innerText = "Nächste Runde!";
+            updateZone(); updateUI(); saveGame();
+        }
+
+        function animateWeapon(icon) {
+            els.wAnim.innerText = icon; els.wAnim.style.opacity=1; els.wAnim.classList.add('smash-anim');
+            setTimeout(()=>{ els.wAnim.style.opacity=0; els.wAnim.classList.remove('smash-anim'); }, 100);
+        }
+
+        // --- SHOP ---
+        function buyWeapon(k,p) {
             if(state.inventory.includes(k)) { equip(k); return; }
-            if(state.money >= p) { state.money -= p; state.inventory.push(k); equip(k); playSound('buy'); }
+            if(state.money>=p) { state.money-=p; state.inventory.push(k); equip(k); playSound('buy'); }
             updateUI(); updateShopUI();
         }
-        function hireStaff(t, p) {
+        function hireStaff(t,p) {
             let cost = Math.floor(p * Math.pow(1.2, state.staff[t]));
-            if(state.money >= cost) { state.money -= cost; state.staff[t]++; playSound('buy'); }
+            if(state.money>=cost) { state.money-=cost; state.staff[t]++; playSound('buy'); }
             updateUI(); updateShopUI();
         }
-        function equip(k) { state.currentWeapon = k; updateShopUI(); }
-        function showTab(t) {
-            document.getElementById('tab-weapons').classList.add('hidden');
-            document.getElementById('tab-staff').classList.add('hidden');
-            document.getElementById('tab-casino').classList.add('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.remove('hidden');
-            event.target.classList.add('active');
+        function equip(k) { state.currentWeapon=k; updateShopUI(); }
+
+        // --- CASINO: BLACKJACK ---
+        let bjDeck=[], bjP=[], bjD=[], bjBet=0, bjActive=false;
+        function startBJ() {
+            if(bjActive) return;
+            let bet = parseInt(document.getElementById('bet-bj').value);
+            if(isNaN(bet)||bet<=0||bet>state.money) return els.msg.innerText="Ungültiger Einsatz!";
+            state.money-=bet; bjBet=bet; updateUI();
+            bjDeck=[2,3,4,5,6,7,8,9,10,10,10,10,11]; bjActive=true;
+            bjP=[draw(),draw()]; bjD=[draw(),draw()];
+            document.getElementById('btn-bj-start').classList.add('hidden');
+            document.getElementById('bj-acts').classList.remove('hidden');
+            updateBjUI(false);
+            if(calcBj(bjP)===21) standBJ();
         }
+        function draw(){ return bjDeck[Math.floor(Math.random()*bjDeck.length)]; }
+        function calcBj(h){ let s=h.reduce((a,b)=>a+b,0), a=h.filter(c=>c===11).length; while(s>21&&a>0){s-=10;a--;} return s; }
+        function updateBjUI(showD) {
+            document.getElementById('bj-p-cards').innerHTML = bjP.map(c=>`<div class='bj-card'>${c==11?'A':c}</div>`).join('');
+            document.getElementById('bj-p-score').innerText = calcBj(bjP);
+            let dHtml = `<div class='bj-card'>${bjD[0]==11?'A':bjD[0]}</div>`;
+            dHtml += showD ? `<div class='bj-card'>${bjD[1]==11?'A':bjD[1]}</div>` : `<div class='bj-card' style='background:#555'>?</div>`;
+            if(showD && bjD.length>2) for(let i=2;i<bjD.length;i++) dHtml+=`<div class='bj-card'>${bjD[i]==11?'A':bjD[i]}</div>`;
+            document.getElementById('bj-d-cards').innerHTML = dHtml;
+            document.getElementById('bj-d-score').innerText = showD ? calcBj(bjD) : "?";
+        }
+        function hitBJ() {
+            bjP.push(draw()); updateBjUI(false); if(calcBj(bjP)>21) endBJ(false);
+        }
+        function standBJ() {
+            updateBjUI(true);
+            let loop = setInterval(()=>{
+                if(calcBj(bjD)<17) { bjD.push(draw()); updateBjUI(true); }
+                else { clearInterval(loop); let p=calcBj(bjP), d=calcBj(bjD); endBJ(d>21||p>d ? true : (p==d?'tie':false)); }
+            }, 800);
+        }
+        function endBJ(res) {
+            bjActive=false;
+            if(res===true) { let w=bjBet*2; if(calcBj(bjP)==21&&bjP.length==2) w=Math.floor(bjBet*2.5); state.money+=w; els.msg.innerText="BJ: SIEG!"; playSound('buy'); }
+            else if(res==='tie') { state.money+=bjBet; els.msg.innerText="BJ: Unentschieden"; }
+            else els.msg.innerText="BJ: Verloren";
+            document.getElementById('btn-bj-start').classList.remove('hidden');
+            document.getElementById('bj-acts').classList.add('hidden');
+            updateUI();
+        }
+
+        // --- CASINO: ROULETTE (FIXED) ---
+        let spinning=false;
+        function spinRoulette(color) {
+            if(spinning) return;
+            let bet = parseInt(document.getElementById('bet-roulette').value);
+            if(isNaN(bet)||bet<=0||bet>state.money) return els.msg.innerText="Ungültiger Einsatz!";
+            state.money-=bet; updateUI(); spinning=true;
+            const w = document.getElementById('wheel');
+            w.style.transition='none'; w.style.transform='rotate(0deg)'; w.offsetHeight;
+            let rot = Math.floor(Math.random()*360);
+            let totalRot = 1440 + (360-rot);
+            w.style.transition="transform 3s cubic-bezier(0.1,0.7,0.1,1)";
+            w.style.transform=`rotate(${totalRot}deg)`;
+            
+            setTimeout(()=>{
+                let res='';
+                if(rot>=0 && rot<20) res='green'; else if(rot>=20 && rot<200) res='red'; else res='black';
+                if(color==res) { 
+                    let m = color=='green'?14:2; state.money+=bet*m; 
+                    els.msg.innerText=res.toUpperCase()+"! SIEG!"; playSound('buy');
+                } else els.msg.innerText="Es kam "+res;
+                updateUI(); spinning=false;
+            },3000);
+        }
+
+        // --- UTILS ---
         function updateUI() {
-            moneyEl.innerText = state.money;
-            hpBar.style.width = (state.hp/state.maxHp*100) + "%";
-            hpVal.innerText = state.hp + "/" + state.maxHp;
-            lvlBadge.innerText = "LVL " + state.level;
-            let r = Math.max(10 - state.level, 0); let b = Math.min(20 + (state.level*2), 60);
-            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${b})`;
+            els.money.innerText = Math.floor(state.money);
+            els.hpBar.style.width = (state.hp/state.maxHp*100)+"%";
+            els.hpVal.innerText = Math.floor(state.hp)+"/"+Math.floor(state.maxHp);
+            els.lvl.innerText = state.level;
         }
         function updateShopUI() {
-            document.querySelectorAll('.shop-btn').forEach(b => { b.classList.remove('active'); b.classList.remove('owned'); });
-            state.inventory.forEach(k => {
-                let b = document.getElementById('w-'+k);
-                if(b) { b.classList.add('owned'); b.querySelector('small').innerText = "BESITZ"; }
-            });
-            let ab = document.getElementById('w-'+state.currentWeapon);
-            if(ab) { ab.classList.add('active'); ab.querySelector('small').innerText = "AKTIV"; }
-            for(let t in state.staff) {
-                let b = document.getElementById('cnt-'+t);
-                if(state.staff[t]>0) { b.innerText = state.staff[t]; b.classList.remove('hidden'); }
+            state.inventory.forEach(k=>{ let b=document.getElementById('w-'+k); if(b){b.classList.add('owned'); b.querySelector('small').innerText="BESITZ";} });
+            let ab=document.getElementById('w-'+state.currentWeapon);
+            document.querySelectorAll('.shop-btn').forEach(b=>b.classList.remove('active'));
+            if(ab) ab.classList.add('active');
+            for(let k in state.staff) { let el=document.getElementById('cnt-'+k); if(el) el.innerText=state.staff[k]; }
+        }
+        function showTab(t) {
+            ['weapons','staff','casino'].forEach(x=>document.getElementById('tab-'+x).classList.add('hidden'));
+            document.getElementById('tab-'+t).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        function rand(min,max){ return Math.floor(Math.random()*(max-min+1)+min); }
+        function spawnParticles(x,y,n,c){
+            for(let i=0;i<n;i++){
+                let p=document.createElement('div'); p.className='particle'; p.style.background=c;
+                p.style.boxShadow="0 0 5px "+c; p.style.left=x+'px'; p.style.top=y+'px';
+                p.style.setProperty('--tx',(Math.random()-0.5)*100+'px');
+                p.style.setProperty('--ty',(Math.random()-0.5)*100+'px');
+                document.body.appendChild(p); setTimeout(()=>p.remove(),600);
             }
         }
-        function spawnParticles(x, y, n, c) {
-            for(let i=0; i<n; i++) {
-                let p = document.createElement('div'); p.classList.add('particle');
-                p.style.background = c; p.style.left=x+'px'; p.style.top=y+'px';
-                let tx = (Math.random()-0.5)*150; let ty = (Math.random()-0.5)*150;
-                p.style.setProperty('--tx', tx+'px'); p.style.setProperty('--ty', ty+'px');
-                document.body.appendChild(p); setTimeout(()=>p.remove(), 600);
-            }
-        }
-        function saveGame() { localStorage.setItem('zDovUlt', JSON.stringify(state)); saveNotify.style.opacity=1; setTimeout(()=>saveNotify.style.opacity=0, 1000); }
-        function loadGame() {
-            let s = localStorage.getItem('zDovUlt');
-            if(s) try { state = { ...state, ...JSON.parse(s) }; if(state.hp<=0) state.hp=1; } catch(e){}
-        }
+        function saveGame() { localStorage.setItem('zDovCity', JSON.stringify(state)); els.save.style.opacity=1; setTimeout(()=>els.save.style.opacity=0,1000); }
+        function loadGame() { try{let s=JSON.parse(localStorage.getItem('zDovCity')); if(s) state={...state,...s}; if(state.hp<=0) state.hp=1; }catch(e){} }
     </script>
 </body>
 </html>
