@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Z' DÖV </title>
+    <title>Z' DÖV - CYBER EDITION</title>
     <style>
+        /* --- GRUNDLAGEN --- */
         body {
-            background-color: #111;
+            background-color: #0a0a12; /* Dunklerer Cyber-Hintergrund */
             color: white;
-            font-family: "Courier New", Courier, monospace;
+            /* Courier New für den Retro-Hacker Look im Hauptteil lassen wir */
+            font-family: "Courier New", Courier, monospace; 
             text-align: center;
             margin: 0;
             padding: 10px;
@@ -19,50 +21,54 @@
             transition: background-color 1s ease;
         }
 
+        /* --- ÜBERSCHRIFTEN --- */
         h1 { 
-            color: #ff4757; 
+            color: #ff00ff; /* Magenta Neon */
             margin: 0; 
             font-size: 2.2rem; 
             text-transform: uppercase; 
             letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5);
         }
         
         .level-badge {
-            background: #ff4757;
-            color: white;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: black;
+            font-weight: bold;
             padding: 2px 8px;
-            border-radius: 5px;
+            border-radius: 2px; /* Eckiger = technischer */
             font-size: 0.8rem;
             vertical-align: middle;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
-        /* Save Icon */
         #save-notify {
             position: absolute;
             top: 10px; right: 10px;
             font-size: 0.8rem;
-            color: #2ed573;
+            color: #00ffff; /* Cyan */
+            text-shadow: 0 0 5px #00ffff;
             opacity: 0;
             transition: opacity 0.5s;
         }
 
-        /* Stats Zeile */
+        /* --- STATS BAR --- */
         .stats-bar {
-            background: rgba(255,255,255,0.1);
+            background: rgba(10, 10, 20, 0.8);
             padding: 8px;
             margin-top: 10px;
-            border-radius: 10px;
+            /* Futuristischer Rahmen statt runder Ecken */
+            border: 1px solid #00ffff;
+            box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
             display: flex;
             justify-content: space-around;
             font-size: 0.9rem;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.2);
         }
         
-        .money { color: gold; font-weight: bold; font-size: 1.1rem; }
+        .money { color: #f1c40f; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 5px #f1c40f; }
 
-        /* Arena */
+        /* --- ARENA & GESICHT --- */
         .arena {
             height: 230px;
             display: flex;
@@ -77,13 +83,13 @@
             cursor: pointer;
             transition: transform 0.05s;
             z-index: 10;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+            /* Cyber Glow hinter dem Kopf */
+            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.3));
             position: relative;
         }
 
         #face:active { transform: scale(0.9); }
 
-        /* Waffe Animation */
         #weapon-anim {
             position: absolute;
             font-size: 80px;
@@ -99,13 +105,14 @@
             left: 55% !important; 
         }
 
-        /* Partikel */
+        /* --- PARTIKEL (Neon-Look) --- */
         .particle {
             position: absolute;
             pointer-events: none;
-            background: cyan;
-            width: 8px;
-            height: 8px;
+            background: #00ffff;
+            box-shadow: 0 0 5px #00ffff;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             z-index: 99;
             animation: fly 0.6s linear forwards;
@@ -116,123 +123,190 @@
         }
 
         /* Animationen */
-        .hit { color: #ff4757; transform: rotate(15deg) scale(0.95); }
-        .dead { filter: grayscale(100%); opacity: 0.5; transform: rotate(180deg); pointer-events: none; }
+        .hit { color: #ff00ff; transform: rotate(15deg) scale(0.95); filter: drop-shadow(0 0 10px #ff00ff); }
+        .dead { filter: grayscale(100%) brightness(0.5); opacity: 0.7; transform: rotate(180deg); pointer-events: none; }
 
-        /* Balken */
+        /* --- LEBENSBALKEN (Tech-Look) --- */
         .bar-container {
             width: 90%;
             height: 20px;
-            border: 2px solid rgba(255,255,255,0.5);
+            /* Leuchtender Rahmen */
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
             margin: 0 auto;
             position: relative;
-            background: rgba(0,0,0,0.5);
-            border-radius: 15px;
+            background: rgba(0,0,0,0.7);
+            /* Keine runden Ecken für Tech-Look */
             overflow: hidden;
         }
 
         .bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            /* Cyber Gradient */
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
             width: 100%;
             transition: width 0.1s;
         }
 
-        /* SHOP & TABS */
+        /* --- SHOP AREA (FUTURISTISCH) --- */
         .shop-area {
-            margin-top: 10px;
-            padding-top: 5px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px 20px 0 0;
+            margin-top: 15px;
+            padding-top: 10px;
+            background: rgba(10, 10, 15, 0.9);
+            border-top: 2px solid #00ffff;
+            box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.2);
             padding-bottom: 50px;
-            height: 300px;
+            height: 320px;
             overflow-y: auto;
+            /* Scanline Effekt */
+            background-image: linear-gradient(transparent 50%, rgba(0, 255, 255, 0.05) 50%);
+            background-size: 10px 4px;
         }
 
         .tab-buttons {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .tab-btn {
-            background: none;
+            background: rgba(0,0,0,0.5);
             border: 1px solid #555;
             color: #888;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 8px 20px;
             cursor: pointer;
+            font-family: sans-serif; /* Modernere Schrift für UI */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
         }
+        
+        /* Cooler Hover Effekt für Tabs */
+        .tab-btn::before {
+            content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .tab-btn:hover::before { left: 100%; }
+
         .tab-btn.active {
-            background: white;
-            color: black;
-            border-color: white;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border-color: #00ffff;
             font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) inset;
         }
 
         .shop-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            max-width: 400px;
+            gap: 12px;
+            max-width: 420px;
             margin: 0 auto;
             padding: 0 10px;
         }
 
+        /* --- NEUE FUTURISTISCHE SHOP BUTTONS --- */
         .shop-btn {
-            background: #2f3542;
-            color: #ccc;
-            border: 1px solid #57606f;
-            padding: 8px;
-            border-radius: 8px;
+            /* Dunkler, technischer Hintergrund */
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.9), rgba(10, 10, 20, 0.9));
+            color: #aaa;
+            /* Leuchtender Basis-Rahmen */
+            border: 1px solid #333;
+            padding: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             gap: 10px;
-            transition: 0.2s;
+            transition: all 0.3s ease;
             text-align: left;
             position: relative;
+            overflow: hidden;
         }
 
-        .shop-btn .icon { font-size: 1.8rem; }
+        /* Hover Effekt: Helles Aufleuchten */
+        .shop-btn:hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            color: white;
+        }
+
+        .shop-btn .icon { font-size: 2rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
         .shop-btn div { display: flex; flex-direction: column; }
-        .shop-btn h4 { margin: 0; font-size: 0.9rem; }
-        .shop-btn small { font-size: 0.75rem; color: #a4b0be; }
         
-        /* Zähler für Anzahl der Mitarbeiter */
+        /* Modernere Schrift für die Namen */
+        .shop-btn h4 { 
+            margin: 0; 
+            font-size: 0.85rem; 
+            font-family: sans-serif; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            font-weight: normal;
+        }
+        .shop-btn small { font-size: 0.75rem; color: #00ffff; opacity: 0.7; }
+        
+        /* Zähler Badge */
         .count-badge {
             position: absolute;
-            top: -5px; right: -5px;
-            background: #2ed573;
-            color: black;
-            border-radius: 50%;
-            width: 20px; height: 20px;
+            top: 5px; right: 5px;
+            background: #ff00ff; /* Magenta */
+            color: white;
+            box-shadow: 0 0 5px #ff00ff;
+            width: 22px; height: 22px;
             font-size: 0.7rem;
             display: flex; align-items: center; justify-content: center;
             font-weight: bold;
+            font-family: sans-serif;
         }
 
-        .shop-btn.owned { border-color: gold; color: white; background: #2f3542; }
-        .shop-btn.active { background: linear-gradient(45deg, gold, orange); color: black; border-color: white; }
-        
-        #msg { min-height: 20px; color: yellow; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
+        /* IM BESITZ (Gold/Gelb Tech Look) */
+        .shop-btn.owned { 
+            border-color: #f1c40f;
+            color: #ddd;
+            box-shadow: inset 0 0 10px rgba(241, 196, 15, 0.2);
+        }
 
+        /* AKTIV / AUSGERÜSTET (Pulsierender Cyber-Look) */
+        @keyframes cyber-pulse {
+            0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; border-color: #ff00ff; }
+            50% { box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff; border-color: #00ffff; }
+            100% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; border-color: #ff00ff; }
+        }
+
+        .shop-btn.active { 
+            background: linear-gradient(135deg, rgba(255,0,255,0.2), rgba(0,255,255,0.2));
+            color: white;
+            animation: cyber-pulse 2s infinite alternate;
+            transform: scale(1.02);
+            z-index: 2;
+        }
+        .shop-btn.active h4 { color: #00ffff; font-weight: bold; }
+        
+        /* Nachrichten */
+        #msg { min-height: 20px; color: #00ffff; margin: 5px 0; font-weight: bold; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,255,255,0.5);}
+
+        /* Reset Button */
         #reset-btn {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 1.2rem;
-            background: #2ed573;
-            border: none;
-            color: white;
-            border-radius: 50px;
+            /* Cyber Gradient Button */
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border: 2px solid #00ff00;
+            color: black;
+            font-weight: bold;
+            text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(46, 213, 115, 0.6);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
             z-index: 20;
             white-space: nowrap;
+            font-family: sans-serif;
         }
         .hidden { display: none; }
 
@@ -240,7 +314,7 @@
 </head>
 <body>
 
-    <div id="save-notify">💾 Gespeichert</div>
+    <div id="save-notify">💾 SYSTEM GESPEICHERT</div>
 
     <h1>Z' DÖV <span class="level-badge" id="lvl-badge">LVL 1</span></h1>
     
@@ -253,7 +327,7 @@
         <div id="health" class="bar-fill"></div>
     </div>
     
-    <p id="msg">HALLET BUNU!!</p>
+    <p id="msg">Cyber-Geschäft eröffnet!</p>
 
     <div class="arena">
         <div id="weapon-anim">👊</div>
@@ -265,8 +339,8 @@
 
     <div class="shop-area">
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('weapons')">⚔️ Waffen</button>
-            <button class="tab-btn" onclick="showTab('staff')">👥 Mitarbeiter</button>
+            <button class="tab-btn active" onclick="showTab('weapons')">⚔️ ARSENAL</button>
+            <button class="tab-btn" onclick="showTab('staff')">👥 CREW</button>
         </div>
 
         <div id="tab-weapons" class="shop-grid">
@@ -276,40 +350,40 @@
             </button>
             <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)">
                 <span class="icon">🩴</span>
-                <div><h4>Terlik</h4><small>50 €</small></div>
+                <div><h4>Terlik v2.0</h4><small>50 €</small></div>
             </button>
             <button id="w-pan" class="shop-btn" onclick="buyWeapon('pan', 250)">
                 <span class="icon">🍳</span>
-                <div><h4>Pfanne</h4><small>250 €</small></div>
+                <div><h4>Cyber-Pfanne</h4><small>250 €</small></div>
             </button>
             <button id="w-hammer" class="shop-btn" onclick="buyWeapon('hammer', 600)">
                 <span class="icon">🔨</span>
-                <div><h4>Hammer</h4><small>600 €</small></div>
+                <div><h4>Hammer X-9000</h4><small>600 €</small></div>
             </button>
              <button id="w-bat" class="shop-btn" onclick="buyWeapon('bat', 1500)">
                 <span class="icon">🏏</span>
-                <div><h4>Keule</h4><small>1500 €</small></div>
+                <div><h4>Laser-Keule</h4><small>1500 €</small></div>
             </button>
             <button id="w-fart" class="shop-btn" onclick="buyWeapon('fart', 5000)">
                 <span class="icon">☣️</span>
-                <div><h4>Sakirden uppercut</h4><small>5000 €</small></div>
+                <div><h4>Bio-Hazard Döv</h4><small>5000 €</small></div>
             </button>
         </div>
 
         <div id="tab-staff" class="shop-grid hidden">
             <button class="shop-btn" onclick="hireStaff('Champ', 100)">
                 <span class="icon">🧢</span>
-                <div><h4>Champ</h4><small>100 € (1/s)</small></div>
+                <div><h4>Champ Bot</h4><small>100 € (1/s)</small></div>
                 <div id="cnt-Champ" class="count-badge hidden">0</div>
             </button>
             <button class="shop-btn" onclick="hireStaff('Lion', 500)">
                 <span class="icon">🕶️</span>
-                <div><h4>Lion</h4><small>500 € (5/s)</small></div>
+                <div><h4>Lion Cyborg</h4><small>500 € (5/s)</small></div>
                 <div id="cnt-Lion" class="count-badge hidden">0</div>
             </button>
              <button class="shop-btn" onclick="hireStaff('Haji Han', 2000)">
                 <span class="icon">🚐</span>
-                <div><h4>Haji Han</h4><small>2k € (25/s)</small></div>
+                <div><h4>Haji Han Mech</h4><small>2k € (25/s)</small></div>
                 <div id="cnt-Haji Han" class="count-badge hidden">0</div>
             </button>
         </div>
@@ -325,7 +399,7 @@
             inventory: ['fist'],
             currentWeapon: 'fist',
             staff: {
-                'Champ': 0, // Hier hast du die Namen geändert
+                'Champ': 0,
                 'Lion': 0,
                 'Haji Han': 0
             }
@@ -336,18 +410,18 @@
         // Waffen Daten
         const weapons = {
             'fist':    { dmg: [5, 9],    icon: '👊', name: 'Keremin yumrugu' },
-            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik' },
-            'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Pfanne' },
-            'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer' },
-            'bat':     { dmg: [150, 250], icon: '🏏', name: 'Keule' },
-            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Sakirden uppercut' }
+            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik v2.0' },
+            'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Cyber-Pfanne' },
+            'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer X-9000' },
+            'bat':     { dmg: [150, 250], icon: '🏏', name: 'Laser-Keule' },
+            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Bio-Hazard Döv' }
         };
 
-        // Staff Daten - Namen müssen exakt mit 'state.staff' übereinstimmen!
+        // Staff Daten
         const staffData = {
-            'Champ': { dps: 1, name: "Champ" },
-            'Lion':  { dps: 5, name: "Lion" },
-            'Haji Han': { dps: 25, name: "Haji Han" }
+            'Champ': { dps: 1, name: "Champ Bot" },
+            'Lion':  { dps: 5, name: "Lion Cyborg" },
+            'Haji Han': { dps: 25, name: "Haji Han Mech" }
         };
 
         // Elemente
@@ -378,7 +452,6 @@
         function autoAttack() {
             if (isDead) return;
             
-            // HIER WAR DER FEHLER: Wir müssen jetzt Champ, Lion und Haji Han nutzen
             let totalDps = (state.staff['Champ'] * staffData['Champ'].dps) + 
                            (state.staff['Lion'] * staffData['Lion'].dps) + 
                            (state.staff['Haji Han'] * staffData['Haji Han'].dps);
@@ -401,21 +474,21 @@
                 
                 if (Math.random() < 0.15) {
                     dmg = Math.floor(dmg * 2);
-                    spawnParticles(x, y, 10, 'red');
-                    msg.innerText = "💥 HELAL! " + dmg;
-                    msg.style.color = "red";
+                    spawnParticles(x, y, 10, '#ff00ff'); // Magenta bei Crit
+                    msg.innerText = "💥 CRIT! " + dmg;
+                    msg.style.color = "#ff00ff";
                     if (navigator.vibrate) navigator.vibrate(50);
                 } else {
-                    spawnParticles(x, y, 4, 'cyan');
+                    spawnParticles(x, y, 4, '#00ffff'); // Cyan normal
                     msg.innerText = "-" + dmg;
-                    msg.style.color = "yellow";
+                    msg.style.color = "#00ffff";
                 }
                 
                 animateWeapon(currentW.icon);
                 state.money += Math.floor(Math.random() * 3) + state.level;
             } else {
                 dmg = autoDmg;
-                spawnParticles(x, y, 1, 'lime'); 
+                spawnParticles(x, y, 1, '#00ff00'); // Grün bei Auto
             }
 
             state.hp -= dmg;
@@ -460,8 +533,8 @@
             let bonus = 50 * state.level;
             state.money += bonus;
             
-            msg.innerText = "K.O.! + " + bonus + " €";
-            msg.style.color = "#2ed573";
+            msg.innerText = "SYSTEM CRASH! + " + bonus + " €";
+            msg.style.color = "#00ff00";
             
             resetBtn.classList.remove("hidden");
             if (navigator.vibrate) navigator.vibrate([100,50,100]);
@@ -479,8 +552,8 @@
             face.innerText = "👨‍🦲";
             face.classList.remove("dead");
             resetBtn.classList.add("hidden");
-            msg.innerText = "Z geri geldi kelek!!!!";
-            msg.style.color = "white";
+            msg.innerText = "Oguz Rebooted!";
+            msg.style.color = "#00ffff";
             
             updateUI();
             saveGame();
@@ -496,10 +569,10 @@
                 state.money -= price;
                 state.inventory.push(key);
                 equip(key);
-                msg.innerText = "Gekauft: " + weapons[key].name;
+                msg.innerText = "Erworben: " + weapons[key].name;
             } else {
-                msg.innerText = "Fehlt: " + (price - state.money) + " €";
-                msg.style.color = "orange";
+                msg.innerText = "Zu wenig Credits! Fehlt: " + (price - state.money) + " €";
+                msg.style.color = "#ff00ff";
             }
             updateUI();
             updateShopUI();
@@ -512,18 +585,18 @@
             if (state.money >= realPrice) {
                 state.money -= realPrice;
                 state.staff[type]++;
-                msg.innerText = "Eingestellt: " + staffData[type].name;
+                msg.innerText = "Aktiviert: " + staffData[type].name;
                 updateUI();
                 updateShopUI(); 
             } else {
-                msg.innerText = "Fehlt: " + (realPrice - state.money) + " €";
-                msg.style.color = "orange";
+                msg.innerText = "Zu wenig Credits! Fehlt: " + (realPrice - state.money) + " €";
+                msg.style.color = "#ff00ff";
             }
         }
 
         function equip(key) {
             state.currentWeapon = key;
-            msg.innerText = "Ausrüstung: " + weapons[key].name;
+            msg.innerText = "Geladen: " + weapons[key].name;
             updateShopUI();
         }
 
@@ -550,8 +623,11 @@
             hpVal.innerText = state.hp + " / " + state.maxHp;
             lvlBadge.innerText = "LVL " + state.level;
             
-            let r = Math.max(17 - (state.level), 0);
-            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${r})`;
+            // Hintergrund Farbe im Cyber Look
+            let base = 10;
+            let r = Math.max(base - state.level, 0);
+            let b = Math.min(base + (state.level*2), 50);
+            document.body.style.backgroundColor = `rgb(${r}, ${r}, ${b})`;
         }
 
         function updateShopUI() {
@@ -564,14 +640,13 @@
                 let btn = document.getElementById('w-' + key);
                 if(btn) {
                     btn.classList.add('owned');
-                    btn.querySelector('small').innerText = "Im Besitz";
+                    btn.querySelector('small').innerText = "BEREIT";
                 }
             });
             
             let activeBtn = document.getElementById('w-' + state.currentWeapon);
             if(activeBtn) activeBtn.classList.add('active');
 
-            // HIER AUCH KORRIGIERT: Badge IDs passend zu den neuen Namen
             for (let type in state.staff) {
                 let count = state.staff[type];
                 let badge = document.getElementById('cnt-' + type);
@@ -588,6 +663,7 @@
                 let p = document.createElement('div');
                 p.classList.add('particle');
                 p.style.backgroundColor = color;
+                p.style.boxShadow = "0 0 5px " + color; // Neon Glow für Partikel
                 p.style.left = x + 'px';
                 p.style.top = y + 'px';
                 let tx = (Math.random() - 0.5) * 150;
@@ -601,9 +677,7 @@
 
         // --- SAVE / LOAD ---
         function saveGame() {
-            // Neuer Speicher-Name, damit es keine Konflikte gibt
             localStorage.setItem('zDovSave_Oguz', JSON.stringify(state));
-            
             saveNotify.style.opacity = 1;
             setTimeout(() => { saveNotify.style.opacity = 0; }, 1000);
         }
