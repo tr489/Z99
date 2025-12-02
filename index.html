@@ -3,58 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z#99' döv </title>
-    
+    <title>Z' DÖV - Ultimate Edition</title>
     <link rel="stylesheet" href="style.css">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <header class="game-header">
-        <h1>
-            <i class="fa-solid fa-fire"></i> Z' DÖV <i class="fa-solid fa-fire"></i>
-        </h1>
-        <p>| Keli döv |</p>
-    </header>
-
     <div class="game-container">
-        
-        <div class="stats-panel">
+        <header>
+            <h1>Z' DÖV</h1>
+            <h2>Keli döv</h2>
+        </header>
+
+        <div class="stats-board">
             <div class="stat-box">
-                <i class="fa-solid fa-hand-fist"></i> Schläge:
-                <span id="strike-count" class="stat-value">0</span>
-            </div>
-            <div class="stat-box">
-                <i class="fa-solid fa-heart-pulse"></i> Energie:
-                <span id="health-count" class="stat-value">100</span>
+                <span class="label">Schläge</span>
+                <span id="score" class="value">0</span>
             </div>
         </div>
 
-        <div class="health-bar-container">
-            <div class="health-bar-label">GEGNER ENERGIE</div>
-            <div id="health-bar" class="health-bar" style="width: 100%;"></div>
-        </div>
-        
-        <div class="dummy-container">
-            <div id="dummy-hitbox" class="dummy-hitbox">
-                
-                <div class="mouth-shape"></div>
-
-                <div class="hit-effect" id="hit-effect">BAM!</div>
+        <main class="arena">
             
+            <div class="fighter player">
+                <h3>Du (Energie)</h3>
+                <div class="health-bar-container">
+                    <div id="player-health" class="health-bar" style="width: 100%;"></div>
+                </div>
+                <div id="player-health-text">100 / 100</div>
             </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter enemy">
+                <h3>Gegner</h3>
+                <div class="health-bar-container">
+                    <div id="enemy-health" class="health-bar enemy-bar" style="width: 100%;"></div>
+                </div>
+                <div id="enemy-health-text">100 / 100</div>
+            </div>
+
+        </main>
+
+        <div class="controls">
+            <button id="hit-btn" class="btn-attack">BAM! 👊</button>
+            <button id="reset-btn" class="btn-reset hidden">Yine DÖV! (Neustart) 🔄</button>
         </div>
 
-        <div id="message-area" class="message-area hidden"></div>
-
-        <button id="restart-btn" class="restart-btn hidden">
-            <i class="fa-solid fa-rotate-right"></i> Yine DÖV!
-        </button>
-
+        <p id="message-log" class="log">Kampf bereit...</p>
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
