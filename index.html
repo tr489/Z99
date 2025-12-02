@@ -3,39 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z' DÖV - CASINO DELUXE</title>
+    <title>Z' DÖV - CASINO ULTIMATE</title>
     <style>
         /* --- GRUNDLAGEN --- */
-        * {
-            touch-action: manipulation; 
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
-
+        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         body {
-            background-color: #0a0a12;
-            color: white;
+            background-color: #0a0a12; color: white;
             font-family: "Courier New", Courier, monospace; 
-            text-align: center;
-            margin: 0;
-            padding: 10px;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
+            text-align: center; margin: 0; padding: 10px;
+            overflow: hidden; user-select: none; -webkit-user-select: none;
             transition: background-color 1s ease;
         }
-
         h1 { 
             color: #ff00ff; margin: 0; font-size: 2.0rem; text-transform: uppercase; 
             text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
         }
-        
         .level-badge {
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            color: black; font-weight: bold; padding: 2px 8px; border-radius: 2px;
-            font-size: 0.8rem; vertical-align: middle;
+            background: linear-gradient(45deg, #ff00ff, #00ffff); color: black; 
+            font-weight: bold; padding: 2px 8px; border-radius: 2px; font-size: 0.8rem; vertical-align: middle;
         }
-
         #save-notify {
             position: absolute; top: 10px; right: 10px; font-size: 0.8rem;
             color: #00ffff; text-shadow: 0 0 5px #00ffff; opacity: 0; transition: opacity 0.5s;
@@ -44,55 +30,43 @@
         /* --- STATS --- */
         .stats-bar {
             background: rgba(10, 10, 20, 0.8); padding: 5px; margin-top: 5px;
-            border: 1px solid #00ffff; display: flex; justify-content: space-around;
-            font-size: 0.9rem;
+            border: 1px solid #00ffff; display: flex; justify-content: space-around; font-size: 0.9rem;
         }
         .money { color: #f1c40f; font-weight: bold; font-size: 1.1rem; }
 
         /* --- ARENA --- */
         .arena {
-            height: 200px; display: flex; justify-content: center; align-items: center;
+            height: 190px; display: flex; justify-content: center; align-items: center;
             position: relative; margin-top: 10px;
         }
-
         #face {
-            font-size: 110px; cursor: pointer; transition: transform 0.05s; z-index: 10;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3)); touch-action: manipulation; 
+            font-size: 100px; cursor: pointer; transition: transform 0.05s; z-index: 10;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
         }
         #face:active { transform: scale(0.9); }
-
-        #weapon-anim {
-            position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11;
-        }
+        #weapon-anim { position: absolute; font-size: 80px; opacity: 0; pointer-events: none; z-index: 11; }
         .smash-anim { transform: scale(1.2) rotate(-45deg); opacity: 1 !important; left: 55%; top: 20%; transition: all 0.1s; }
-
         .particle {
             position: absolute; pointer-events: none; background: #00ffff;
             box-shadow: 0 0 5px #00ffff; width: 6px; height: 6px; border-radius: 50%;
             z-index: 99; animation: fly 0.6s linear forwards;
         }
-        @keyframes fly {
-            0% { transform: translate(0,0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
-
+        @keyframes fly { 0% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
         .hit { color: #ff00ff; transform: rotate(15deg) scale(0.95); }
         .dead { filter: grayscale(100%) brightness(0.5); opacity: 0.7; transform: rotate(180deg); pointer-events: none; }
 
         /* --- HP BAR --- */
         .bar-container {
-            width: 90%; height: 15px; border: 1px solid #ff00ff; margin: 5px auto;
-            background: rgba(0,0,0,0.7);
+            width: 90%; height: 15px; border: 1px solid #ff00ff; margin: 5px auto; background: rgba(0,0,0,0.7);
         }
         .bar-fill { height: 100%; background: linear-gradient(90deg, #ff00ff, #00ffff); width: 100%; transition: width 0.1s; }
 
-        /* --- SHOP & CASINO UI --- */
+        /* --- SHOP/CASINO UI --- */
         .shop-area {
             margin-top: 5px; padding-top: 5px; background: rgba(10, 10, 15, 0.95);
             border-top: 2px solid #00ffff; box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.2);
-            height: 380px; overflow-y: auto;
+            height: 400px; overflow-y: auto;
         }
-
         .tab-buttons { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; padding: 0 5px; }
         .tab-btn {
             background: rgba(0,0,0,0.5); border: 1px solid #555; color: #888;
@@ -109,7 +83,6 @@
         }
         .shop-btn.owned { border-color: #f1c40f; color: #ddd; }
         .shop-btn.active { border-color: #00ffff; color: white; box-shadow: 0 0 5px #00ffff; }
-        .shop-btn .icon { font-size: 1.5rem; }
         .shop-btn h4 { margin: 0; font-size: 0.75rem; }
         .shop-btn small { font-size: 0.65rem; color: #00ffff; }
         .count-badge {
@@ -117,78 +90,64 @@
             width: 18px; height: 18px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- CASINO ANIMATIONEN --- */
+        /* --- CASINO COMPONENTS --- */
         .casino-box {
             background: rgba(0,0,0,0.3); border: 1px solid #444; padding: 10px;
             margin-bottom: 15px; width: 95%; margin-left: auto; margin-right: auto;
-            position: relative;
         }
         .casino-title { color: gold; margin: 0 0 5px 0; font-size: 0.9rem; text-transform: uppercase; }
-        .bet-input { background: #111; border: 1px solid #555; color: white; width: 60px; text-align: center; }
-        .casino-btn { background: #333; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; }
+        .bet-input { background: #111; border: 1px solid #555; color: white; width: 70px; text-align: center; }
+        .casino-btn { background: #333; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; margin: 2px; }
         
-        /* 1. MÜNZWURF ANIMATION */
-        .coin-container {
-            width: 60px; height: 60px; margin: 10px auto; perspective: 600px;
-        }
-        .coin {
-            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
-            transition: transform 1s ease-out;
-        }
-        .coin.flip { animation: flipCoin 1s forwards; }
-        .coin-side {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; border: 2px solid gold; box-shadow: 0 0 10px gold;
-        }
-        .heads { background: #f1c40f; color: black; transform: rotateY(0deg); } /* YAZI */
-        .tails { background: #e67e22; color: white; transform: rotateY(180deg); } /* TURA */
-
-        @keyframes flipCoin {
-            0% { transform: rotateY(0); }
-            100% { transform: rotateY(1800deg); } /* 5 Drehungen */
-        }
-
-        /* 2. SLOT ANIMATION */
-        .slot-machine {
-            display: flex; justify-content: center; gap: 5px; margin: 10px 0;
-            background: #222; padding: 10px; border: 2px solid gold; border-radius: 5px;
-        }
-        .reel {
-            width: 40px; height: 50px; background: white; color: black; font-size: 30px;
-            overflow: hidden; line-height: 50px; border: 1px solid #555;
-        }
-        .reel.spinning { animation: spinReel 0.1s infinite linear; color: transparent; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        
-        @keyframes spinReel {
-            0% { transform: translateY(-2px); }
-            50% { transform: translateY(2px); }
-            100% { transform: translateY(-2px); }
-        }
-
-        /* 3. ROULETTE ANIMATION */
+        /* Roulette Wheel */
+        .roulette-wrapper { position: relative; width: 100px; height: 100px; margin: 10px auto; }
         .roulette-wheel {
-            width: 80px; height: 80px; margin: 10px auto; border-radius: 50%;
-            background: conic-gradient(red 0deg 170deg, green 170deg 190deg, black 190deg 360deg);
-            border: 3px solid white; position: relative; transition: transform 2s cubic-bezier(0.1, 0.7, 0.1, 1);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            width: 100%; height: 100%; border-radius: 50%; border: 4px solid white;
+            /* Green: 0-20deg, Red: 20-200deg, Black: 200-360deg */
+            background: conic-gradient(#2ed573 0deg 20deg, #e74c3c 20deg 200deg, #222 200deg 360deg);
+            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+            transform: rotate(0deg);
         }
         .roulette-arrow {
-            width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
-            border-top: 10px solid gold; position: absolute; top: -10px; left: 35px; z-index: 5;
+            width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent;
+            border-top: 12px solid gold; position: absolute; top: -5px; left: 42px; z-index: 5;
         }
-        .wheel-inner { width: 100%; height: 100%; border-radius: 50%; }
+
+        /* Blackjack */
+        .bj-table { background: #004400; padding: 10px; border-radius: 5px; border: 2px solid #555; }
+        .cards-area { display: flex; justify-content: center; gap: 5px; margin: 5px 0; min-height: 40px; }
+        .bj-card {
+            background: white; color: black; padding: 2px 5px; border-radius: 3px; font-weight: bold;
+            width: 30px; height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; border: 1px solid #aaa;
+        }
+        .bj-controls { margin-top: 5px; }
+        .bj-score { color: white; font-size: 0.8rem; margin-bottom: 5px; }
+
+        /* Animations */
+        .coin-container { width: 50px; height: 50px; margin: 10px auto; perspective: 600px; }
+        .coin { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1s ease-out; }
+        .coin-side {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            backface-visibility: hidden; border: 2px solid gold;
+        }
+        .heads { background: gold; color: black; }
+        .tails { background: orange; color: white; transform: rotateY(180deg); }
+
+        .slot-machine { display: flex; justify-content: center; gap: 5px; margin: 10px 0; background: #222; padding: 5px; }
+        .reel { width: 30px; height: 40px; background: white; color: black; line-height: 40px; border: 1px solid #555; }
+        .spinning { animation: spin 0.1s infinite linear; color: transparent; text-shadow: 0 0 5px black; }
+        @keyframes spin { 0% { transform: translateY(-2px); } 50% { transform: translateY(2px); } 100% { transform: translateY(-2px); } }
 
         #msg { min-height: 20px; color: #00ffff; margin: 5px 0; font-weight: bold; font-size: 0.9rem;}
         #reset-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             padding: 15px 40px; font-size: 1.2rem;
             background: linear-gradient(90deg, #00b894, #00cec9); border: 2px solid #00ff00;
-            color: black; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); z-index: 20;
+            color: black; font-weight: bold; cursor: pointer; z-index: 20;
         }
         .hidden { display: none; }
-
     </style>
 </head>
 <body>
@@ -202,16 +161,14 @@
         <span class="money"><span id="money-val">0</span> €</span>
     </div>
 
-    <div class="bar-container">
-        <div id="health" class="bar-fill"></div>
-    </div>
+    <div class="bar-container"><div id="health" class="bar-fill"></div></div>
     
-    <p id="msg">Mach dein Glück!</p>
+    <p id="msg">Dein Imperium wartet!</p>
 
     <div class="arena">
         <div id="weapon-anim">👊</div>
         <div id="face" onclick="manualAttack(event)">👨‍🦲</div>
-        <button id="reset-btn" class="hidden" onclick="nextLevel()">NEXT LEVEL >>></button>
+        <button id="reset-btn" class="hidden" onclick="nextLevel()">NÄCHSTES LEVEL >>></button>
     </div>
 
     <div class="shop-area">
@@ -222,40 +179,55 @@
         </div>
 
         <div id="tab-weapons" class="shop-grid">
-            <button id="w-fist" class="shop-btn active" onclick="equip('fist')">
-                <span class="icon">👊</span><div><h4>Faust</h4><small>Gratis</small></div>
-            </button>
-            <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)">
-                <span class="icon">🩴</span><div><h4>Terlik v2</h4><small>50 €</small></div>
-            </button>
-            <button id="w-pan" class="shop-btn" onclick="buyWeapon('pan', 250)">
-                <span class="icon">🍳</span><div><h4>Pfanne</h4><small>250 €</small></div>
-            </button>
-            <button id="w-hammer" class="shop-btn" onclick="buyWeapon('hammer', 600)">
-                <span class="icon">🔨</span><div><h4>Hammer</h4><small>600 €</small></div>
-            </button>
-             <button id="w-bat" class="shop-btn" onclick="buyWeapon('bat', 1500)">
-                <span class="icon">🏏</span><div><h4>Keule</h4><small>1500 €</small></div>
-            </button>
-            <button id="w-fart" class="shop-btn" onclick="buyWeapon('fart', 6868)">
-                <span class="icon">☣️</span><div><h4>Atom-Döv</h4><small>6868 €</small></div>
-            </button>
+            <button id="w-fist" class="shop-btn active" onclick="equip('fist')"><span class="icon">👊</span><div><h4>Faust</h4><small>Gratis</small></div></button>
+            <button id="w-slipper" class="shop-btn" onclick="buyWeapon('slipper', 50)"><span class="icon">🩴</span><div><h4>Terlik v2</h4><small>50 €</small></div></button>
+            <button id="w-pan" class="shop-btn" onclick="buyWeapon('pan', 250)"><span class="icon">🍳</span><div><h4>Pfanne</h4><small>250 €</small></div></button>
+            <button id="w-hammer" class="shop-btn" onclick="buyWeapon('hammer', 600)"><span class="icon">🔨</span><div><h4>Hammer</h4><small>600 €</small></div></button>
+            <button id="w-bat" class="shop-btn" onclick="buyWeapon('bat', 1500)"><span class="icon">🏏</span><div><h4>Keule</h4><small>1500 €</small></div></button>
+            <button id="w-fart" class="shop-btn" onclick="buyWeapon('fart', 6868)"><span class="icon">☣️</span><div><h4>Atom-Döv</h4><small>6868 €</small></div></button>
         </div>
 
         <div id="tab-staff" class="shop-grid hidden">
-            <button class="shop-btn" onclick="hireStaff('Champ', 100)">
-                <span class="icon">🧢</span><div><h4>Champ</h4><small>100 €</small></div><div id="cnt-Champ" class="count-badge hidden">0</div>
-            </button>
-            <button class="shop-btn" onclick="hireStaff('Lion', 500)">
-                <span class="icon">🕶️</span><div><h4>Lion</h4><small>500 €</small></div><div id="cnt-Lion" class="count-badge hidden">0</div>
-            </button>
-             <button class="shop-btn" onclick="hireStaff('Haji Han', 2000)">
-                <span class="icon">😎</span><div><h4>Haji Han</h4><small>2k €</small></div><div id="cnt-Haji Han" class="count-badge hidden">0</div>
-            </button>
+            <button class="shop-btn" onclick="hireStaff('Champ', 100)"><span class="icon">🧢</span><div><h4>Champ</h4><small>100 €</small></div><div id="cnt-Champ" class="count-badge hidden">0</div></button>
+            <button class="shop-btn" onclick="hireStaff('Lion', 500)"><span class="icon">🕶️</span><div><h4>Lion</h4><small>500 €</small></div><div id="cnt-Lion" class="count-badge hidden">0</div></button>
+            <button class="shop-btn" onclick="hireStaff('Haji Han', 2000)"><span class="icon">😎</span><div><h4>Haji Han</h4><small>2k €</small></div><div id="cnt-Haji Han" class="count-badge hidden">0</div></button>
         </div>
 
         <div id="tab-casino" class="hidden">
             
+            <div class="casino-box">
+                <h4 class="casino-title">🃏 BLACKJACK (3:2)</h4>
+                <div class="bj-table">
+                    <div class="bj-score">Oguz: <span id="bj-dealer-score">0</span></div>
+                    <div id="bj-dealer-cards" class="cards-area"></div>
+                    <hr style="border-color:#444">
+                    <div class="bj-score">Du: <span id="bj-player-score">0</span></div>
+                    <div id="bj-player-cards" class="cards-area"></div>
+                </div>
+                <div style="margin-top:5px">
+                    <input type="number" id="bet-bj" class="bet-input" placeholder="€" value="100">
+                    <button id="btn-bj-start" class="casino-btn" onclick="startBlackjack()">START</button>
+                    <span id="bj-actions" class="hidden">
+                        <button class="casino-btn" style="background:#2ed573; color:black" onclick="hitBj()">HIT</button>
+                        <button class="casino-btn" style="background:#e74c3c; color:white" onclick="standBj()">STAND</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="casino-box">
+                <h4 class="casino-title">🎲 ROULETTE</h4>
+                <div class="roulette-wrapper">
+                    <div class="roulette-arrow"></div>
+                    <div id="wheel" class="roulette-wheel"></div>
+                </div>
+                <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
+                <div style="margin-top:5px;">
+                    <button class="casino-btn" style="color:#e74c3c; border-color:#e74c3c" onclick="spinRoulette('red')">ROT (x2)</button>
+                    <button class="casino-btn" style="color:#aaa; border-color:#aaa" onclick="spinRoulette('black')">SCHWARZ (x2)</button>
+                    <button class="casino-btn" style="color:#2ed573; border-color:#2ed573" onclick="spinRoulette('green')">GRÜN (x14)</button>
+                </div>
+            </div>
+
             <div class="casino-box">
                 <h4 class="casino-title">🟡 YAZI TURA (x2)</h4>
                 <div class="coin-container">
@@ -269,30 +241,13 @@
             </div>
 
             <div class="casino-box">
-                <h4 class="casino-title">🎰 SLOTS (3x = Jackpot)</h4>
+                <h4 class="casino-title">🎰 SLOTS</h4>
                 <div class="slot-machine">
                     <div id="reel1" class="reel">👊</div>
                     <div id="reel2" class="reel">🍒</div>
                     <div id="reel3" class="reel">💎</div>
                 </div>
-                <small>Einsatz: 100 €</small>
-                <button class="casino-btn" onclick="spinSlots()">DREHEN</button>
-            </div>
-
-            <div class="casino-box">
-                <h4 class="casino-title">🎲 ROULETTE (x2 / x14)</h4>
-                <div style="position:relative;">
-                    <div class="roulette-arrow"></div>
-                    <div id="wheel" class="roulette-wheel">
-                        <div class="wheel-inner"></div>
-                    </div>
-                </div>
-                <input type="number" id="bet-roulette" class="bet-input" placeholder="€">
-                <div style="margin-top:5px;">
-                    <button class="casino-btn" style="color:red; border-color:red" onclick="spinRoulette('red')">ROT</button>
-                    <button class="casino-btn" style="color:#aaa; border-color:#aaa" onclick="spinRoulette('black')">SCHWARZ</button>
-                    <button class="casino-btn" style="color:#2ed573; border-color:#2ed573" onclick="spinRoulette('green')">GRÜN</button>
-                </div>
+                <small>100 €</small> <button class="casino-btn" onclick="spinSlots()">DREHEN</button>
             </div>
 
         </div>
@@ -301,19 +256,11 @@
     <script>
         // --- SOUNDS ---
         const sounds = {
-            hit: new Audio('hit.m4a'),
-            buy: new Audio('buy.mp3'),
-            win: new Audio('win.mp3')
+            hit: new Audio('hit.m4a'), buy: new Audio('buy.mp3'), win: new Audio('win.mp3')
         };
         sounds.hit.volume = 0.6;
 
-        function playSound(type) {
-            try {
-                let s = sounds[type].cloneNode();
-                s.play().catch(e => {});
-            } catch (e) { }
-        }
-        
+        function playSound(type) { try { sounds[type].cloneNode().play().catch(e=>{}); } catch(e){} }
         document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
 
         // --- GAME STATE ---
@@ -325,16 +272,15 @@
         let isDead = false;
 
         const weapons = {
-            'fist':    { dmg: [5, 9],    icon: '👊', name: 'Faust' },
-            'slipper': { dmg: [15, 25],  icon: '🩴', name: 'Terlik' },
-            'pan':     { dmg: [35, 55],  icon: '🍳', name: 'Pfanne' },
-            'hammer':  { dmg: [70, 100], icon: '🔨', name: 'Hammer' },
-            'bat':     { dmg: [150, 250], icon: '🏏', name: 'Keule' },
-            'fart':    { dmg: [500, 999], icon: '☣️', name: 'Atom-Döv' }
+            'fist': { dmg: [5,9], icon: '👊', name: 'Faust' },
+            'slipper': { dmg: [15,25], icon: '🩴', name: 'Terlik' },
+            'pan': { dmg: [35,55], icon: '🍳', name: 'Pfanne' },
+            'hammer': { dmg: [70,100], icon: '🔨', name: 'Hammer' },
+            'bat': { dmg: [150,250], icon: '🏏', name: 'Keule' },
+            'fart': { dmg: [500,999], icon: '☣️', name: 'Atom-Döv' }
         };
-        const staffData = { 'Champ': { dps: 1, name: "Champ" }, 'Lion': { dps: 5, name: "Lion" }, 'Haji Han': { dps: 25, name: "Haji Han" } };
+        const staffData = { 'Champ':{dps:1,name:"Champ"}, 'Lion':{dps:5,name:"Lion"}, 'Haji Han':{dps:25,name:"Haji Han"} };
 
-        // Elemente
         const face = document.getElementById('face');
         const hpBar = document.getElementById('health');
         const hpVal = document.getElementById('hp-val');
@@ -349,24 +295,172 @@
         loadGame(); updateUI(); updateShopUI();
         setInterval(autoAttack, 1000); setInterval(saveGame, 5000);
 
-        // --- CASINO ANIMATION LOGIC ---
-        
-        // 1. COIN FLIP
+        // ================= BLACKJACK LOGIC =================
+        let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjBet = 0, bjActive = false;
+
+        function startBlackjack() {
+            if(bjActive) return;
+            let bet = parseInt(document.getElementById('bet-bj').value);
+            if(isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
+            if(bet > state.money) return msg.innerText = "Zu arm!";
+            
+            state.money -= bet; bjBet = bet; updateUI();
+            
+            // Deck erstellen (vereinfacht, unendlich)
+            bjDeck = [2,3,4,5,6,7,8,9,10,10,10,10,11]; 
+            bjPlayerHand = [drawCard(), drawCard()];
+            bjDealerHand = [drawCard(), drawCard()];
+            
+            bjActive = true;
+            document.getElementById('btn-bj-start').classList.add('hidden');
+            document.getElementById('bj-actions').classList.remove('hidden');
+            document.getElementById('bet-bj').disabled = true;
+            
+            updateBjUI(false); // Dealer Karte noch verdeckt
+            
+            // Check instant Blackjack
+            if(calcBj(bjPlayerHand) === 21) { standBj(); }
+        }
+
+        function drawCard() { return bjDeck[Math.floor(Math.random()*bjDeck.length)]; }
+
+        function calcBj(hand) {
+            let sum = hand.reduce((a,b)=>a+b, 0);
+            let aces = hand.filter(c=>c===11).length;
+            while(sum > 21 && aces > 0) { sum -= 10; aces--; }
+            return sum;
+        }
+
+        function updateBjUI(revealDealer) {
+            // Player UI
+            let pDiv = document.getElementById('bj-player-cards');
+            pDiv.innerHTML = "";
+            bjPlayerHand.forEach(c => { pDiv.innerHTML += `<div class='bj-card'>${c===11?'A':c}</div>`; });
+            document.getElementById('bj-player-score').innerText = calcBj(bjPlayerHand);
+
+            // Dealer UI
+            let dDiv = document.getElementById('bj-dealer-cards');
+            dDiv.innerHTML = "";
+            if(revealDealer) {
+                bjDealerHand.forEach(c => { dDiv.innerHTML += `<div class='bj-card'>${c===11?'A':c}</div>`; });
+                document.getElementById('bj-dealer-score').innerText = calcBj(bjDealerHand);
+            } else {
+                dDiv.innerHTML += `<div class='bj-card'>${bjDealerHand[0]===11?'A':bjDealerHand[0]}</div>`;
+                dDiv.innerHTML += `<div class='bj-card' style='background:#333; color:#333'>?</div>`;
+                document.getElementById('bj-dealer-score').innerText = "?";
+            }
+        }
+
+        function hitBj() {
+            if(!bjActive) return;
+            bjPlayerHand.push(drawCard());
+            updateBjUI(false);
+            if(calcBj(bjPlayerHand) > 21) endBj(false);
+        }
+
+        function standBj() {
+            if(!bjActive) return;
+            updateBjUI(true); // Dealer aufdecken
+            let dScore = calcBj(bjDealerHand);
+            
+            // Dealer zieht bis 17
+            let drawLoop = setInterval(() => {
+                dScore = calcBj(bjDealerHand);
+                if(dScore < 17) {
+                    bjDealerHand.push(drawCard());
+                    updateBjUI(true);
+                } else {
+                    clearInterval(drawLoop);
+                    determineBjWinner();
+                }
+            }, 800);
+        }
+
+        function determineBjWinner() {
+            let p = calcBj(bjPlayerHand);
+            let d = calcBj(bjDealerHand);
+            
+            if(d > 21 || p > d) endBj(true);
+            else if(p === d) endBj('tie');
+            else endBj(false);
+        }
+
+        function endBj(result) {
+            bjActive = false;
+            if(result === true) {
+                let win = bjBet * 2;
+                if(calcBj(bjPlayerHand) === 21 && bjPlayerHand.length === 2) win = Math.floor(bjBet * 2.5); // Blackjack 3:2
+                state.money += win;
+                msg.innerText = "GEWONNEN! +" + win; playSound('buy');
+            } else if (result === 'tie') {
+                state.money += bjBet;
+                msg.innerText = "UNENTSCHIEDEN!";
+            } else {
+                msg.innerText = "DEALER GEWINNT!";
+            }
+            document.getElementById('btn-bj-start').classList.remove('hidden');
+            document.getElementById('bj-actions').classList.add('hidden');
+            document.getElementById('bet-bj').disabled = false;
+            updateUI();
+        }
+
+        // ================= ROULETTE LOGIC (FIXED) =================
+        let wheelSpinning = false;
+        function spinRoulette(color) {
+            if(wheelSpinning) return;
+            let bet = parseInt(document.getElementById('bet-roulette').value);
+            if(isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
+            if(bet > state.money) return msg.innerText = "Zu arm!";
+            state.money -= bet; updateUI(); wheelSpinning = true;
+
+            const wheel = document.getElementById('wheel');
+            
+            // Rotation zurücksetzen (Trick)
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            wheel.offsetHeight; // Trigger reflow
+
+            // Zufälliges Ergebnis (0-360 Grad)
+            let finalRot = Math.floor(Math.random() * 360);
+            
+            // Extra Drehungen hinzufügen für Animation
+            let spinAmount = (360 * 5) + (360 - finalRot); // 360-finalRot weil Pfeil oben ist
+            
+            wheel.style.transition = "transform 3s cubic-bezier(0.1, 0.7, 0.1, 1)";
+            wheel.style.transform = `rotate(${spinAmount}deg)`;
+
+            setTimeout(() => {
+                // Ergebnis berechnen
+                // Gradient: Green 0-20, Red 20-200, Black 200-360
+                // Da wir gegen den Uhrzeigersinn lesen, wenn das Rad CW dreht:
+                let resultColor = "";
+                if(finalRot >= 0 && finalRot < 20) resultColor = 'green';
+                else if(finalRot >= 20 && finalRot < 200) resultColor = 'red';
+                else resultColor = 'black';
+
+                if(color === resultColor) {
+                    let win = color === 'green' ? bet * 14 : bet * 2;
+                    state.money += win;
+                    msg.innerText = resultColor.toUpperCase() + "! GEWONNEN! +" + win;
+                    playSound('buy');
+                } else {
+                    msg.innerText = "Es kam " + resultColor.toUpperCase();
+                }
+                updateUI();
+                wheelSpinning = false;
+            }, 3000);
+        }
+
+        // --- OTHER CASINO ---
         function spinCoin() {
             let bet = parseInt(document.getElementById('bet-coin').value);
             if (isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
             if (bet > state.money) return msg.innerText = "Zu arm!";
-            
-            state.money -= bet;
-            updateUI();
+            state.money -= bet; updateUI();
             
             const coin = document.getElementById('coin');
-            // Reset Animation hack
-            coin.style.animation = 'none';
-            coin.offsetHeight; /* trigger reflow */
+            coin.style.animation = 'none'; coin.offsetHeight; 
             
-            // Random Ergebnis (0 = Heads/Yazi, 1 = Tails/Tura)
-            // Um 1800 grad rotieren (5 runden) + entweder 0 oder 180 am ende
             let isHeads = Math.random() < 0.5;
             let rotate = 1800 + (isHeads ? 0 : 180); 
             
@@ -374,188 +468,77 @@
             coin.style.transform = `rotateY(${rotate}deg)`;
             
             setTimeout(() => {
-                // Logik nach der Animation
-                if (isHeads) { // Sagen wir Yazi gewinnt immer (oder 50/50 logik hier einbauen)
-                    // Hier einfache 50/50 Chance simuliert durch den Wurf
-                    let win = bet * 2;
-                    state.money += win;
-                    msg.innerText = "YAZI! GEWONNEN! +" + win;
-                    msg.style.color = "#2ed573";
-                    playSound('buy');
-                } else {
-                    msg.innerText = "TURA! VERLOREN!";
-                    msg.style.color = "red";
-                }
+                if (isHeads) { 
+                    state.money += bet * 2; msg.innerText = "YAZI! +" + bet*2; msg.style.color="#2ed573"; playSound('buy');
+                } else { msg.innerText = "TURA!"; msg.style.color="red"; }
                 updateUI();
-                // Reset transform für nächsten Wurf
                 setTimeout(() => { coin.style.transition = "none"; coin.style.transform = "rotateY(0deg)"; }, 1000);
             }, 1500);
         }
 
-        // 2. SLOTS
         function spinSlots() {
-            let cost = 100;
-            if (state.money < cost) return msg.innerText = "Brauchst 100 €!";
-            state.money -= cost;
-            updateUI();
-
-            const r1 = document.getElementById('reel1');
-            const r2 = document.getElementById('reel2');
-            const r3 = document.getElementById('reel3');
+            if (state.money < 100) return msg.innerText = "Brauchst 100 €!";
+            state.money -= 100; updateUI();
+            const r1 = document.getElementById('reel1'), r2 = document.getElementById('reel2'), r3 = document.getElementById('reel3');
+            r1.classList.add('spinning'); r2.classList.add('spinning'); r3.classList.add('spinning');
+            const sym = ["👊", "🩴", "👨‍🦲", "🍒", "💎"];
             
-            // Start spinning Animation
-            r1.classList.add('spinning');
-            r2.classList.add('spinning');
-            r3.classList.add('spinning');
-            
-            const symbols = ["👊", "🩴", "👨‍🦲", "🍒", "💎"];
-            
-            // Stoppen nacheinander
-            setTimeout(() => {
-                r1.classList.remove('spinning');
-                r1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-            }, 500);
-            
-            setTimeout(() => {
-                r2.classList.remove('spinning');
-                r2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-            }, 1000);
-            
+            setTimeout(() => { r1.classList.remove('spinning'); r1.innerText = sym[Math.floor(Math.random()*5)]; }, 500);
+            setTimeout(() => { r2.classList.remove('spinning'); r2.innerText = sym[Math.floor(Math.random()*5)]; }, 1000);
             setTimeout(() => {
                 r3.classList.remove('spinning');
-                let res = symbols[Math.floor(Math.random() * symbols.length)];
-                r3.innerText = res;
-                
-                // Check Win
-                let s1 = r1.innerText; let s2 = r2.innerText; let s3 = res;
-                if (s1 === s3 && s2 === s3) {
-                    let win = cost * 10; state.money += win;
-                    msg.innerText = "JACKPOT!!! +" + win; playSound('win');
-                } else if (s1 === s2 || s2 === s3 || s1 === s3) {
-                    let win = cost * 2; state.money += win;
-                    msg.innerText = "Kleiner Gewinn! +" + win; playSound('buy');
-                } else {
-                    msg.innerText = "Niete!";
-                }
+                let s3 = sym[Math.floor(Math.random()*5)]; r3.innerText = s3;
+                let s1 = r1.innerText, s2 = r2.innerText;
+                if (s1==s3 && s2==s3) { state.money += 1000; msg.innerText="JACKPOT!"; playSound('win'); }
+                else if (s1==s2 || s2==s3 || s1==s3) { state.money += 200; msg.innerText="Kleiner Gewinn!"; playSound('buy'); }
+                else msg.innerText="Niete!";
                 updateUI();
             }, 1500);
         }
 
-        // 3. ROULETTE
-        function spinRoulette(color) {
-            let bet = parseInt(document.getElementById('bet-roulette').value);
-            if (isNaN(bet) || bet <= 0) return msg.innerText = "Einsatz?";
-            if (bet > state.money) return msg.innerText = "Zu arm!";
-            
-            state.money -= bet;
-            updateUI();
-            
-            const wheel = document.getElementById('wheel');
-            // Zufällige Drehung (min 3 Runden = 1080deg + Zufall 0-360)
-            let rot = 1080 + Math.random() * 360;
-            
-            wheel.style.transition = "transform 2s cubic-bezier(0.1, 0.7, 0.1, 1)";
-            wheel.style.transform = `rotate(${rot}deg)`;
-            
-            setTimeout(() => {
-                // Ergebnis berechnen (Winkel normalisieren)
-                let actualRot = rot % 360;
-                // Einfache Logik: Wir definieren Bereiche im CSS Gradient
-                // Rot: 0-170, Grün: 170-190, Schwarz: 190-360
-                // Da Pfeil oben ist, müssen wir invertieren oder einfach Zufall simulieren
-                
-                // Wir machen es einfach per Zufallszahl für die Logik, Animation ist nur Show
-                let roll = Math.floor(Math.random() * 37);
-                let resColor = (roll === 0) ? 'green' : (roll <= 18 ? 'red' : 'black');
-                
-                if (color === resColor) {
-                    let multi = (color === 'green') ? 14 : 2;
-                    let win = bet * multi;
-                    state.money += win;
-                    msg.innerText = resColor.toUpperCase() + "! GEWONNEN! +" + win;
-                    playSound('buy');
-                } else {
-                    msg.innerText = "Kugel landete auf " + resColor.toUpperCase();
-                }
-                
-                updateUI();
-                // Reset Wheel leise
-                setTimeout(() => { 
-                    wheel.style.transition = "none"; 
-                    wheel.style.transform = "rotate(0deg)"; 
-                }, 2000);
-                
-            }, 2000);
-        }
-
-        // --- GAME LOGIC ---
+        // --- GAME CORE ---
         function manualAttack(e) { if (!isDead) attackLogic(true, e.clientX, e.clientY); }
         function autoAttack() {
             if (isDead) return;
             let dps = (state.staff['Champ']*1) + (state.staff['Lion']*5) + (state.staff['Haji Han']*25);
-            if (dps > 0) {
-                const r = face.getBoundingClientRect();
-                attackLogic(false, r.left+r.width/2, r.top+r.height/2, dps);
-            }
+            if (dps > 0) { const r = face.getBoundingClientRect(); attackLogic(false, r.left+r.width/2, r.top+r.height/2, dps); }
         }
-
         function attackLogic(isManual, x, y, autoDmg=0) {
             let dmg = 0; let w = weapons[state.currentWeapon];
             if (isManual) {
                 playSound('hit');
                 dmg = Math.floor(Math.random() * (w.dmg[1]-w.dmg[0]+1)) + w.dmg[0];
-                if (Math.random() < 0.15) {
-                    dmg *= 2; spawnParticles(x, y, 10, '#ff00ff');
-                    msg.innerText = "CRIT! " + dmg; msg.style.color = "#ff00ff";
-                } else {
-                    spawnParticles(x, y, 4, '#00ffff');
-                    msg.innerText = "-" + dmg; msg.style.color = "#00ffff";
-                }
+                if (Math.random() < 0.15) { dmg *= 2; spawnParticles(x, y, 10, '#ff00ff'); } 
+                else { spawnParticles(x, y, 4, '#00ffff'); }
                 animateWeapon(w.icon);
                 state.money += Math.floor(Math.random()*3)+state.level;
-            } else {
-                dmg = autoDmg; spawnParticles(x, y, 1, '#00ff00');
-            }
+            } else { dmg = autoDmg; spawnParticles(x, y, 1, '#00ff00'); }
             state.hp -= dmg; if(state.hp<0) state.hp=0;
             updateUI(); updateFace();
             if(state.hp<=0) kill();
         }
-
         function animateWeapon(icon) {
-            weaponAnim.innerText = icon;
-            weaponAnim.style.opacity = '1'; weaponAnim.classList.add('smash-anim');
+            weaponAnim.innerText = icon; weaponAnim.style.opacity = '1'; weaponAnim.classList.add('smash-anim');
             face.classList.add('hit');
-            setTimeout(() => { 
-                face.classList.remove('hit'); 
-                weaponAnim.classList.remove('smash-anim'); 
-                weaponAnim.style.opacity = '0';
-            }, 100);
+            setTimeout(() => { face.classList.remove('hit'); weaponAnim.classList.remove('smash-anim'); weaponAnim.style.opacity = '0'; }, 100);
         }
-
         function updateFace() {
             let p = (state.hp/state.maxHp)*100;
-            if(state.hp>0) {
-                if(p<30) face.innerText="🤢"; else if(p<60) face.innerText="🤕"; else face.innerText="😠";
-            }
+            if(state.hp>0) { if(p<30) face.innerText="🤢"; else if(p<60) face.innerText="🤕"; else face.innerText="😠"; }
         }
-
         function kill() {
             isDead = true; playSound('win');
             face.innerText = "😵"; face.classList.add('dead');
-            let bonus = 50 * state.level; state.money += bonus;
-            msg.innerText = "K.O.! + " + bonus + " €";
-            resetBtn.classList.remove('hidden');
-            updateUI(); saveGame();
+            state.money += 50 * state.level;
+            msg.innerText = "K.O.! + " + (50*state.level) + " €";
+            resetBtn.classList.remove('hidden'); updateUI(); saveGame();
         }
-
         function nextLevel() {
             state.level++; state.maxHp = Math.floor(state.maxHp*1.4); state.hp = state.maxHp;
             isDead = false; face.innerText = "👨‍🦲"; face.classList.remove('dead');
-            resetBtn.classList.add('hidden'); msg.innerText = "Level " + state.level;
+            resetBtn.classList.add('hidden'); msg.innerText = "Oguz Rebooted!";
             updateUI(); saveGame();
         }
-
-        // --- SHOP ---
         function buyWeapon(k, p) {
             if(state.inventory.includes(k)) { equip(k); return; }
             if(state.money >= p) { state.money -= p; state.inventory.push(k); equip(k); playSound('buy'); }
@@ -567,48 +550,35 @@
             updateUI(); updateShopUI();
         }
         function equip(k) { state.currentWeapon = k; updateShopUI(); }
-
         function showTab(t) {
             document.getElementById('tab-weapons').classList.add('hidden');
             document.getElementById('tab-staff').classList.add('hidden');
             document.getElementById('tab-casino').classList.add('hidden');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-'+t).classList.remove('hidden');
-            // Einfacher Hack um den Button aktiv zu machen (ohne ID)
             event.target.classList.add('active');
         }
-
         function updateUI() {
             moneyEl.innerText = state.money;
             hpBar.style.width = (state.hp/state.maxHp*100) + "%";
             hpVal.innerText = state.hp + "/" + state.maxHp;
             lvlBadge.innerText = "LVL " + state.level;
-            // BG Color
-            let r = Math.max(10 - state.level, 0);
-            let b = Math.min(20 + (state.level*2), 60);
+            let r = Math.max(10 - state.level, 0); let b = Math.min(20 + (state.level*2), 60);
             document.body.style.backgroundColor = `rgb(${r}, ${r}, ${b})`;
         }
-
         function updateShopUI() {
-            // Reset
             document.querySelectorAll('.shop-btn').forEach(b => { b.classList.remove('active'); b.classList.remove('owned'); });
-            
-            // Weapons
             state.inventory.forEach(k => {
                 let b = document.getElementById('w-'+k);
                 if(b) { b.classList.add('owned'); b.querySelector('small').innerText = "BESITZ"; }
             });
             let ab = document.getElementById('w-'+state.currentWeapon);
             if(ab) { ab.classList.add('active'); ab.querySelector('small').innerText = "AKTIV"; }
-
-            // Staff
             for(let t in state.staff) {
-                let c = state.staff[t];
                 let b = document.getElementById('cnt-'+t);
-                if(c>0) { b.innerText = c; b.classList.remove('hidden'); }
+                if(state.staff[t]>0) { b.innerText = state.staff[t]; b.classList.remove('hidden'); }
             }
         }
-
         function spawnParticles(x, y, n, c) {
             for(let i=0; i<n; i++) {
                 let p = document.createElement('div'); p.classList.add('particle');
@@ -618,13 +588,11 @@
                 document.body.appendChild(p); setTimeout(()=>p.remove(), 600);
             }
         }
-
-        function saveGame() { localStorage.setItem('zDovDeluxe', JSON.stringify(state)); saveNotify.style.opacity=1; setTimeout(()=>saveNotify.style.opacity=0, 1000); }
+        function saveGame() { localStorage.setItem('zDovUlt', JSON.stringify(state)); saveNotify.style.opacity=1; setTimeout(()=>saveNotify.style.opacity=0, 1000); }
         function loadGame() {
-            let s = localStorage.getItem('zDovDeluxe');
+            let s = localStorage.getItem('zDovUlt');
             if(s) try { state = { ...state, ...JSON.parse(s) }; if(state.hp<=0) state.hp=1; } catch(e){}
         }
-
     </script>
 </body>
 </html>
