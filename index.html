@@ -2,221 +2,121 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z' DÖV - FINAL V7</title>
-    <style>
-        /* --- Grundeinstellungen --- */
-        :root {
-            --bg: #121212;
-            --card: #1e1e24;
-            --text: #ffffff;
-            --accent: #ff4757;
-            --green: #2ed573;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        .game-wrapper {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-            text-align: center;
-        }
-        .game-container {
-            background-color: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-        }
-        h1 {
-            color: var(--accent);
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .arena {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 20px 0;
-            align-items: center;
-        }
-        .status-col {
-            width: 100%;
-            text-align: left;
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 10px;
-        }
-        .bar-bg {
-            width: 100%;
-            height: 15px;
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-        .bar-fill {
-            height: 100%;
-            background: var(--green);
-            transition: width 0.2s ease, background-color 0.2s;
-        }
-        .enemy-fill {
-            background: var(--accent);
-        }
-        .keli-zone {
-            margin: 10px 0;
-        }
-        .keli-avatar {
-            font-size: 120px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            user-select: none;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
-        }
-        .keli-avatar.hit {
-            transform: scale(0.9) rotate(5deg);
-        }
-        .keli-avatar.dead {
-            filter: grayscale(100%);
-            opacity: 0.6;
-            transform: rotate(180deg);
-            pointer-events: none;
-        }
-        .log-text {
-            min-height: 25px;
-            margin-bottom: 15px;
-            font-style: italic;
-            color: #ccc;
-        }
-        .btn-main {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
-            transition: transform 0.1s;
-            width: 100%;
-        }
-        .btn-main:active {
-            transform: scale(0.95);
-        }
-        .btn-main:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .btn-reset {
-            background-color: var(--green);
-            color: #121212;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .hidden { display: none; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Z' DÖV - FINAL</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <main class="game-wrapper">
         <div class="game-container">
-            <h1>Z' DÖV <span id="lvl-badge">LVL 1</span></h1>
-            <p class="log-text" id="zone-name">📍 HINTERHOF</p>
-            <div class="status-col">
-                HP: <span id="hp-txt">100/100</span>
-                <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
-            </div>
-            <div class="status-col">Money: <span id="money-txt">0</span> €</div>
 
-            <div class="arena">
-                <h2 id="enemy-name">VS OGUZ</h2>
+            <header class="top-header">
+                <h1>Z' DÖV <span id="lvl-badge" class="badge">LVL 1</span></h1>
+                <p id="zone-name" class="zone">📍 HINTERHOF</p>
+            </header>
+
+            <!-- Player Status -->
+            <section class="status-box">
+                <div class="status-row">
+                    <label>HP:</label>
+                    <span id="hp-txt">100/100</span>
+                </div>
+                <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
+
+                <div class="status-row money">
+                    <label>Money:</label>
+                    <span id="money-txt">0 €</span>
+                </div>
+            </section>
+
+            <!-- Arena -->
+            <section class="arena">
+                <h2 id="enemy-name" class="enemy-title">VS OGUZ</h2>
+
                 <div class="keli-zone">
                     <div id="face" class="keli-avatar" onpointerdown="hit(event)">👨‍🦲</div>
+                    <div id="weapon-anim" class="weapon-anim">👊</div>
                 </div>
-                <div id="weapon-anim">👊</div>
-                <button id="next-btn" class="btn-main hidden" onclick="nextLevel()">WEITER >></button>
-                <p id="msg" class="log-text">Mach ihn platt!</p>
-            </div>
 
-            <section class="shop-area">
+                <p id="msg" class="log-text">Mach ihn platt!</p>
+
+                <button id="next-btn" class="btn-main hidden" onclick="nextLevel()">WEITER >></button>
+            </section>
+
+            <!-- SHOP TABS -->
+            <section class="shop">
                 <div class="tabs">
                     <button class="tab active" onclick="tab('waffen')">⚔️ Waffen</button>
                     <button class="tab" onclick="tab('crew')">👥 Crew</button>
                     <button class="tab" onclick="tab('casino')">🎰 Casino</button>
                 </div>
 
-                <div id="tab-waffen" class="content active">
-                    <div class="grid" id="weapon-list"></div>
+                <!-- Waffen -->
+                <div id="tab-waffen" class="tab-content active">
+                    <div id="weapon-list" class="grid"></div>
                 </div>
 
-                <div id="tab-crew" class="content">
-                    <div class="grid" id="staff-list"></div>
+                <!-- Crew -->
+                <div id="tab-crew" class="tab-content">
+                    <div id="staff-list" class="grid"></div>
                 </div>
 
-                <div id="tab-casino" class="content">
+                <!-- Casino -->
+                <div id="tab-casino" class="tab-content">
+
+                    <!-- Blackjack -->
                     <div class="casino-box">
-                        <div style="color:gold; font-weight:bold; margin-bottom:5px">🃏 BLACKJACK (3:2)</div>
+                        <h3 class="casino-title">🃏 BLACKJACK (3:2)</h3>
 
-                        <div style="font-size:0.8rem; color:#aaa;">Dealer: <span id="d-score">0</span></div>
+                        <p class="sub">Dealer: <span id="d-score">0</span></p>
                         <div id="d-cards" class="cards"></div>
 
-                        <div style="font-size:0.8rem; color:#aaa;">Du: <span id="p-score">0</span></div>
+                        <p class="sub">Du: <span id="p-score">0</span></p>
                         <div id="p-cards" class="cards"></div>
 
                         <input type="number" id="bj-bet" class="bet-in" value="100">
-                        <div style="margin-top:5px">
-                            <span id="bj-start-div"><button class="c-btn" onclick="startBJ()">START</button></span>
+
+                        <div class="btn-inline">
+                            <span id="bj-start-div">
+                                <button class="c-btn" onclick="startBJ()">START</button>
+                            </span>
+
                             <span id="bj-play-div" class="hidden">
-                                <button class="c-btn" style="background:#2ed573" onclick="hitBJ()">HIT</button>
-                                <button class="c-btn" style="background:#e74c3c; color:white" onclick="standBJ()">STAND</button>
+                                <button class="c-btn green" onclick="hitBJ()">HIT</button>
+                                <button class="c-btn red" onclick="standBJ()">STAND</button>
                             </span>
                         </div>
                     </div>
 
+                    <!-- Slots -->
                     <div class="casino-box">
-                        <div style="color:gold; font-weight:bold">🎰 SLOTS (High Risk)</div>
+                        <h3 class="casino-title">🎰 SLOTS (High Risk)</h3>
+
                         <div class="slot-row">
                             <div id="reel1" class="reel">👊</div>
                             <div id="reel2" class="reel">🍒</div>
                             <div id="reel3" class="reel">💎</div>
                         </div>
-                        <button class="c-btn" id="slot-btn" onclick="spinSlots()">100€ DREHEN</button>
+
+                        <button id="slot-btn" class="c-btn" onclick="spinSlots()">100€ DREHEN</button>
                     </div>
 
+                    <!-- Coin Flip -->
                     <div class="casino-box">
-                        <div style="color:gold; font-weight:bold">🟡 YAZI TURA (x2)</div>
-                        <div id="coin-display" style="font-size:3rem; margin:10px;">🪙</div>
+                        <h3 class="casino-title">🟡 YAZI TURA (x2)</h3>
+
+                        <div id="coin-display" class="coin-display">🪙</div>
                         <input type="number" id="coin-bet" class="bet-in" placeholder="Einsatz">
                         <button class="c-btn" onclick="spinCoin()">WERFEN</button>
                     </div>
+
                 </div>
             </section>
+
         </div>
     </main>
-    <script>
-        // (Originale JavaScript-Funktionen bleiben unverändert eingefügt)
-        // ... [hier das ursprüngliche Skript einfügen] ...
-    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
